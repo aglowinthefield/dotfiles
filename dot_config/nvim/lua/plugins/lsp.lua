@@ -19,6 +19,16 @@ return {
         }
       })
 
+      local ft_lsp_group = vim.api.nvim_create_augroup("ft_lsp_group", { clear = true })
+      vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
+        pattern = { "docker-compose.yaml", "compose.yaml" },
+        group = ft_lsp_group,
+        desc = "Fix the issue where the LSP does not start with docker-compose.",
+        callback = function()
+          vim.opt.filetype = "yaml.docker-compose"
+        end
+      })
+
       vim.diagnostic.enable = true
       vim.diagnostic.config({
         virtual_lines = true,
@@ -35,7 +45,16 @@ return {
   },
   {
     'mason-org/mason-lspconfig.nvim',
-    opts = {},
+    opts = {
+      ensure_installed = {
+        'lua_ls',
+        'pyright',
+        'neocmake',
+        'clangd',
+        'docker_language_server',
+      }
+    },
+    lazy = false,
     dependencies = {
       { "mason-org/mason.nvim", opts = {} },
       "neovim/nvim-lspconfig",
@@ -96,20 +115,6 @@ return {
         }),
         matching = { disallow_symbol_nonprefix_matching = false }
       })
-
-      local capabilities = require('cmp_nvim_lsp').default_capabilities()
-      require('lspconfig')['pyright'].setup {
-        capabilities = capabilities
-      }
-      require('lspconfig')['neocmake'].setup {
-        capabilities = capabilities
-      }
-      require('lspconfig')['lua_ls'].setup {
-        capabilities = capabilities
-      }
-      require('lspconfig')['docker-language-server'].setup {
-        capabilities = capabilities
-      }
     end
   }
 }
