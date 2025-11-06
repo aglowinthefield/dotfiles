@@ -1,3 +1,4 @@
+{{- if not .chezmoi.os "windows" }}
 #!/bin/sh
 set -eu
 
@@ -15,3 +16,4 @@ if [ ! -d "${TPM_DIR}/.git" ]; then
 else
     git -C "${TPM_DIR}" pull --ff-only
 fi
+{{- end }}
