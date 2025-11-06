@@ -1,5 +1,6 @@
+{{- if eq .chezmoi.os "windows" -}}
+{{- else -}}
 #!/bin/sh
-{{- if ne .chezmoi.os "windows" }}
 set -eu
 
 TPM_DIR="${HOME}/.tmux/plugins/tpm"
@@ -16,4 +17,4 @@ if [ ! -d "${TPM_DIR}/.git" ]; then
 else
     git -C "${TPM_DIR}" pull --ff-only
 fi
-{{- end }}
+{{- end -}}
