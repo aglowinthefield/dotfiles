@@ -1,5 +1,5 @@
-{{- if ne .chezmoi.os "windows" }}
 #!/bin/sh
+{{- if ne .chezmoi.os "windows" }}
 set -eu
 
 TPM_DIR="${HOME}/.tmux/plugins/tpm"
