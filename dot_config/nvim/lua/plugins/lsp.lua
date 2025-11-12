@@ -52,6 +52,7 @@ return {
         'neocmake',
         'clangd',
         'docker_language_server',
+        'fish_lsp',
       }
     },
     lazy = false,
