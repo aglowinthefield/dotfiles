@@ -2,7 +2,7 @@
 set -euo pipefail
 
 OS="{{ .chezmoi.os }}"
-LINUX_ID="{{ .chezmoi.osRelease.id }}"
+LINUX_ID="{{ if .chezmoi.osRelease }}{{ .chezmoi.osRelease.id }}{{ end }}"
 
 install_fish() {
   if command -v fish >/dev/null 2>&1; then
@@ -64,7 +64,6 @@ set_default_shell_to_fish() {
     return 1
   fi
 
-  # Prefer $SHELL; fall back to passwd entry if needed
   current_shell="${SHELL:-}"
   if [ -z "${current_shell}" ] && command -v getent >/dev/null 2>&1; then
     current_shell="$(getent passwd "$USER" | cut -d: -f7 || true)"
@@ -88,4 +87,3 @@ main() {
 }
 
 main "$@"
-
