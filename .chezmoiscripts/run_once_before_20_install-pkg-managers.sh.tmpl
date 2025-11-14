@@ -1,0 +1,7 @@
+{{ if eq .chezmoi.os "darwin" }}
+# homebrew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+{{ else if eq .chezmoi.os "linux" }}
+sudo pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
+{{ else }}
+{{ end }}
