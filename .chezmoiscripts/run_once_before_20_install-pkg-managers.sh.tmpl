@@ -1,6 +1,21 @@
 {{ if eq .chezmoi.os "darwin" }}
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# Install Homebrew if not installed
+if ! command -v brew >/dev/null 2>&1; then
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
 {{ else if eq .chezmoi.os "linux" }}
-sudo pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
+# Install yay (Arch) if not installed
+if ! command -v yay >/dev/null 2>&1; then
+  sudo pacman -S --needed git base-devel
+  if [ ! -d "$HOME/yay" ]; then
+    git clone https://aur.archlinux.org/yay.git "$HOME/yay"
+  fi
+  cd "$HOME/yay"
+  makepkg -si --noconfirm
+fi
+
 {{ else }}
+# Unsupported OS – do nothing
 {{ end }}
+
