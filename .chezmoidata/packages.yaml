@@ -21,8 +21,6 @@ packages:
 
   arch:
     pacman:
-    - '1password'
-    - '1password-cli'
     - 'atop'
     - 'base'
     - 'base-devel'
@@ -49,5 +47,4 @@ packages:
     - 'tree'
     - 'vi'
     - 'vim'
-    - 'yay'
     - 'yq'
