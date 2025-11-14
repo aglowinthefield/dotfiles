@@ -1,0 +1,45 @@
+function delete-empty-folders-help
+    echo "Removes empty folders from a root folder."
+    echo "Usage:"
+    echo ""
+    echo "  delete-empty-folders <root-folder>"
+end
+
+function delete-empty-folders
+    if count $argv >/dev/null
+        set directory_source $argv[1]
+        echo "Removing empty folders from '$directory_source'"
+        find $directory_source -empty -type d -delete
+    else
+        echo "Need a root-folder to start the search. Not doing anything."
+        echo ""
+        delete-empty-folders-help
+    end
+end
+
+function find_image_folders_only
+    # Define acceptable image extensions (case-insensitive)
+    set -l img_exts jpg jpeg png gif bmp webp tif tiff svg
+
+    # Convert extensions to a regex pattern
+    set -l pattern (string join "|" $img_exts)
+
+    # Use `find` to walk directories
+    for dir in (find . -type d)
+        # Check if all non-dir files under this dir are images
+        set -l non_img (find $dir -type f | grep -viE "\.($pattern)\$")
+
+        if test -z "$non_img"
+            echo $dir
+        end
+    end
+end
+
+function no_music_folders
+    for dir in (find . -type d)
+        set count (find "$dir" -type f \( -iname "*.flac" -o -iname "*.mp3" -o -iname "*.m4a" -o -iname "*.mp4" -o -iname "*.alac" \) | wc -l)
+        if test $count -eq 0
+            echo $dir
+        end
+    end
+end

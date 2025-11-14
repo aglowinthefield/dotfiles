@@ -1,0 +1,32 @@
+source ~/.config/fish/functions.fish
+
+if status is-interactive
+    # Commands to run in interactive sessions can go here
+end
+
+if status is-interactive
+    and not set -q TMUX
+    if test "$DISPLAY" = ":0"
+        # VNC / local desktop session
+        set SESSION_NAME vnc
+    else
+        # SSH session
+        set SESSION_NAME home
+    end
+
+    if tmux has-session -t $SESSION_NAME
+        exec tmux attach-session -t $SESSION_NAME
+    else
+        tmux new-session -s $SESSION_NAME
+    end
+end
+
+fish_vi_key_bindings
+starship init fish | source
+
+set -x XDG_CONFIG_HOME $HOME/.config
+
+{{- if eq .chezmoi.os "linux" -}}
+set -g -x SYSTEMD_EDITOR vim
+set -g -x SSH_AUTH_SOCK $XDG_RUNTIME_DIR/ssh-agent.socket
+{{- end -}}
