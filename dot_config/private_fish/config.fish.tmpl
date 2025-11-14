@@ -6,8 +6,10 @@ end
 
 fish_vi_key_bindings
 starship init fish | source
+vfox activate fish | source
 
 set -x XDG_CONFIG_HOME $HOME/.config
+
 
 {{- if eq .chezmoi.os "linux" -}}
 
