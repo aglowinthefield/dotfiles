@@ -75,5 +75,17 @@ set_default_shell_to_fish() {
     return 0
   fi
 
-  echo "Changing default shell to fish (${fish_path}) for user ${USER} (m_
+  echo "Changing default shell to fish (${fish_path}) for user ${USER} (may prompt for password)..."
+  chsh -s "${fish_path}"
+}
+
+main() {
+  echo "=== Installing and configuring fish shell ==="
+  install_fish
+  ensure_fish_in_etc_shells
+  set_default_shell_to_fish
+  echo "=== Done ==="
+}
+
+main "$@"
 
