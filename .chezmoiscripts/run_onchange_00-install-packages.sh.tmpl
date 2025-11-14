@@ -11,6 +11,7 @@ cask {{ . | quote }}
 EOF
 {{ else if eq .chezmoi.os "linux" }}
 {{   if eq .chezmoi.osRelease.id "arch" }}
+#!/bin/bash
 	sudo pacman -S --needed --noconfirm \
 	{{- range .packages.arch.pacman }}
 	  {{ . | quote }} \
