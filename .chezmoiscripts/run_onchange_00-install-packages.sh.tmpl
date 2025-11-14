@@ -1,4 +1,4 @@
-{{ if eq .chezmoi.os "darwin" -}}
+{{- if eq .chezmoi.os "darwin" -}}
 #!/bin/bash
 
 brew bundle --file=/dev/stdin <<EOF
@@ -9,12 +9,12 @@ brew {{ . | quote }}
 cask {{ . | quote }}
 {{ end -}}
 EOF
-{{ else if eq .chezmoi.os "linux" }}
-{{   if eq .chezmoi.osRelease.id "arch" }}
+{{- else if eq .chezmoi.os "linux" -}}
+{{-   if eq .chezmoi.osRelease.id "arch" -}}
 #!/bin/sh
 	sudo pacman -S --needed --noconfirm \
 	{{- range .packages.arch.pacman }}
 	  {{ . | quote }} \
 	{{- end }}
-{{   end }}
-{{ end -}}
+{{-   end -}}
+{{- end -}}
