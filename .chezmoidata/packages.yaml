@@ -1,7 +1,6 @@
 packages:
   darwin:
     brews:
-    - 'alacritty'
     - 'ffmpeg'
     - 'fish'
     - 'flac'
@@ -17,6 +16,7 @@ packages:
     casks:
     - '1password'
     - '1password-cli'
+    - 'alacritty'
     - 'brave-browser'
     - 'discord'
     - 'firefox'
