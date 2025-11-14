@@ -1,0 +1,39 @@
+# ~/.gitconfig (managed by chezmoi)
+
+[user]
+    # Personal identity (default)
+    name = aglowinthefield
+    email = 146008217+aglowinthefield@users.noreply.github.com
+    signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIByV9f4UnbBzbGJypuS+IpoHiGLymFocOwiM/43FIl24
+
+[commit]
+    # Always sign commits unless overridden
+    gpgsign = true
+
+[gpg]
+    # Use SSH signing (1Password)
+    format = ssh
+
+[gpg "ssh"]
+{{- if eq .chezmoi.os "darwin" }}
+    program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
+{{- else if eq .chezmoi.os "linux" }}
+    program = "/opt/1Password/op-ssh-sign"
+{{- end }}
+
+# ---- Work identity overrides below ----
+# Any repo under ~/dev/ will use ~/.gitconfig_work
+[includeIf "gitdir:~/dev/"]
+    path = ~/.gitconfig_work
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = false
+
+[push]
+    default = current
+
+[color]
+    ui = auto
