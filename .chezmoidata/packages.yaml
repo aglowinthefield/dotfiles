@@ -1,18 +1,19 @@
 packages:
   darwin:
     brews:
-    - 'git'
-    - 'tmux'
-    - 'starship'
+    - 'alacritty'
+    - 'ffmpeg'
     - 'fish'
     - 'flac'
-    - 'ffmpeg'
+    - 'git'
     - 'lame'
     - 'lsd'
     - 'neovim'
     - 'openssl'
     - 'samba'
     - 'starship'
+    - 'starship'
+    - 'tmux'
     casks:
     - '1password'
     - '1password-cli'
