@@ -36,5 +36,3 @@ o.hlsearch = false
 
 -- GUI
 o.termguicolors = true
-
-require("config.keys")
