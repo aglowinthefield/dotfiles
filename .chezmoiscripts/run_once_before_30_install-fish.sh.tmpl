@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+OS="{{ .chezmoi.os }}"
+LINUX_ID="{{ .chezmoi.osRelease.id }}"
+
+install_fish() {
+  if command -v fish >/dev/null 2>&1; then
+    echo "fish already installed"
+    return 0
+  fi
+
+  case "$OS" in
+    darwin)
+      echo "Installing fish on macOS..."
+      if command -v brew >/dev/null 2>&1; then
+        brew install fish
+      else
+        echo "Homebrew not found. Please install Homebrew or install fish manually." >&2
+        return 1
+      fi
+      ;;
+    linux)
+      case "$LINUX_ID" in
+        arch|endeavouros|manjaro)
+          echo "Installing fish on Arch-based distro..."
+          sudo pacman -S --needed --noconfirm fish
+          ;;
+        *)
+          echo "Don't know how to install fish on Linux ID '$LINUX_ID'. Install fish manually." >&2
+          return 1
+          ;;
+      esac
+      ;;
+    *)
+      echo "Unsupported OS '$OS'. Install fish manually." >&2
+      return 1
+      ;;
+  esac
+}
+
+ensure_fish_in_etc_shells() {
+  local fish_path
+  fish_path="$(command -v fish || true)"
+  if [ -z "${fish_path}" ]; then
+    echo "fish not found on PATH, cannot add to /etc/shells" >&2
+    return 1
+  fi
+
+  if [ -f /etc/shells ] && grep -qx "${fish_path}" /etc/shells; then
+    echo "fish already in /etc/shells"
+  else
+    echo "Adding ${fish_path} to /etc/shells (may prompt for sudo)..."
+    echo "${fish_path}" | sudo tee -a /etc/shells >/dev/null
+  fi
+}
+
+set_default_shell_to_fish() {
+  local fish_path current_shell
+
+  fish_path="$(command -v fish || true)"
+  if [ -z "${fish_path}" ]; then
+    echo "fish not found on PATH, cannot set default shell" >&2
+    return 1
+  fi
+
+  # Prefer $SHELL; fall back to passwd entry if needed
+  current_shell="${SHELL:-}"
+  if [ -z "${current_shell}" ] && command -v getent >/dev/null 2>&1; then
+    current_shell="$(getent passwd "$USER" | cut -d: -f7 || true)"
+  fi
+
+  if [ "${current_shell}" = "${fish_path}" ]; then
+    echo "Default shell already fish: ${fish_path}"
+    return 0
+  fi
+
+  echo "Changing default shell to fish (${fish_path}) for user ${USER} (m_
+
