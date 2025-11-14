@@ -14,6 +14,6 @@ EOF
 #!/usr/bin/env bash
 set -euo pipefail
 
-sudo pacman -S --needed --noconfirm {{ join .packages.arch.pacman " " }}
+sudo pacman -S --needed --noconfirm {{ join " " .packages.arch.pacman }}
 {{- end }}
 
