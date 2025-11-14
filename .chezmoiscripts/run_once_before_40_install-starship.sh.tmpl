@@ -1,6 +1,0 @@
-#!/bin/sh
-{{ if eq .chezmoi.os "darwin" }}
-brew install starship
-{{ else if eq .chezmoi.os "linux" }}
-curl -sS https://starship.rs/install.sh | sh
-{{ end }}

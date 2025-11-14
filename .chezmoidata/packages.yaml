@@ -8,6 +8,8 @@ packages:
     - 'flac'
     - 'ffmpeg'
     - 'lame'
+    - 'lsd'
+    - 'neovim'
     - 'openssl'
     - 'samba'
     - 'starship'
