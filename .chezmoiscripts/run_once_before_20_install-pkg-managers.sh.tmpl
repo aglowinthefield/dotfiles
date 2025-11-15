@@ -1,5 +1,6 @@
 {{- if or (eq .chezmoi.os "darwin") (eq .chezmoi.os "linux") -}}
 #!/bin/sh
+set -eu
 
 {{- if eq .chezmoi.os "darwin" }}
 
@@ -10,15 +11,29 @@ fi
 
 {{- else if eq .chezmoi.os "linux" }}
 
+  {{- if eq .chezmoi.osRelease.id "arch" }}
+
 # Install yay (Arch) if not installed
 if ! command -v yay >/dev/null 2>&1; then
-  sudo pacman -S --needed git base-devel
+  echo "yay not found, installing via pacman + AUR…"
+
+  # Ensure git + base-devel installed
+  sudo pacman -S --needed --noconfirm git base-devel
+
+  # Clone yay if needed
   if [ ! -d "$HOME/yay" ]; then
     git clone https://aur.archlinux.org/yay.git "$HOME/yay"
   fi
+
+  # Build & install yay
   cd "$HOME/yay"
   makepkg -si --noconfirm
+else
+  echo "yay already installed"
 fi
 
-{{- end -}}
-{{- end -}}
+  {{- end }}   # end arch guard
+{{- end }}     # end linux if
+
+{{- end -}}    # end top-level guard
+
