@@ -6,7 +6,6 @@
     email = 146008217+aglowinthefield@users.noreply.github.com
     signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEu7PGIiUMTrrk1KhsAUZPgRNPCfLg5sSsYlNwSo4sho
 
-
 [commit]
     # Always sign commits unless overridden
     gpgsign = true
@@ -16,11 +15,7 @@
     format = ssh
 
 [gpg "ssh"]
-{{- if eq .chezmoi.os "darwin" }}
-    program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
-{{- else if eq .chezmoi.os "linux" }}
-    program = "/opt/1Password/op-ssh-sign"
-{{- end }}
+  program = op-ssh-sign
 
 # ---- Work identity overrides below ----
 # Any repo under ~/dev/ will use ~/.gitconfig_work
@@ -38,3 +33,6 @@
 
 [color]
     ui = auto
+
+[core]
+    autocrlf = true

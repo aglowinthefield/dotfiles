@@ -53,6 +53,7 @@ return {
         'clangd',
         'docker_language_server',
         'fish_lsp',
+        'omnisharp'
       }
     },
     lazy = false,
