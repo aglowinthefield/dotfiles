@@ -15,7 +15,11 @@
     format = ssh
 
 [gpg "ssh"]
+  {{ if eq .chezmoi.os "windows" }}
+  program = "~/AppData/Local/Microsoft/WindowsApps/op-ssh-sign.exe"
+  {{ else }}
   program = op-ssh-sign
+  {{ end }}
 
 # ---- Work identity overrides below ----
 # Any repo under ~/dev/ will use ~/.gitconfig_work
@@ -36,3 +40,4 @@
 
 [core]
     autocrlf = true
+  whitespace = cr-at-eol
