@@ -39,5 +39,8 @@
     ui = auto
 
 [core]
-    autocrlf = true
+  autocrlf = true
   whitespace = cr-at-eol
+  {{ if eq .chezmoi.os "windows" }}
+  sshCommand = "C:/Windows/System32/OpenSSH/ssh.exe"
+  {{ end }}
