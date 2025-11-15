@@ -14,7 +14,7 @@ set -x XDG_CONFIG_HOME $HOME/.config
 set -gx EDITOR nvim 
 
 
-{{- if eq .chezmoi.os "linux" -}}
+{{ if eq .chezmoi.os "linux" }}
 
 if status is-interactive
     and not set -q TMUX
@@ -35,4 +35,4 @@ end
 
 set -g -x SYSTEMD_EDITOR vim
 set -g -x SSH_AUTH_SOCK $XDG_RUNTIME_DIR/ssh-agent.socket
-{{- end -}}
+{{ end }}
