@@ -1,11 +1,15 @@
+{{- if or (eq .chezmoi.os "darwin") (eq .chezmoi.os "linux") -}}
 #!/bin/sh
-{{ if eq .chezmoi.os "darwin" }}
+
+{{- if eq .chezmoi.os "darwin" }}
+
 # Install Homebrew if not installed
 if ! command -v brew >/dev/null 2>&1; then
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 fi
 
-{{ else if eq .chezmoi.os "linux" }}
+{{- else if eq .chezmoi.os "linux" }}
+
 # Install yay (Arch) if not installed
 if ! command -v yay >/dev/null 2>&1; then
   sudo pacman -S --needed git base-devel
@@ -16,7 +20,5 @@ if ! command -v yay >/dev/null 2>&1; then
   makepkg -si --noconfirm
 fi
 
-{{ else }}
-# Unsupported OS – do nothing
-{{ end }}
-
+{{- end -}}
+{{- end -}}
