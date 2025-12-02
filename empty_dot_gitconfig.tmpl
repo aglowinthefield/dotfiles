@@ -17,6 +17,8 @@
 [gpg "ssh"]
   {{ if eq .chezmoi.os "windows" }}
   program = "~/AppData/Local/Microsoft/WindowsApps/op-ssh-sign.exe"
+  {{ else if eq .chezmoi.os "darwin" }}
+  program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
   {{ else }}
   program = op-ssh-sign
   {{ end }}
@@ -39,8 +41,8 @@
     ui = auto
 
 [core]
+  {{ if eq .chezmoi.os "windows" }}
   autocrlf = true
   whitespace = cr-at-eol
-  {{ if eq .chezmoi.os "windows" }}
   sshCommand = "C:/Windows/System32/OpenSSH/ssh.exe"
   {{ end }}

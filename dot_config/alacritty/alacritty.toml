@@ -3,6 +3,6 @@ import = [
   "~/.config/alacritty/themes/themes/kanagawa_dragon.toml"
 ]
 
-[terminal.shell]
-program = "/usr/local/bin/fish"
-args = ["--login"]
+# [terminal.shell]
+# program = "/usr/local/bin/fish"
+# args = ["--login"]
