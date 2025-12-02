@@ -1,0 +1,17 @@
+{{- if eq .chezmoi.os "windows" -}}
+{{- else -}}
+#!/bin/sh
+
+vfox add nodejs
+vfox i nodejs@25.2.1
+vfox use nodejs@25.2.1
+
+vfox add bun
+vfox i bun@1.3.3
+vfox use bun@1.3.3
+
+vfox add java
+vfox i java@25.0.1+8
+vfox use java@25.0.1+8
+
+{{- end }}
