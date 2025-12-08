@@ -1,0 +1,14 @@
+{{- if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+# macOS Settings
+# Hash: {{ include ".chezmoiscripts/run_onchange_50_macos-settings.sh.tmpl" | sha256sum }}
+
+set -e
+
+echo "Configuring macOS settings..."
+
+# Disable "Click desktop to show desktop" feature
+defaults write com.apple.WindowManager EnableStandardClickToShowDesktop -bool false
+
+echo "macOS settings configured. Some changes may require logout/restart to take effect."
+{{ end -}}
