@@ -1,4 +1,5 @@
 {{- if ne .chezmoi.os "windows" -}}
+#!/bin/sh
 vfox add nodejs
 vfox i nodejs@25.2.1
 vfox use -g nodejs@25.2.1
