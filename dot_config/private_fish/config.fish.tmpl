@@ -8,7 +8,7 @@ set -U fish_greeting
 
 fish_vi_key_bindings
 starship init fish | source
-{{ if .vfox -}}
+{{ if dig "vfox" false . -}}
 vfox activate fish | source
 {{- end }}
 

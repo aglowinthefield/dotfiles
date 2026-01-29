@@ -1,4 +1,4 @@
-{{- if and .vfox (ne .chezmoi.os "windows") -}}
+{{- if and (dig "vfox" false .) (ne .chezmoi.os "windows") -}}
 #!/bin/sh
 {{ if eq .chezmoi.os "darwin" -}}
 brew install vfox
