@@ -20,7 +20,7 @@
   {{ else if eq .chezmoi.os "darwin" }}
   program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
   {{ else }}
-  program = op-ssh-sign
+  program = ssh-keygen
   {{ end }}
 
 # ---- Work identity overrides below ----
