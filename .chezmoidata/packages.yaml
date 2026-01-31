@@ -11,9 +11,7 @@ packages:
     - 'openssl'
     - 'samba'
     - 'starship'
-    - 'starship'
     - 'tmux'
-    - 'vfox'
     casks:
     - '1password'
     - '1password-cli'
@@ -46,6 +44,7 @@ packages:
     - 'ripgrep'
     - 'rsync'
     - 'samba'
+    - 'starship'
     - 'tailscale'
     - 'tmux'
     - 'tree'

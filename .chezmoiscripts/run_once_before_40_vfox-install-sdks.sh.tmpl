@@ -1,5 +1,8 @@
-{{- if ne .chezmoi.os "windows" -}}
+{{- if and (dig "vfox" false .) (ne .chezmoi.os "windows") -}}
 #!/bin/sh
+{{ if eq .chezmoi.os "darwin" -}}
+brew install vfox
+{{ end -}}
 vfox add nodejs
 vfox i nodejs@25.2.1
 vfox use -g nodejs@25.2.1

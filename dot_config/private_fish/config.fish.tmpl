@@ -8,7 +8,9 @@ set -U fish_greeting
 
 fish_vi_key_bindings
 starship init fish | source
+{{ if dig "vfox" false . -}}
 vfox activate fish | source
+{{- end }}
 
 set -x XDG_CONFIG_HOME $HOME/.config
 set -gx EDITOR nvim 
