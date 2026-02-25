@@ -1,4 +1,4 @@
-oh-my-posh --config 'uew' init pwsh | Invoke-Expression
+oh-my-posh --config "$HOME/Documents/OMP/uew.omp.json" init pwsh | Invoke-Expression
 
 $env:XDG_CONFIG_HOME = "$HOME/.config"
 $env:EDITOR = "nvim"
