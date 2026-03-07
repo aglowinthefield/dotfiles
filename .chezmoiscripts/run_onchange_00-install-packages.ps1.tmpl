@@ -1,0 +1,12 @@
+{{- if eq .chezmoi.os "windows" -}}
+# Scoop packages hash: {{ include ".chezmoidata/packages.yaml" | sha256sum }}
+{{ range .packages.windows.scoop_buckets -}}
+scoop bucket add {{ . }}
+{{ end -}}
+scoop install {{ join " " .packages.windows.scoop }}
+scoop install {{ join " " .packages.windows.scoop_fonts }}
+
+{{ range .packages.windows.winget -}}
+winget install --exact --id {{ . }} --accept-source-agreements --accept-package-agreements
+{{ end -}}
+{{- end -}}
