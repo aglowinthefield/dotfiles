@@ -10,5 +10,61 @@ echo "Configuring macOS settings..."
 # Disable "Click desktop to show desktop" feature
 defaults write com.apple.WindowManager EnableStandardClickToShowDesktop -bool false
 
+# --- Performance: Reduce animations ---
+defaults write com.apple.Accessibility ReduceMotionEnabled -bool true
+defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
+defaults write com.apple.dock expose-animation-duration -float 0.1
+defaults write com.apple.dock launchanim -bool false
+defaults write com.apple.dock autohide-time-modifier -float 0.2
+
+# --- Disable Siri entirely ---
+defaults write com.apple.assistant.support "Assistant Enabled" -bool false
+defaults write com.apple.Siri VoiceTriggerUserEnabled -bool false
+defaults write com.apple.Siri HotkeyTag -int 0
+defaults write com.apple.assistant.support "Proactive Assistant Enabled" -bool false
+defaults write com.apple.assistant.support "Suggestions Enabled" -bool false
+defaults write com.apple.Spotlight SiriSuggestionsEnabled -bool false
+
+# --- Disable Spotlight indexing ---
+sudo mdutil -i off / 2>/dev/null || true
+sudo mdutil -E / 2>/dev/null || true
+
+# --- Disable unnecessary background services ---
+# Use both gui/ and user/ domains for reliability on Tahoe
+SERVICES=(
+  # Siri remnant daemons
+  com.apple.siri.context.service
+  com.apple.siriinferenced
+  com.apple.siriactionsd
+  com.apple.siriknowledged
+  com.apple.sirittsd
+  # ML/AI processing
+  com.apple.photoanalysisd
+  com.apple.mediaanalysisd
+  com.apple.naturallanguaged
+  com.apple.ciphermld
+  com.apple.intelligencecontextd
+  com.apple.mlhostd
+  # Telemetry/analytics
+  com.apple.inputanalyticsd
+  com.apple.ap.adprivacyd
+  com.apple.biomesyncd
+  com.apple.BiomeAgent
+  # Unused services
+  com.apple.GameController.gamecontrolleragentd
+  com.apple.weatherd
+  com.apple.Maps.mapssyncd
+  com.apple.Safari.PasswordBreachAgent
+  com.apple.SafariBookmarksSyncAgent
+)
+CURRENT_UID=$(id -u)
+for svc in "${SERVICES[@]}"; do
+  launchctl disable "gui/$CURRENT_UID/$svc" 2>/dev/null
+  launchctl disable "user/$CURRENT_UID/$svc" 2>/dev/null
+done
+
+# Restart Dock to apply animation changes
+killall Dock 2>/dev/null || true
+
 echo "macOS settings configured. Some changes may require logout/restart to take effect."
 {{ end -}}
