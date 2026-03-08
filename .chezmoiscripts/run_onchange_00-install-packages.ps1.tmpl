@@ -1,12 +1,29 @@
 {{- if eq .chezmoi.os "windows" -}}
 # Scoop packages hash: {{ include ".chezmoidata/packages.yaml" | sha256sum }}
 {{ range .packages.windows.scoop_buckets -}}
-scoop bucket add {{ . }}
+scoop bucket add {{ . }} *>$null
 {{ end -}}
-scoop install {{ join " " .packages.windows.scoop }}
-scoop install {{ join " " .packages.windows.scoop_fonts }}
+scoop install {{ join " " .packages.windows.scoop }} 2>$null 6>$null
+scoop install {{ join " " .packages.windows.scoop_fonts }} 2>$null 6>$null
 
+$wingetPackages = @(
 {{ range .packages.windows.winget -}}
-winget install --exact --id {{ . }} --accept-source-agreements --accept-package-agreements
+  '{{ . }}'
 {{ end -}}
+)
+$jobs = $wingetPackages | ForEach-Object {
+  Start-Job -ArgumentList $_ -ScriptBlock {
+    param($id)
+    $output = winget install --exact --id $id --accept-source-agreements --accept-package-agreements --disable-interactivity 2>&1
+    $output | Where-Object {
+      $_ -match '\S' -and
+      $_ -notmatch '^[\s\\|/\-]+$' -and
+      $_ -notmatch 'Found an existing package already installed' -and
+      $_ -notmatch 'No available upgrade found' -and
+      $_ -notmatch 'No newer package versions are available'
+    }
+  }
+}
+$jobs | Wait-Job | Receive-Job
+$jobs | Remove-Job
 {{- end -}}
