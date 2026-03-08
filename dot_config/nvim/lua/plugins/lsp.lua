@@ -7,13 +7,11 @@ return {
     },
 
     config = function()
-      require('mason').setup()
-
       vim.lsp.config('lua_ls', {
         settings = {
           Lua = {
             diagnostics = {
-              globals = { 'vim', 'buffer' }
+              globals = { 'vim' }
             }
           }
         }
@@ -29,14 +27,12 @@ return {
         end
       })
 
-      vim.diagnostic.enable = true
       vim.diagnostic.config({
         virtual_lines = true,
       })
 
       -- Autoformat all files by default
       vim.api.nvim_create_autocmd("BufWritePre", {
-        buffer = buffer,
         callback = function()
           vim.lsp.buf.format { async = false }
         end
@@ -74,11 +70,9 @@ return {
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-cmdline",
-      "hrsh7th/nvim-cmp",
     },
     config = function()
       local cmp = require('cmp')
-      -- local cmp_select = {behavior = cmp.SelectBehavior.Select}
       cmp.setup({
         window = {
           completion = cmp.config.window.bordered(),
