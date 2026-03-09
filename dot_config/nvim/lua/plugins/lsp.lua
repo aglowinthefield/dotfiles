@@ -31,12 +31,6 @@ return {
         virtual_lines = true,
       })
 
-      -- Autoformat all files by default
-      vim.api.nvim_create_autocmd("BufWritePre", {
-        callback = function()
-          vim.lsp.buf.format { async = false }
-        end
-      })
     end
   },
   {
@@ -49,7 +43,7 @@ return {
         'clangd',
         'docker_language_server',
         'fish_lsp',
-        'omnisharp'
+        'ts_ls',
       }
     },
     lazy = false,
