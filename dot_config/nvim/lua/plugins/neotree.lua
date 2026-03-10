@@ -4,7 +4,22 @@ return {
   dependencies = {
     "nvim-lua/plenary.nvim",
     "MunifTanjim/nui.nvim",
-    { "nvim-tree/nvim-web-devicons", lazy = true }, -- optional, but recommended
+    { "nvim-tree/nvim-web-devicons", lazy = true },
+    {
+      "s1n7ax/nvim-window-picker",
+      version = "2.*",
+      opts = {
+        hint = "floating-big-letter",
+        filter_rules = {
+          bo = { filetype = { "neo-tree", "neo-tree-popup", "notify" }, buftype = { "terminal", "quickfix" } },
+        },
+      },
+    },
+    {
+      "antosha417/nvim-lsp-file-operations",
+      dependencies = { "nvim-lua/plenary.nvim" },
+      opts = {},
+    },
   },
   lazy = false,                                     -- neo-tree will lazily load itself
   ---@module 'neo-tree'
