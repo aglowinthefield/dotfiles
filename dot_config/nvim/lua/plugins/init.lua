@@ -6,7 +6,7 @@ return {
   { "nvim-tree/nvim-web-devicons",     opts = {} },
   {
     "nvim-treesitter/nvim-treesitter",
-    branch = 'master',
+    branch = 'main',
     lazy = false,
     build = ":TSUpdate",
     opts = {
@@ -18,34 +18,28 @@ return {
     dependencies = { "nvim-treesitter/nvim-treesitter" },
     event = { "BufReadPre", "BufNewFile" },
     config = function()
-      require("nvim-treesitter.configs").setup({
-        textobjects = {
-          select = {
-            enable = true,
-            lookahead = true,
-            keymaps = {
-              ["af"] = "@function.outer",
-              ["if"] = "@function.inner",
-              ["ac"] = "@class.outer",
-              ["ic"] = "@class.inner",
-              ["aa"] = "@parameter.outer",
-              ["ia"] = "@parameter.inner",
-            },
-          },
-          move = {
-            enable = true,
-            set_jumps = true,
-            goto_next_start = {
-              ["]m"] = "@function.outer",
-              ["]]"] = "@class.outer",
-            },
-            goto_previous_start = {
-              ["[m"] = "@function.outer",
-              ["[["] = "@class.outer",
-            },
-          },
-        },
+      -- Configure via config.update (no .setup() in new API)
+      local config = require("nvim-treesitter-textobjects.config")
+      config.update({
+        select = { lookahead = true },
+        move = { set_jumps = true },
       })
+
+      -- Textobject select keymaps
+      local select = require("nvim-treesitter-textobjects.select")
+      vim.keymap.set({ "x", "o" }, "af", function() select.select_textobject("@function.outer") end)
+      vim.keymap.set({ "x", "o" }, "if", function() select.select_textobject("@function.inner") end)
+      vim.keymap.set({ "x", "o" }, "ac", function() select.select_textobject("@class.outer") end)
+      vim.keymap.set({ "x", "o" }, "ic", function() select.select_textobject("@class.inner") end)
+      vim.keymap.set({ "x", "o" }, "aa", function() select.select_textobject("@parameter.outer") end)
+      vim.keymap.set({ "x", "o" }, "ia", function() select.select_textobject("@parameter.inner") end)
+
+      -- Textobject move keymaps
+      local move = require("nvim-treesitter-textobjects.move")
+      vim.keymap.set({ "n", "x", "o" }, "]m", function() move.goto_next_start("@function.outer") end)
+      vim.keymap.set({ "n", "x", "o" }, "]]", function() move.goto_next_start("@class.outer") end)
+      vim.keymap.set({ "n", "x", "o" }, "[m", function() move.goto_previous_start("@function.outer") end)
+      vim.keymap.set({ "n", "x", "o" }, "[[", function() move.goto_previous_start("@class.outer") end)
     end,
   },
   { "j-hui/fidget.nvim", event = "LspAttach", opts = {} },

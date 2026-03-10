@@ -43,6 +43,7 @@ return {
         'clangd',
         'docker_language_server',
         'fish_lsp',
+        'gopls',
         'ts_ls',
       }
     },
