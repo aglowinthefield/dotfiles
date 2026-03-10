@@ -8,12 +8,14 @@ set -U fish_greeting
 
 fish_vi_key_bindings
 starship init fish | source
-{{ if dig "vfox" false . -}}
-vfox activate fish | source
-{{- end }}
+fnm env --use-on-cd --shell fish | source
 
 set -x XDG_CONFIG_HOME $HOME/.config
-set -gx EDITOR nvim 
+set -gx EDITOR nvim
+{{ if eq .chezmoi.os "darwin" }}
+fish_add_path /opt/homebrew/opt/ruby/bin
+fish_add_path /opt/homebrew/lib/ruby/gems/4.0.0/bin
+{{ end }}
 
 
 {{ if eq .chezmoi.os "linux" }}
