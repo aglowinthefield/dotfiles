@@ -37,9 +37,9 @@ return {
       -- Textobject move keymaps
       local move = require("nvim-treesitter-textobjects.move")
       vim.keymap.set({ "n", "x", "o" }, "]m", function() move.goto_next_start("@function.outer") end)
-      vim.keymap.set({ "n", "x", "o" }, "]]", function() move.goto_next_start("@class.outer") end)
+      vim.keymap.set({ "n", "x", "o" }, "]c", function() move.goto_next_start("@class.outer") end)
       vim.keymap.set({ "n", "x", "o" }, "[m", function() move.goto_previous_start("@function.outer") end)
-      vim.keymap.set({ "n", "x", "o" }, "[[", function() move.goto_previous_start("@class.outer") end)
+      vim.keymap.set({ "n", "x", "o" }, "[c", function() move.goto_previous_start("@class.outer") end)
     end,
   },
   { "j-hui/fidget.nvim", event = "LspAttach", opts = {} },
