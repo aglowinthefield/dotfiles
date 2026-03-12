@@ -8,7 +8,7 @@ return {
     bigfile = { enabled = true },
     -- Startup dashboard with recent files, shortcuts, etc.
     dashboard = { enabled = true },
-    -- File explorer sidebar (replaces neo-tree, nvim-tree, etc.)
+    -- File explorer sidebar
     explorer = { enabled = true },
     -- Animated indent guides showing scope
     indent = { enabled = true },

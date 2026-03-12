@@ -6,10 +6,13 @@ return {
       -- Groups
       { "<leader>b", group = "Buffer" },
       { "<leader>c", group = "Code" },
+      { "<leader>d", group = "Debug" },
       { "<leader>f", group = "Find" },
       { "<leader>g", group = "Git" },
       { "<leader>s", group = "Search" },
+      { "<leader>t", group = "Test" },
       { "<leader>u", group = "UI/Toggle" },
+      { "<leader>x", group = "Diagnostics" },
 
       -- Top Pickers & Explorer
       { "<leader><space>", function() Snacks.picker.smart() end, desc = "Smart Find Files" },

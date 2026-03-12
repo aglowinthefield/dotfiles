@@ -36,3 +36,13 @@ o.hlsearch = false
 
 -- GUI
 o.termguicolors = true
+
+-- C# uses 4-space indent by convention
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "cs",
+  callback = function()
+    vim.bo.tabstop = 4
+    vim.bo.softtabstop = 4
+    vim.bo.shiftwidth = 4
+  end,
+})

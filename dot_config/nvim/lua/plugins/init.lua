@@ -10,7 +10,7 @@ return {
     lazy = false,
     build = ":TSUpdate",
     opts = {
-      ensure_installed = { "typescript", "tsx", "javascript", "yaml" },
+      ensure_installed = { "typescript", "tsx", "javascript", "yaml", "c_sharp" },
     },
   },
   {
