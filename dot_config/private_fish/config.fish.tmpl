@@ -37,4 +37,5 @@ end
 
 set -g -x SYSTEMD_EDITOR vim
 set -g -x SSH_AUTH_SOCK $XDG_RUNTIME_DIR/ssh-agent.socket
+ssh-add -l | grep -q op_signing_key; or ssh-add ~/.ssh/op_signing_key 2>/dev/null
 {{ end }}
