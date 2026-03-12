@@ -9,9 +9,17 @@ return {
     branch = 'main',
     lazy = false,
     build = ":TSUpdate",
-    opts = {
-      ensure_installed = { "typescript", "tsx", "javascript", "yaml", "c_sharp" },
-    },
+    config = function()
+      -- main branch dropped ensure_installed from setup(); install explicitly
+      local wanted = { "typescript", "tsx", "javascript", "yaml", "c_sharp", "swift" }
+      local installed = require("nvim-treesitter").get_installed()
+      local missing = vim.tbl_filter(function(lang)
+        return not vim.list_contains(installed, lang)
+      end, wanted)
+      if #missing > 0 then
+        require("nvim-treesitter").install(missing)
+      end
+    end,
   },
   {
     "nvim-treesitter/nvim-treesitter-textobjects",

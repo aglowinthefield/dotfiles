@@ -17,6 +17,15 @@ return {
         }
       })
 
+      -- sourcekit-lsp ships with Xcode (not Mason-managed)
+      -- Requires buildServer.json for Xcode projects (generate with xcode-build-server)
+      vim.lsp.config('sourcekit', {
+        cmd = { 'sourcekit-lsp' },
+        filetypes = { 'swift', 'objc', 'objcpp', 'c', 'cpp' },
+        root_markers = { 'buildServer.json', 'Package.swift', '*.xcodeproj', '.git' },
+      })
+      vim.lsp.enable('sourcekit')
+
       local ft_lsp_group = vim.api.nvim_create_augroup("ft_lsp_group", { clear = true })
       vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
         pattern = { "docker-compose.yaml", "compose.yaml" },
