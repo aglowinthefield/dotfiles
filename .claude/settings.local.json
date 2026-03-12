@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(chezmoi diff:*)",
+      "Bash(chezmoi cat-config:*)",
+      "Bash(chezmoi config-path:*)",
+      "Bash(chezmoi data:*)"
+    ]
+  }
+}

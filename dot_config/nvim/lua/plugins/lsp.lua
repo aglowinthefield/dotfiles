@@ -7,17 +7,24 @@ return {
     },
 
     config = function()
-      require('mason').setup()
-
       vim.lsp.config('lua_ls', {
         settings = {
           Lua = {
             diagnostics = {
-              globals = { 'vim', 'buffer' }
+              globals = { 'vim' }
             }
           }
         }
       })
+
+      -- sourcekit-lsp ships with Xcode (not Mason-managed)
+      -- Requires buildServer.json for Xcode projects (generate with xcode-build-server)
+      vim.lsp.config('sourcekit', {
+        cmd = { 'sourcekit-lsp' },
+        filetypes = { 'swift', 'objc', 'objcpp', 'c', 'cpp' },
+        root_markers = { 'buildServer.json', 'Package.swift', '*.xcodeproj', '.git' },
+      })
+      vim.lsp.enable('sourcekit')
 
       local ft_lsp_group = vim.api.nvim_create_augroup("ft_lsp_group", { clear = true })
       vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
@@ -29,18 +36,10 @@ return {
         end
       })
 
-      vim.diagnostic.enable = true
       vim.diagnostic.config({
         virtual_lines = true,
       })
 
-      -- Autoformat all files by default
-      vim.api.nvim_create_autocmd("BufWritePre", {
-        buffer = buffer,
-        callback = function()
-          vim.lsp.buf.format { async = false }
-        end
-      })
     end
   },
   {
@@ -53,7 +52,8 @@ return {
         'clangd',
         'docker_language_server',
         'fish_lsp',
-        'omnisharp'
+        'gopls',
+        'ts_ls',
       }
     },
     lazy = false,
@@ -74,11 +74,9 @@ return {
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-cmdline",
-      "hrsh7th/nvim-cmp",
     },
     config = function()
       local cmp = require('cmp')
-      -- local cmp_select = {behavior = cmp.SelectBehavior.Select}
       cmp.setup({
         window = {
           completion = cmp.config.window.bordered(),

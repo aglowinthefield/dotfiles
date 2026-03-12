@@ -1,0 +1,17 @@
+{{- if ne .chezmoi.os "windows" -}}
+{{- else -}}
+# Install PPM (psmux plugin manager)
+$PPM_DIR = Join-Path $env:USERPROFILE ".psmux\plugins\ppm"
+
+if (-not (Test-Path (Join-Path $PPM_DIR ".git"))) {
+    Write-Host "Installing PPM (psmux plugin manager)..."
+    $TMP_DIR = Join-Path $env:TEMP "psmux-plugins"
+    git clone --depth 1 https://github.com/marlocarlo/psmux-plugins.git $TMP_DIR
+    New-Item -ItemType Directory -Path (Split-Path $PPM_DIR) -Force | Out-Null
+    Copy-Item (Join-Path $TMP_DIR "ppm") $PPM_DIR -Recurse
+    Remove-Item $TMP_DIR -Recurse -Force
+    Write-Host "PPM installed successfully."
+} else {
+    Write-Host "PPM already installed."
+}
+{{- end -}}

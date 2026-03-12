@@ -30,7 +30,7 @@ require("lazy").setup({
   },
   -- Configure any other settings here. See the documentation for more details.
   -- colorscheme that will be used when installing plugins.
-  install = { colorscheme = { "gruvbox" } },
+  install = { colorscheme = { "kanagawa-paper" } },
   -- automatically check for plugin updates
   checker = { enabled = true },
   change_detection = {
