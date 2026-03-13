@@ -1,0 +1,297 @@
+#
+# Alacritty Configuration
+# Reference: https://alacritty.org/config-alacritty.html
+#
+
+# ── General ──────────────────────────────────────────────────────────────────
+
+[general]
+import = [
+  "~/.config/alacritty/themes/themes/kanagawa_dragon.toml"
+]
+
+# Directory the shell is started in. "None" uses parent process's working directory.
+# Default: "None"
+# working_directory = "None"
+
+# Enable automatic config reloading on file change.
+# Default: true
+# live_config_reload = true
+
+# Offer IPC using `alacritty msg` (Unix only).
+# Default: true
+# ipc_socket = true
+
+# ── Environment Variables ────────────────────────────────────────────────────
+
+# [env]
+# Key-value pairs set as environment variables for any process spawned by Alacritty.
+# TERM = "xterm-256color"
+
+# ── Window ───────────────────────────────────────────────────────────────────
+
+[window]
+dimensions = { columns = 120, lines = 30 }
+dynamic_padding = false
+
+# Window position in pixels. "None" lets the WM decide.
+# Default: "None" for both
+# position = { x = 0, y = 0 }
+
+# Blank space around the terminal content in pixels.
+# Default: 0 for both
+# padding = { x = 0, y = 0 }
+
+# Window decorations/frame style.
+# Options: "Full" | "None" | "Transparent" (macOS) | "Buttonless" (macOS)
+# Default: "Full"
+# decorations = "Full"
+
+# Background opacity from 0.0 (transparent) to 1.0 (opaque).
+# Default: 1.0
+# opacity = 1.0
+
+# Request compositor to blur content behind transparent windows (macOS/KDE Wayland).
+# Default: false
+# blur = false
+
+# Initial window state.
+# Options: "Windowed" | "Maximized" | "Fullscreen" | "SimpleFullscreen" (macOS)
+# Default: "Windowed"
+# startup_mode = "Windowed"
+
+# Window title.
+# Default: "Alacritty"
+# title = "Alacritty"
+
+# Allow terminal programs to change the window title.
+# Default: true
+# dynamic_title = true
+
+# Window class (Linux/BSD X11).
+# Default: instance = "Alacritty", general = "Alacritty"
+# class = { instance = "Alacritty", general = "Alacritty" }
+
+# Override system theme for window decorations.
+# Options: "Dark" | "Light" | "None"
+# Default: "None"
+# decorations_theme_variant = "None"
+
+# Prefer resizing window by discrete cell-sized steps (macOS/X11).
+# Default: false
+# resize_increments = false
+
+# Treat Option key as Alt (macOS only).
+# Options: "OnlyLeft" | "OnlyRight" | "Both" | "None"
+# Default: "None"
+# option_as_alt = "None"
+
+# Window stacking order.
+# Options: "Normal" | "AlwaysOnTop"
+# Default: "Normal"
+# level = "Normal"
+
+# ── Scrolling ────────────────────────────────────────────────────────────────
+
+[scrolling]
+# Maximum number of lines in the scrollback buffer (0 to disable).
+# Default: 10000
+# history = 10000
+
+# Number of lines scrolled per scroll input event.
+# Default: 3
+# multiplier = 3
+
+# ── Font ─────────────────────────────────────────────────────────────────────
+
+[font]
+size = 11.5
+
+# Horizontal letter spacing adjustment in pixels.
+# Default: { x = 0, y = 0 }
+# offset = { x = 0, y = 0 }
+
+# Glyph position adjustment within cells in pixels.
+# Default: { x = 0, y = 0 }
+# glyph_offset = { x = 0, y = 0 }
+
+# Use built-in font for box drawing characters (e.g. ┌─┐).
+# Default: true
+# builtin_box_drawing = true
+
+[font.normal]
+family = "JetBrainsMono NF"
+style = "Regular"
+
+[font.bold]
+style = "ExtraBold"
+
+[font.italic]
+style = "Italic"
+
+[font.bold_italic]
+style = "Bold Italic"
+
+# ── Colors ───────────────────────────────────────────────────────────────────
+
+[colors]
+draw_bold_text_with_bright_colors = false
+
+# Apply window.opacity to all cell backgrounds, not just the default.
+# Default: false
+# transparent_background_colors = false
+
+# Custom colors from index 16 to 256.
+# Default: []
+# indexed_colors = [{ index = 16, color = "#ff0000" }]
+
+# ── Bell ─────────────────────────────────────────────────────────────────────
+
+[bell]
+# Visual bell flash animation effect.
+# Options: "Ease" | "EaseOut" | "EaseOutSine" | "EaseOutQuad" | "EaseOutCubic"
+#          "EaseOutQuart" | "EaseOutQuint" | "EaseOutExpo" | "EaseOutCirc" | "Linear"
+# Default: "Linear"
+# animation = "Linear"
+
+# Duration of the visual bell flash in milliseconds (0 to disable).
+# Default: 0
+# duration = 0
+
+# Color of the visual bell flash.
+# Default: "#ffffff"
+# color = "#ffffff"
+
+# Program to run whenever the bell is rung.
+# Default: "None"
+# command = { program = "notify-send", args = ["Alacritty", "Bell"] }
+
+# ── Selection ────────────────────────────────────────────────────────────────
+
+[selection]
+# Characters used as word separators for semantic (double-click) selection.
+# Default: ",│`|:\"' ()[]{}<>\\t"
+# semantic_escape_chars = ",│`|:\"' ()[]{}<>\\t"
+
+# Automatically copy selected text to the primary clipboard.
+# Default: false
+# save_to_clipboard = false
+
+# ── Cursor ───────────────────────────────────────────────────────────────────
+
+[cursor.style]
+# Cursor shape.
+# Options: "Block" | "Underline" | "Beam"
+# Default: "Block"
+# shape = "Block"
+
+# Cursor blinking state.
+# "Never"/"Always" prevent programs from changing it; "Off"/"On" are the default states.
+# Options: "Never" | "Off" | "On" | "Always"
+# Default: "Off"
+# blinking = "Off"
+
+[cursor]
+# Vi mode cursor style (inherits from cursor.style if unset).
+# vi_mode_style = { shape = "Block", blinking = "Off" }
+
+# Cursor blink interval in milliseconds.
+# Default: 750
+# blink_interval = 750
+
+# Seconds of inactivity before cursor stops blinking (0 to never stop).
+# Default: 5
+# blink_timeout = 5
+
+# Render cursor as a hollow box when the window is unfocused.
+# Default: true
+# unfocused_hollow = true
+
+# Cursor thickness as a fraction of cell width (for Beam/Underline shapes).
+# Default: 0.15
+# thickness = 0.15
+
+# ── Terminal ─────────────────────────────────────────────────────────────────
+
+# OSC 52 clipboard escape sequence handling.
+# Options: "Disabled" | "OnlyCopy" | "OnlyPaste" | "CopyPaste"
+# Default: "OnlyCopy"
+# [terminal]
+# osc52 = "OnlyCopy"
+
+{{ if eq .chezmoi.os "windows" }}
+[terminal.shell]
+program = "C:\\Program Files\\PowerShell\\7\\pwsh.exe"
+args = ["-NoLogo"]
+# VS Dev Shell (slow startup, uncomment if needed):
+# args = ["-NoExit", "-Command", "& 'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\Tools\\Launch-VsDevShell.ps1' -Arch amd64 -HostArch amd64 -SkipAutomaticLocation | Out-Null; Set-Location ~"]
+{{ else }}
+# [terminal.shell]
+# program = "/usr/local/bin/fish"
+# args = ["--login"]
+{{ end }}
+
+# ── Mouse ────────────────────────────────────────────────────────────────────
+
+[mouse]
+# Hide the mouse cursor while typing.
+# Default: false
+# hide_when_typing = false
+
+# Mouse click bindings. Each entry has: mouse button, mods, mode, action.
+# Example:
+# bindings = [{ mouse = "Right", mods = "Control", action = "Paste" }]
+
+# ── Hints ────────────────────────────────────────────────────────────────────
+
+[hints]
+# Keys used for hint labels (order matters for label assignment).
+# Default: "jfkdls;ahgurieowpq"
+# alphabet = "jfkdls;ahgurieowpq"
+
+# Hint rules. Each entry has: regex, hyperlinks, post_processing, persist, action, command, binding, mouse.
+# Example:
+# [[hints.enabled]]
+# regex = "(mailto:|https:|http:|file:)[^\\u0000-\\u001F\\u007F-\\u009F<>\"\\s{-}\\^⟨⟩`]+"
+# hyperlinks = true
+# post_processing = true
+# persist = false
+# action = "Copy"
+# binding = { key = "U", mods = "Control|Shift" }
+
+# ── Keyboard ─────────────────────────────────────────────────────────────────
+
+# [keyboard]
+# Custom key bindings. Each entry has: key, mods, mode, action/chars/command.
+# Example:
+# bindings = [
+#   { key = "V", mods = "Control|Shift", action = "Paste" },
+#   { key = "C", mods = "Control|Shift", action = "Copy" },
+# ]
+
+# ── Debug ────────────────────────────────────────────────────────────────────
+
+# [debug]
+# Display frame render time. Default: false
+# render_timer = false
+
+# Keep log file after quitting. Default: false
+# persistent_logging = false
+
+# Log level. Options: "Off" | "Error" | "Warn" | "Info" | "Debug" | "Trace"
+# Default: "Warn"
+# log_level = "Warn"
+
+# Force a specific renderer backend.
+# Options: "glsl3" | "gles2" | "gles2pure" | "None"
+# Default: "None"
+# renderer = "None"
+
+# Log all received window events. Default: false
+# print_events = false
+
+# Highlight window damage information. Default: false
+# highlight_damage = false
+
+# Use EGL as display API if available (Linux/BSD). Default: false
+# prefer_egl = false

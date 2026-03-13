@@ -4,7 +4,14 @@
       "Bash(chezmoi diff:*)",
       "Bash(chezmoi cat-config:*)",
       "Bash(chezmoi config-path:*)",
-      "Bash(chezmoi data:*)"
+      "Bash(chezmoi data:*)",
+      "Bash(chezmoi managed:*)",
+      "Bash(chezmoi apply:*)",
+      "Read(//c/Program Files/PowerShell/7/**)",
+      "Read(//c/Users/clearing/.local/share/chezmoi/$HOME/Documents/PowerShell/**)",
+      "Bash(cd /c/Users/clearing/.local/share/chezmoi/dot_config/alacritty && mv alacritty.toml alacritty.toml.tmpl)",
+      "Bash(where pwsh:*)",
+      "WebFetch(domain:alacritty.org)"
     ]
   }
 }

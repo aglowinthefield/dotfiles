@@ -1,0 +1,11 @@
+{{- if eq .chezmoi.os "windows" }}
+$target = Join-Path $env:USERPROFILE ".config\alacritty"
+$link = Join-Path $env:APPDATA "alacritty"
+
+if (-not (Test-Path $link)) {
+    cmd /c mklink /J $link $target
+    Write-Host "Created junction: $link -> $target"
+} else {
+    Write-Host "Alacritty AppData link already exists"
+}
+{{- end }}
