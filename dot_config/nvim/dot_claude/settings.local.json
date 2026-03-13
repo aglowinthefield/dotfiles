@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(where:*)",
+      "Bash(dir /s /b \"%LOCALAPPDATA%\\\\nvim-data\\\\mason\\\\packages\\\\clangd\"\")",
+      "Bash(findstr:*)",
+      "Bash(winget --version:*)",
+      "Read(//c/Users/clearing/AppData/Local/nvim-data/site/**)",
+      "Read(//c/Users/clearing/.local/share/nvim/**)",
+      "Read(//d/var/boutique/**)"
+    ]
+  }
+}
