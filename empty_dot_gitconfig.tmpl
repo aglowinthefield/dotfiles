@@ -41,6 +41,9 @@
 [color]
     ui = auto
 
+[safe]
+  directory = *
+
 [core]
   {{ if eq .chezmoi.os "windows" }}
   autocrlf = true
