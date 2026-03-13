@@ -74,13 +74,36 @@ return {
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-cmdline",
+      "onsails/lspkind.nvim",
     },
     config = function()
       local cmp = require('cmp')
       cmp.setup({
         window = {
-          completion = cmp.config.window.bordered(),
-          documentation = cmp.config.window.bordered(),
+          completion = cmp.config.window.bordered({
+            border = "rounded",
+            scrollbar = true,
+          }),
+          documentation = cmp.config.window.bordered({
+            border = "rounded",
+            max_width = 60,
+            max_height = 20,
+          }),
+        },
+        formatting = {
+          fields = { "kind", "abbr", "menu" },
+          format = function(entry, vim_item)
+            local kind = require("lspkind").cmp_format({
+              mode = "symbol_text",
+              maxwidth = 50,
+              ellipsis_char = "…",
+            })(entry, vim_item)
+            -- Split "Icon Text" into separate kind and abbr fields
+            local strings = vim.split(kind.kind, "%s", { trimempty = true })
+            kind.kind = " " .. (strings[1] or "") .. " "
+            kind.menu = "  (" .. (strings[2] or "") .. ")"
+            return kind
+          end,
         },
         mapping = cmp.mapping.preset.insert({
           ['<C-b>'] = cmp.mapping.scroll_docs(-4),
