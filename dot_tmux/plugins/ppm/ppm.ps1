@@ -388,12 +388,15 @@ function Initialize-Plugin {
     param([string]$PluginPath)
     $name = Split-Path -Leaf $PluginPath
 
-    # If the plugin ships a plugin.conf, psmux already sourced it natively
-    # when processing the `set -g @plugin` declaration.  Skip re-sourcing
-    # via the .ps1 entry point to avoid overriding user settings that were
-    # set AFTER the @plugin line in the config file.
+    # If the plugin ships a plugin.conf, source it via psmux so the
+    # bind-key / set directives take effect.
     $confFile = Join-Path $PluginPath 'plugin.conf'
     if (Test-Path $confFile) {
+        try {
+            Invoke-Psmux source-file $confFile
+        } catch {
+            Write-Host "  Warning: Error sourcing ${name}/plugin.conf : $_" -ForegroundColor Yellow
+        }
         return
     }
 
