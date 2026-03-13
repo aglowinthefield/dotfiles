@@ -1,3 +1,29 @@
+{{- if eq .chezmoi.os "windows" }}
+# =============================================================================
+# psmux config (Windows)
+# =============================================================================
+# Most settings are handled by psmux-sensible and psmux-pain-control plugins.
+# Only declare plugins and settings that psmux can parse here.
+# Avoid hyphenated option names — psmux converts them to $env: vars which
+# PowerShell can't handle (e.g. $env:allow-rename is invalid).
+
+unbind C-b
+set -g prefix C-a
+bind C-a send-prefix
+
+# List of plugins
+set -g @plugin 'psmux-plugins/ppm'
+set -g @plugin 'psmux-plugins/psmux-sensible'
+set -g @plugin 'psmux-plugins/psmux-pain-control'
+set -g @kanagawa-variant 'dragon'
+set -g @plugin 'psmux-plugins/psmux-theme-kanagawa'
+
+run '~/.tmux/plugins/ppm/ppm.ps1'
+{{- else }}
+# =============================================================================
+# tmux config (Linux/macOS)
+# =============================================================================
+
 # True color support
 set -g default-terminal "tmux-256color"
 set -ag terminal-overrides ",xterm-256color:RGB,alacritty:RGB"
@@ -27,25 +53,16 @@ set -g mouse on
 set-option -g allow-rename off
 
 # List of plugins
-{{- if eq .chezmoi.os "windows" }}
-set -g @plugin 'psmux-plugins/ppm'
-set -g @plugin 'psmux-plugins/psmux-sensible'
-{{- else }}
 set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'tmux-plugins/tmux-sensible'
 
 set -g @plugin 'Nybkox/tmux-ukiyo'
 set -g @ukiyo-theme "kanagawa/dragon"  # darker
-{{- end }}
 
 setw -g xterm-keys on
-# set -s escape-time 200                     # faster command sequences
 set -sg repeat-time 600                   # increase repeat timeout
 set -s focus-events on
 set -s escape-time 50
 
-{{- if eq .chezmoi.os "windows" }}
-run '~/.psmux/plugins/ppm/ppm.ps1'
-{{- else }}
 run '~/.tmux/plugins/tpm/tpm'
 {{- end }}

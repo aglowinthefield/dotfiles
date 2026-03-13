@@ -1,4 +1,7 @@
 {{- if ne .chezmoi.os "windows" }}
 Documents/PowerShell
+# psmux plugins are Windows-only
+.tmux/plugins/ppm
+.tmux/plugins/psmux-*
 {{- end }}
 .config/nvim/lazy-lock.json
