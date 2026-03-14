@@ -13,6 +13,15 @@ if (-not $longPathsEnabled -or $longPathsEnabled.LongPathsEnabled -ne 1) {
     }
 }
 
+# Enable komorebi autostart with whkd
+if (Get-Command komorebic -ErrorAction SilentlyContinue) {
+    Write-Host "Enabling komorebi autostart with whkd..."
+    komorebic enable-autostart --whkd
+    Write-Host "Komorebi autostart enabled."
+} else {
+    Write-Host "WARNING: komorebic not found. Run 'komorebic enable-autostart --whkd' after installing."
+}
+
 # Reminder: disable animations manually for komorebi
 Write-Host ""
 Write-Host "NOTE: For best komorebi experience, disable system animations:"
