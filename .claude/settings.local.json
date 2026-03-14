@@ -20,7 +20,9 @@
       "Bash(taskkill.exe /PID 28604 /F 2>&1; taskkill.exe /PID 8252 /F 2>&1)",
       "Bash(powershell -Command \"\\(Get-ItemProperty -Path 'HKCU:\\\\Control Panel\\\\Desktop' -Name 'UserPreferencesMask'\\).UserPreferencesMask | ForEach-Object { '0x{0:X2}' -f $_ }\")",
       "Bash(powershell.exe -NoProfile -Command \"$mask = \\(Get-ItemProperty -Path 'HKCU:\\\\\\\\Control Panel\\\\\\\\Desktop' -Name 'UserPreferencesMask'\\).UserPreferencesMask; for \\($i=0; $i -lt $mask.Length; $i++\\) { Write-Host \\('Byte {0}: 0x{1:X2}' -f $i, $mask[$i]\\) }\")",
-      "Bash(powershell.exe -NoProfile -Command \"@\\('SystemPropertiesPerformance.exe'\\)\")"
+      "Bash(powershell.exe -NoProfile -Command \"@\\('SystemPropertiesPerformance.exe'\\)\")",
+      "Bash(powershell.exe -NoProfile -Command \"$mask = \\(Get-ItemProperty -Path 'HKCU:\\\\Control Panel\\\\Desktop' -Name 'UserPreferencesMask'\\).UserPreferencesMask; $mask[0] = $mask[0] -bor 0x02; Set-ItemProperty -Path 'HKCU:\\\\Control Panel\\\\Desktop' -Name 'UserPreferencesMask' -Value $mask; Write-Host 'Font smoothing re-enabled. You may need to log out and back in.'\")",
+      "WebFetch(domain:lgug2z.github.io)"
     ]
   }
 }
