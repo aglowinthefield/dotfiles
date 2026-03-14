@@ -259,6 +259,8 @@ packages:
     - 'JanDeDobbeleer.OhMyPosh'
     - 'jeffvli.Feishin'
     - 'Kitware.CMake'
+    - 'LGUG2Z.komorebi'
+    - 'LGUG2Z.whkd'
     - 'LLVM.LLVM'
     - 'Logitech.GHUB'
     - 'Microsoft.PowerShell'

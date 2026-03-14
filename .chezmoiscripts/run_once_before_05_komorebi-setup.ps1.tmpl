@@ -1,0 +1,26 @@
+{{- if ne .chezmoi.os "windows" -}}
+{{- else -}}
+# Enable long path support (required for komorebi)
+$longPathsEnabled = Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -ErrorAction SilentlyContinue
+if (-not $longPathsEnabled -or $longPathsEnabled.LongPathsEnabled -ne 1) {
+    Write-Host "Enabling long path support (requires admin)..."
+    try {
+        Set-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1
+        Write-Host "Long path support enabled."
+    } catch {
+        Write-Host "WARNING: Could not enable long paths. Run this in an Administrator terminal:"
+        Write-Host "  Set-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -Value 1"
+    }
+}
+
+# Disable system animations (recommended for tiling window managers)
+$prefMask = (Get-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name 'UserPreferencesMask' -ErrorAction SilentlyContinue).UserPreferencesMask
+if ($prefMask -and ($prefMask[0] -band 0x02)) {
+    Write-Host "Disabling system animations for better tiling WM experience..."
+    $prefMask[0] = $prefMask[0] -band (-bnot 0x02)
+    Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name 'UserPreferencesMask' -Value $prefMask
+    Write-Host "System animations disabled. A restart may be needed for full effect."
+} else {
+    Write-Host "System animations already disabled."
+}
+{{- end -}}

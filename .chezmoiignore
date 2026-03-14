@@ -3,5 +3,8 @@ Documents/PowerShell
 # psmux plugins are Windows-only
 .tmux/plugins/ppm
 .tmux/plugins/psmux-*
+# komorebi + whkd are Windows-only
+.config/whkd
+komorebi.json
 {{- end }}
 .config/nvim/lazy-lock.json
