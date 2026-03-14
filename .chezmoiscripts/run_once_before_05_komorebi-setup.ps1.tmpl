@@ -13,14 +13,9 @@ if (-not $longPathsEnabled -or $longPathsEnabled.LongPathsEnabled -ne 1) {
     }
 }
 
-# Disable system animations (recommended for tiling window managers)
-$prefMask = (Get-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name 'UserPreferencesMask' -ErrorAction SilentlyContinue).UserPreferencesMask
-if ($prefMask -and ($prefMask[0] -band 0x02)) {
-    Write-Host "Disabling system animations for better tiling WM experience..."
-    $prefMask[0] = $prefMask[0] -band (-bnot 0x02)
-    Set-ItemProperty -Path 'HKCU:\Control Panel\Desktop' -Name 'UserPreferencesMask' -Value $prefMask
-    Write-Host "System animations disabled. A restart may be needed for full effect."
-} else {
-    Write-Host "System animations already disabled."
-}
+# Reminder: disable animations manually for komorebi
+Write-Host ""
+Write-Host "NOTE: For best komorebi experience, disable system animations:"
+Write-Host "  Settings > Accessibility > Visual effects > Animation effects -> Off"
+Write-Host ""
 {{- end -}}

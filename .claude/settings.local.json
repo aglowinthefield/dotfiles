@@ -17,7 +17,10 @@
       "Read(//c/Users/clearing/.local/share/chezmoi/$APPDATA/**)",
       "Bash(chezmoi state:*)",
       "Bash(rm -f ~/.config/chezmoi/chezmoistate.boltdb.lock 2>/dev/null; fuser ~/.config/chezmoi/chezmoistate.boltdb 2>/dev/null; tasklist.exe 2>/dev/null | grep -i chezmoi)",
-      "Bash(taskkill.exe /PID 28604 /F 2>&1; taskkill.exe /PID 8252 /F 2>&1)"
+      "Bash(taskkill.exe /PID 28604 /F 2>&1; taskkill.exe /PID 8252 /F 2>&1)",
+      "Bash(powershell -Command \"\\(Get-ItemProperty -Path 'HKCU:\\\\Control Panel\\\\Desktop' -Name 'UserPreferencesMask'\\).UserPreferencesMask | ForEach-Object { '0x{0:X2}' -f $_ }\")",
+      "Bash(powershell.exe -NoProfile -Command \"$mask = \\(Get-ItemProperty -Path 'HKCU:\\\\\\\\Control Panel\\\\\\\\Desktop' -Name 'UserPreferencesMask'\\).UserPreferencesMask; for \\($i=0; $i -lt $mask.Length; $i++\\) { Write-Host \\('Byte {0}: 0x{1:X2}' -f $i, $mask[$i]\\) }\")",
+      "Bash(powershell.exe -NoProfile -Command \"@\\('SystemPropertiesPerformance.exe'\\)\")"
     ]
   }
 }
