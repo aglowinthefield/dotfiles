@@ -1,0 +1,4 @@
+{{- if eq .chezmoi.os "windows" }}
+[Environment]::SetEnvironmentVariable("WHKD_CONFIG_HOME", "$env:USERPROFILE\.config\whkd", "User")
+Write-Host "Set WHKD_CONFIG_HOME to $env:USERPROFILE\.config\whkd"
+{{- end }}

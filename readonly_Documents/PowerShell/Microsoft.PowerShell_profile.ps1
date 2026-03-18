@@ -2,7 +2,12 @@
 # PSReadLine — fish-like experience
 # ---------------------------------------------------------------------------
 Set-PSReadLineOption -EditMode Vi
-Set-PSReadLineOption -PredictionSource HistoryAndPlugin
+# Use HistoryAndPlugin if predictor plugins are available, otherwise fall back to History
+try {
+    Set-PSReadLineOption -PredictionSource HistoryAndPlugin -ErrorAction Stop
+} catch {
+    Set-PSReadLineOption -PredictionSource History
+}
 Set-PSReadLineOption -PredictionViewStyle InlineView
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd
 Set-PSReadLineOption -BellStyle None
@@ -30,7 +35,7 @@ $env:EDITOR = "nvim"
 # Aliases
 # ---------------------------------------------------------------------------
 Set-Alias vim nvim
-Set-Alias ls eza
+Set-Alias ls lsd
 Set-Alias c clear
 
 function x { exit }
