@@ -1,0 +1,41 @@
+# Starship prompt — ported from OMP uew theme
+# Line 1: ~ username  branch  shell
+# Line 2: ~ path ~
+
+format = """
+[~](fg:#BFA8BF) $username$git_branch$shell
+[~](fg:#BFA8BF) $directory$character"""
+
+# No right prompt — we dropped that for speed
+right_format = ""
+
+[username]
+style_user = "fg:#BBC4B9"
+style_root = "fg:#BBC4B9"
+format = "[$user ]($style)"
+show_always = true
+
+[git_branch]
+symbol = "\ue725 "
+style = "fg:#BFA8BF"
+format = "[$symbol$branch]($style) "
+
+[shell]
+disabled = false
+format = "[\uf120](fg:#fff) [$indicator]($style) "
+style = "fg:#BFA8BF"
+pwsh_indicator = "pwsh"
+bash_indicator = "bash"
+fish_indicator = "fish"
+
+[directory]
+style = "fg:#B6D6F2"
+format = "[\ue5ff $path]($style) "
+truncation_length = 0
+home_symbol = "home"
+fish_style_pwd_dir_length = 0
+
+[character]
+success_symbol = "[~](fg:#BFA8BF)"
+error_symbol = "[~](fg:#fff)"
+vimcmd_symbol = "[~](fg:#BFA8BF)"

@@ -26,7 +26,7 @@ Set-PSReadLineKeyHandler -Key Ctrl+u -Function BackwardDeleteLine
 # ---------------------------------------------------------------------------
 # Prompt & environment
 # ---------------------------------------------------------------------------
-oh-my-posh --config "$HOME/Documents/OMP/uew.omp.json" init pwsh | Invoke-Expression
+Invoke-Expression (&starship init powershell)
 
 $env:XDG_CONFIG_HOME = "$HOME/.config"
 $env:EDITOR = "nvim"
