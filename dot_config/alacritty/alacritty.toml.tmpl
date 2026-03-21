@@ -7,13 +7,16 @@
 
 [general]
 import = [
-  "~/.config/alacritty/themes/themes/kanagawa_dragon.toml"
+  "~/AppData/Roaming/alacritty/themes/themes/gruvbox_material_hard_dark.toml"
 ]
 
 # Directory the shell is started in. "None" uses parent process's working directory.
 # Default: "None"
-# working_directory = "None"
-
+{{ if eq .chezmoi.os "windows" -}}
+working_directory = "{{ .chezmoi.homeDir | replace "/" "\\\\" }}"
+{{ else -}}
+working_directory = "{{ .chezmoi.homeDir }}"
+{{ end }}
 # Enable automatic config reloading on file change.
 # Default: true
 # live_config_reload = true
@@ -62,11 +65,10 @@ dynamic_padding = false
 
 # Window title.
 # Default: "Alacritty"
-# title = "Alacritty"
+title = "˚❀　.　˚　　✦　　✿　.　˚　. 　 ˚　✿.　˚　　❀"
 
-# Allow terminal programs to change the window title.
-# Default: true
-# dynamic_title = true
+# Prevent programs from overriding the custom title above.
+dynamic_title = false
 
 # Window class (Linux/BSD X11).
 # Default: instance = "Alacritty", general = "Alacritty"
@@ -105,7 +107,7 @@ dynamic_padding = false
 # ── Font ─────────────────────────────────────────────────────────────────────
 
 [font]
-size = 11.5
+size = 10
 
 # Horizontal letter spacing adjustment in pixels.
 # Default: { x = 0, y = 0 }
@@ -183,7 +185,7 @@ draw_bold_text_with_bright_colors = false
 # Cursor shape.
 # Options: "Block" | "Underline" | "Beam"
 # Default: "Block"
-# shape = "Block"
+shape = "Underline"
 
 # Cursor blinking state.
 # "Never"/"Always" prevent programs from changing it; "Off"/"On" are the default states.
