@@ -1,0 +1,16 @@
+{{- if ne .chezmoi.os "windows" -}}
+{{- else -}}
+# Prevent apps from flashing the taskbar and stealing focus / popping the Start menu
+# To undo: Set ForegroundFlashCount to 7 and ForegroundLockTimeout to 200000 (Windows defaults)
+$desktopKey = 'HKCU:\Control Panel\Desktop'
+
+$current = Get-ItemProperty $desktopKey
+if ($current.ForegroundFlashCount -ne 0 -or $current.ForegroundLockTimeout -ne 0) {
+    Write-Host "Disabling foreground flash (prevents Start menu popup on app notifications)..."
+    Set-ItemProperty $desktopKey -Name ForegroundFlashCount -Value 0
+    Set-ItemProperty $desktopKey -Name ForegroundLockTimeout -Value 0
+    Write-Host "Done. Sign out and back in for changes to take effect."
+} else {
+    Write-Host "Foreground flash already disabled."
+}
+{{- end -}}

@@ -26,7 +26,9 @@ Set-PSReadLineKeyHandler -Key Ctrl+u -Function BackwardDeleteLine
 # ---------------------------------------------------------------------------
 # Prompt & environment
 # ---------------------------------------------------------------------------
-Invoke-Expression (&starship init powershell)
+# Cache generated with: starship init powershell --print-full-init > ~/.config/starship/init.ps1
+# Regenerate after updating starship.
+. "$HOME/.config/starship/init.ps1"
 
 $env:XDG_CONFIG_HOME = "$HOME/.config"
 $env:EDITOR = "nvim"

@@ -1,12 +1,12 @@
 {
   "$schema": "https://raw.githubusercontent.com/LGUG2Z/komorebi/v0.1.40/schema.json",
-  "app_specific_configuration_path": "$Env:USERPROFILE/applications.json",
+  "app_specific_configuration_path": "$Env:KOMOREBI_CONFIG_HOME/applications.json",
   "window_hiding_behaviour": "Cloak",
   "cross_monitor_move_behaviour": "Insert",
   "default_workspace_padding": 20,
   "default_container_padding": 20,
   "border": true,
-  "border_width": 8,
+  "border_width": 2,
   "border_offset": -1,
   "theme": {
     "palette": "Base16",
@@ -14,6 +14,39 @@
     "unfocused_border": "Base03",
     "bar_accent": "Base0D"
   },
+  "manage_rules": [
+    {
+      "kind": "Exe",
+      "id": "SharpVaMTools-GUI.exe",
+      "matching_strategy": "Equals"
+    }
+  ],
+  "ignore_rules": [
+    [
+      {
+        "kind": "Exe",
+        "id": "ModOrganizer.exe",
+        "matching_strategy": "Equals"
+      },
+      {
+        "kind": "Title",
+        "id": "Skyrim Special Edition",
+        "matching_strategy": "DoesNotContain"
+      }
+    ],
+    [
+      {
+        "kind": "Exe",
+        "id": "xEdit64.exe",
+        "matching_strategy": "Equals"
+      },
+      {
+        "kind": "Title",
+        "id": "SSEEdit",
+        "matching_strategy": "DoesNotContain"
+      }
+    ]
+  ],
   "monitors": [
     {
       "workspaces": [
