@@ -1,13 +1,14 @@
 # ---------------------------------------------------------------------------
+# Modules
+# ---------------------------------------------------------------------------
+Import-Module CompletionPredictor -ErrorAction SilentlyContinue
+Import-Module PSFzf -ErrorAction SilentlyContinue
+
+# ---------------------------------------------------------------------------
 # PSReadLine — fish-like experience
 # ---------------------------------------------------------------------------
 Set-PSReadLineOption -EditMode Vi
-# Use HistoryAndPlugin if predictor plugins are available, otherwise fall back to History
-try {
-    Set-PSReadLineOption -PredictionSource HistoryAndPlugin -ErrorAction Stop
-} catch {
-    Set-PSReadLineOption -PredictionSource History
-}
+Set-PSReadLineOption -PredictionSource HistoryAndPlugin
 Set-PSReadLineOption -PredictionViewStyle InlineView
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd
 Set-PSReadLineOption -BellStyle None
@@ -19,9 +20,11 @@ Set-PSReadLineKeyHandler -Key End -Function AcceptSuggestion
 Set-PSReadLineKeyHandler -Key Ctrl+f -Function AcceptSuggestion
 Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
 Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
-Set-PSReadLineKeyHandler -Key Ctrl+r -Function ReverseSearchHistory
 Set-PSReadLineKeyHandler -Key Ctrl+w -Function BackwardKillWord
 Set-PSReadLineKeyHandler -Key Ctrl+u -Function BackwardDeleteLine
+
+# PSFzf — fuzzy history & file search
+Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
 
 # ---------------------------------------------------------------------------
 # Prompt & environment
@@ -29,6 +32,11 @@ Set-PSReadLineKeyHandler -Key Ctrl+u -Function BackwardDeleteLine
 # Cache generated with: starship init powershell --print-full-init > ~/.config/starship/init.ps1
 # Regenerate after updating starship.
 . "$HOME/.config/starship/init.ps1"
+
+function Invoke-Starship-TransientFunction {
+    "~ "
+}
+Enable-TransientPrompt
 
 $env:XDG_CONFIG_HOME = "$HOME/.config"
 $env:EDITOR = "nvim"
