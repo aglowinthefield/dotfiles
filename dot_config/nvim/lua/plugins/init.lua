@@ -9,7 +9,7 @@ return {
     build = ":TSUpdate",
     config = function()
       -- main branch dropped ensure_installed from setup(); install explicitly
-      local wanted = { "typescript", "tsx", "javascript", "yaml", "c_sharp", "swift" }
+      local wanted = { "typescript", "tsx", "javascript", "yaml", "c_sharp", "swift", "rust" }
       local installed = require("nvim-treesitter").get_installed()
       local missing = vim.tbl_filter(function(lang)
         return not vim.list_contains(installed, lang)
@@ -49,6 +49,7 @@ return {
     end,
   },
   { "j-hui/fidget.nvim", event = "LspAttach", opts = {} },
+  { "brenoprata10/nvim-highlight-colors", event = { "BufReadPre", "BufNewFile" }, opts = {} },
   {
     'alker0/chezmoi.vim',
     lazy = false,
