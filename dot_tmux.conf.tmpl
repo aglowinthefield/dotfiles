@@ -1,4 +1,4 @@
-
+{{- if eq .chezmoi.os "windows" }}
 # =============================================================================
 # psmux config (Windows)
 # =============================================================================
@@ -29,3 +29,51 @@ run-shell 'C:\Users\clearing\.tmux\plugins/psmux-continuum/psmux-continuum.tmux'
 set -g @plugin 'psmux-plugins/psmux-theme-gruvbox'
 run-shell 'C:\Users\clearing\.tmux\plugins/psmux-theme-gruvbox/psmux-theme-gruvbox.tmux'
 # ── End plugins ──────────────────────────────────────
+
+{{- else }}
+# =============================================================================
+# tmux config (macOS / Linux)
+# =============================================================================
+
+# True color support
+set -g default-terminal "tmux-256color"
+set -ag terminal-overrides ",xterm-256color:RGB,alacritty:RGB"
+
+unbind C-b
+set-option -g prefix C-a
+bind-key C-a send-prefix
+
+bind | split-window -h
+bind - split-window -v
+
+# smart pane switching with awareness of vim splits
+bind h select-pane -L
+bind j select-pane -D
+bind k select-pane -U
+bind l select-pane -R
+
+# Resize with capital variants
+bind H resize-pane -L 5
+bind J resize-pane -D 5
+bind K resize-pane -U 5
+bind L resize-pane -R 5
+
+set -g mouse on
+
+# don't rename windows automatically
+set-option -g allow-rename off
+
+# List of plugins
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'tmux-plugins/tmux-sensible'
+
+set -g @plugin 'Nybkox/tmux-ukiyo'
+set -g @ukiyo-theme "kanagawa/dragon"  # darker
+
+setw -g xterm-keys on
+set -sg repeat-time 600                   # increase repeat timeout
+set -s focus-events on
+set -s escape-time 50
+
+run '~/.tmux/plugins/tpm/tpm'
+{{- end }}
