@@ -28,6 +28,14 @@
 [includeIf "gitdir:~/dev/"]
     path = ~/.gitconfig_work
 
+# ---- Personal identity restore for aglowinthefield repos ----
+# Any repo whose remote points at github.com/aglowinthefield/* uses ~/.gitconfig_personal,
+# overriding the ~/dev/ work override above. Matches both SSH and HTTPS remote URLs.
+[includeIf "hasconfig:remote.*.url:git@github.com:aglowinthefield/**"]
+    path = ~/.gitconfig_personal
+[includeIf "hasconfig:remote.*.url:https://github.com/aglowinthefield/**"]
+    path = ~/.gitconfig_personal
+
 [init]
     defaultBranch = main
 
