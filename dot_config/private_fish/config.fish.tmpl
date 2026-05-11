@@ -11,6 +11,10 @@ starship init fish | source
 fnm env --use-on-cd --shell fish | source
 
 set -x XDG_CONFIG_HOME $HOME/.config
+# czkawka_gui requires $XDG_DATA_DIRS to contain "/usr/local/share".
+set -x XDG_DATA_DIRS "/usr/local/share:$XDG_DATA_DIRS"
+
+
 set -gx EDITOR nvim
 {{ if eq .chezmoi.os "darwin" }}
 fish_add_path /opt/homebrew/opt/ruby/bin
@@ -42,3 +46,4 @@ set -g -x SYSTEMD_EDITOR vim
 set -g -x SSH_AUTH_SOCK $XDG_RUNTIME_DIR/ssh-agent.socket
 ssh-add -l | grep -q op_signing_key; or ssh-add ~/.ssh/op_signing_key 2>/dev/null
 {{ end }}
+
