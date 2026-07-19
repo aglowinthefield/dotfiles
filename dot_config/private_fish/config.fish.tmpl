@@ -43,7 +43,12 @@ if status is-interactive
 end
 
 set -g -x SYSTEMD_EDITOR vim
-set -g -x SSH_AUTH_SOCK $XDG_RUNTIME_DIR/ssh-agent.socket
-ssh-add -l | grep -q op_signing_key; or ssh-add ~/.ssh/op_signing_key 2>/dev/null
+# Only wire up the ssh-agent socket if it actually exists on this machine.
+# Headless servers have no ssh-agent.socket, so skip it to avoid
+# "Error connecting to agent: No such file or directory" on login.
+if test -S $XDG_RUNTIME_DIR/ssh-agent.socket
+    set -g -x SSH_AUTH_SOCK $XDG_RUNTIME_DIR/ssh-agent.socket
+    ssh-add -l | grep -q op_signing_key; or ssh-add ~/.ssh/op_signing_key 2>/dev/null
+end
 {{ end }}
 

@@ -7,8 +7,14 @@
     signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEu7PGIiUMTrrk1KhsAUZPgRNPCfLg5sSsYlNwSo4sho
 
 [commit]
-    # Always sign commits unless overridden
+    # Sign commits where a signer is available (1Password on macOS/Windows).
+    # Disabled only on the 'tomauty' server, which has no signing agent and
+    # would otherwise fail commits with "Error connecting to agent".
+    {{ if eq .chezmoi.hostname "tomauty" }}
+    gpgsign = false
+    {{ else }}
     gpgsign = true
+    {{ end }}
 
 [gpg]
     # Use SSH signing (1Password)
