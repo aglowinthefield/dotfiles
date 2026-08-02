@@ -53,4 +53,3 @@ function gs { git status }
 function gd { git diff }
 function gdc { git diff --cached }
 if (-not (Get-Command poetry -ErrorAction Ignore)) { $env:Path += ";C:\Users\clearing\AppData\Roaming\Python\Scripts" }
-if (-not (Get-Command poetry -ErrorAction Ignore)) { $env:Path += ";C:\Users\clearing\AppData\Roaming\Python\Scripts" }
