@@ -1,605 +1,587 @@
-:root {
-    /* colors from the gruvbox material mix medium/soft palette */
-    --yellow: #e9b143;
-    --red: #f2594b;
-    --bg0: #32302f;
-    --bg1: #32302f;
-    --bg2: #3c3836;
-    --bg3: #45403d;
-    --bg4: #504945;
-    --bg5: #665c54;
-    --bg_dim: #282828;
-    --grey0: #7c6f64;
-    --grey1: #928374;
-    --grey2: #a89984;
-    --fg0: #e2cca9;
-
-    --accent: #e9b143;
-    --background: rgba(69, 64, 61, 0.85); /*bg3*/
-    --background-widget: rgba(50, 48, 45, 0.6); /*bg0*/
-    --text: #e2cca9;
-}
-
-/* GLOBAL */
+/* GLOBAL CONFIGURATIONS */
 * {
-    font-size: 11px;
-    color: var(--text);
-    font-weight: 900;
-    font-family: "JetBrainsMono NFP";
-    margin: 0;
-    padding: 0;
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
 }
 
-.yasb-bar {
-    padding: 0 2px;
-    background-color: var(--background);
-    border-radius: 6px;
+/* CPU */
+.cpu-widget {
+  background-color: rgba(17, 17, 27, 0.8);
+  outline: none;
+  width: 90px;
+  min-width: 90px;
+  max-width: 90px;
+}
+.cpu-widget .label {
+  font-family: "0xProto Nerd Font";
+  font-size: 12px;
+  font-weight: bold;
+  color: #cdd6f4;
+  padding-top: 2px;
+  width: 50px;
+  min-width: 50px;
+  max-width: 50px;
+}
+.cpu-widget .icon {
+  font-family: "0xProto Nerd Font";
+  font-weight: bold;
+  font-size: 14px;
+  padding-left: 9px;
+  color: #cdd6f4;
 }
 
-.icon {
-    color: var(--accent);
-    font-size: 14px;
-    margin: 0 5px;
+/* MEMORY */
+.memory-widget {
+  background-color: rgba(17, 17, 27, 0.8);
+  outline: none;
+}
+.memory-widget .label {
+  font-family: "0xProto Nerd Font";
+  font-size: 12px;
+  font-weight: bold;
+  color: #cdd6f4;
+  padding: 2px 12px 0 2px;
+}
+.memory-widget .icon {
+  font-family: "0xProto Nerd Font";
+  color: #cdd6f4;
+  font-size: 16px;
+  font-weight: bold;
+  padding-right: 12px;
+  padding-left: 12px;
 }
 
-.label {
-    padding: 0 6px 0 0;
-    margin: 0 3px 0 0;
+/* TRAFFIC */
+.traffic-widget {
+  background-color: rgba(17, 17, 27, 0.8);
+  padding: 0 10px 2px 10px;
+  width: 190px;
+  min-width: 190px;
+  max-width: 190px;
+  outline: none;
+}
+.traffic-widget .label {
+  color: #cdd6f4;
+  font-size: 12px;
+  font-weight: bold;
+}
+.traffic-widget .download {
+  color: #cdd6f4;
+  padding-top: 4px;
+  font-family: "0xProto Nerd Font";
+  font-weight: bold;
+  font-size: 12px;
+}
+.traffic-widget .upload {
+  color: #cdd6f4;
+  padding-top: 4px;
+  font-family: "0xProto Nerd Font";
+  font-weight: bold;
+  font-size: 12px;
 }
 
-.widget {
-    padding: 0 3px;
-    margin: 0;
+/* TRAFFIC MENU */
+.traffic-menu {
+  background-color: rgba(17, 17, 27, 0.8);
+  border: 1px solid rgba(205, 214, 244, 0.2);
+  color: #cdd6f4;
+  font-family: "0xProto Nerd Font";
+  font-size: 12px;
+  min-width: 220px;
+}
+.traffic-menu .header {
+  border-bottom: 1px solid rgba(205, 214, 244, 0.2);
+  background-color: rgba(24, 24, 37, 0.4);
+}
+.traffic-menu .header .title {
+  padding-left: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #cdd6f4;
+  font-family: "0xProto Nerd Font";
+}
+.traffic-menu .header .reset-button {
+  font-size: 12px;
+  padding-right: 4px;
+  padding-top: 2px;
+  margin-right: 8px;
+  font-weight: bold;
+  background-color: transparent;
+  font-family: "0xProto Nerd Font";
+  border: none;
+  color: #cdd6f4;
+  outline: none;
+}
+.traffic-menu .download-speed,
+.traffic-menu .upload-speed {
+  font-family: "0xProto Nerd Font";
+  background-color: transparent;
+  margin: 16px 12px -8px 12px;
+}
+.traffic-menu .speed-separator {
+  max-width: 1px;
+  background-color: #585b70;
+  margin: 32px 0 16px 0;
+}
+.traffic-menu .upload-speed-value,
+.traffic-menu .download-speed-value {
+  color: #cdd6f4;
+  font-size: 24px;
+  font-weight: bold;
+  font-family: "0xProto Nerd Font";
+}
+.traffic-menu .upload-speed-unit,
+.traffic-menu .download-speed-unit {
+  font-family: "0xProto Nerd Font";
+  color: #cdd6f4;
+  font-size: 12px;
+  font-weight: bold;
+  padding-top: 4px;
+}
+.traffic-menu .download-speed-placeholder {
+  color: transparent;
+}
+.traffic-menu .upload-speed-placeholder {
+  color: transparent;
+}
+.traffic-menu .section-title {
+  font-family: "0xProto Nerd Font";
+  font-size: 12px;
+  font-weight: bold;
+  background-color: transparent;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  color: #9399b2;
+  margin-bottom: 4px;
+}
+.traffic-menu .session-section,
+.traffic-menu .today-section,
+.traffic-menu .alltime-section {
+  margin: 8px 8px 0 8px;
+  background-color: transparent;
+}
+.traffic-menu .data-text,
+.traffic-menu .data-value {
+  font-family: "0xProto Nerd Font";
+  font-weight: bold;
+  font-size: 12px;
+  color: #cdd6f4;
+  padding: 2px 0;
+}
+.traffic-menu .interface-info,
+.traffic-menu .internet-info {
+  background-color: rgba(24, 24, 37, 0.4);
+  border-top: 1px solid rgba(205, 214, 244, 0.2);
+  font-size: 12px;
+  font-weight: bold;
+  font-family: "0xProto Nerd Font";
+  color: #89dceb;
+  padding: 8px 0;
+  margin-top: 16px;
+}
+.traffic-menu .internet-info.connected {
+  font-family: "0xProto Nerd Font";
+  color: #a6e3a1;
+  margin-top: 0;
+}
+.traffic-menu .internet-info.disconnected {
+  font-family: "0xProto Nerd Font";
+  color: #eba0ac;
+  margin-top: 0;
 }
 
-.widget-container {
-    background-color: var(--background-widget);
-    margin: 4px 0px;
-    border-radius: 6px;
+/* KOMOREBI LAYOUT */
+.komorebi-active-layout {
+  background-color: rgba(17, 17, 27, 0.8);
+  width: 36px;
+  min-width: 36px;
+  max-width: 36px;
 }
-
-.widget .label {
-    padding: 2px 2px 1px 5px;
+.komorebi-active-layout .label {
+  color: #cdd6f4;
+  font-family: "Segoe Fluent Icons";
+  font-size: 16px;
+  font-weight: bold;
+  padding: 0 11px 0 7px;
+  outline: none;
 }
-
-/* TOOLTIP */
-.tooltip {
-    background-color: var(--bg_dim);
-    border-radius: 4px;
-    color: var(--fg0);
-    padding: 5px 10px;
-    font-size: 12px;
-    font-family: 'Segoe UI';
-    font-weight: 600;
-    margin-top: 4px;
+.komorebi-layout-menu {
+  border: 1px solid rgba(205, 214, 244, 0.2);
+  background-color: rgba(17, 17, 27, 0.8);
+  color: #cdd6f4;
+  font-family: "0xProto Nerd Font";
+  font-size: 12px;
 }
-
-/* CONTEXT MENU */
-.context-menu,
-.context-menu .menu-checkbox {
-    background-color: var(--bg_dim);
-    border: none;
-    padding: 4px 0px;
-    font-family: 'Segoe UI';
-    font-size: 12px;
-    color: var(--fg0)
+.komorebi-layout-menu .menu-item {
+  padding: 4px 16px;
+  color: #cdd6f4;
+  font-size: 12px;
 }
-.context-menu::right-arrow {
-    width: 8px;
-    height: 8px;
-    padding-right: 24px;
+.komorebi-layout-menu .menu-item-icon {
+  color: #cdd6f4;
+  font-size: 16px;
+  font-weight: bold;
 }
-.context-menu::item,
-.context-menu .menu-checkbox {
-    background-color: transparent;
-    padding: 6px 12px;
-    margin: 2px 6px;
-    border-radius: 6px;
-    min-width: 100px;
+.komorebi-layout-menu .menu-item-text {
+  font-family: "0xProto Nerd Font";
+  padding-left: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #cdd6f4;
 }
-.context-menu::item:selected,
-.context-menu .menu-checkbox:hover {
-    background-color: var(--bg4);
-    color: #FFFFFF;
+.komorebi-layout-menu .menu-item:hover {
+  background-color: rgba(205, 214, 244, 0.2);
 }
-.context-menu::separator {
-    height: 1px;
-    background-color: var(--bg5);
-    margin: 4px 8px;
-}
-.context-menu::item:disabled {
-    color: var(--grey0);
-    background-color: transparent;
-}
-.context-menu .menu-checkbox .checkbox {
-    border: none;
-    padding: 8px 16px;
-    font-size: 12px;
-    margin: 0;
-    color: var(--fg0);
-    font-family: 'Segoe UI'
-}
-.context-menu .submenu::item:disabled {
-    margin: 0;
-    padding-left: 16px;
-}
-.context-menu .menu-checkbox .checkbox:unchecked {
-    color: var(--grey1)
-}
-.context-menu .menu-checkbox .checkbox::indicator {
-    width: 12px;
-    height: 12px;
-    margin-left: 0px;
-    margin-right: 8px;
-}
-.context-menu .menu-checkbox .checkbox::indicator:unchecked {
-    background: var(--bg5);
-    border-radius: 2px;
-}
-.context-menu .menu-checkbox .checkbox::indicator:checked {
-    background: var(--accent);
-    border-radius: 2px;
-}
-.context-menu .menu-checkbox .checkbox:focus {
-    outline: none;
-}
-
-/* CALENDAR */
-.calendar {
-    background-color: var(--bg_dim);
-    border-radius: 6px;
-    border: 1px solid var(--grey1);
-}
-
-.calendar .calendar-table,
-.calendar .calendar-table::item {
-    background-color: var(--bg_dim);
-    color: var(--fg0);
-    font-family: 'Segoe UI';
-    margin: 0;
-    padding: 0;
-}
-
-.calendar .calendar-table::item:selected {
-    color: rgb(255, 255, 255);
-    border-radius: 6;
-    border: 1px solid var(--accent)
-}
-
-.calendar .day-label {
-    margin-top: 20px;
-}
-
-.calendar .day-label,
-.calendar .month-label,
-.calendar .date-label {
-    font-family: 'Segoe UI';
-    font-size: 16px;
-    color: var(--fg0);
-    font-weight: 700;
-    min-width: 180px;
-    max-width: 180px;
-}
-
-.calendar .month-label {
-    font-weight: normal;
-}
-
-.calendar .date-label {
-    font-size: 88px;
-    font-weight: 900;
-    color: var(--fg0);
-    margin-top: -20px;
+.komorebi-layout-menu .separator {
+  max-height: 1px;
+  background-color: #585b70;
 }
 
 /* KOMOREBI WORKSPACES */
-.komorebi-workspaces .offline-status {
-    color: var(--text);
-    font-size: 12px;
-    padding: 0 0px;
-    font-weight: 600;
-}
-
 .komorebi-workspaces .ws-btn {
-    border: none;
-    margin: 0 3px;
-    height: 10px;
-    width: 9px;
-    border-radius: 2px;
-    background-color: var(--bg4);
-    color: rgba(0, 0, 0, 0);
+  background-color: rgba(17, 17, 27, 0.8);
+  font-family: "0xProto Nerd Font";
+  font-size: 12px;
+  font-weight: bold;
+  padding: 10px 12px 8px 12px;
+  border: none;
+  outline: none;
 }
-
-.komorebi-workspaces .ws-btn:hover {
-    color: rgba(0, 0, 0, 0);
-    background-color: var(--grey0);
-}
-
-.komorebi-workspaces .ws-btn.populated:hover {
-    color: rgba(0, 0, 0, 0);
-    background-color: var(--grey1);
-}
-
 .komorebi-workspaces .ws-btn.populated {
-    color: rgba(0, 0, 0, 0);
-    background-color: var(--grey1);
+  color: rgba(205, 214, 244, 0.6);
 }
-
 .komorebi-workspaces .ws-btn.active {
-    color: rgba(0, 0, 0, 0);
-    background-color: var(--accent);
-    height: 13px;
-}
-
-.komorebi-active-layout {
-    padding: 0 0px 0 0;
-}
-
-.komorebi-active-layout .label {
-    font-weight: 600;
-    padding: 2px 0 0 0;
-}
-
-/* POWER MENU WIDGET */
-.power-menu-widget .label {
-    color: var(--accent);
-    font-size: 16px;
-}
-
-.power-menu-popup {
-    background-color: rgba(40, 40, 40, 0.8);
-    padding: 32px;
-    border-radius: 32px;
-}
-
-.power-menu-popup .button {
-    width: 160px;
-    height: 240px;
-    border-radius: 6px;
-    background-color: var(--bg3);
-    font-family: "Segoe UI";
-    color: white;
-    border: 4px solid rgba(255, 255, 255, 0);
-}
-
-.power-menu-popup .button.hover {
-    background-color: var(--bg1);
-    border: 4px solid var(--bg1);
-}
-
-.power-menu-popup .button .label {
-    padding: 0;
-    margin: 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--fg0);
-    font-family: "Segoe UI";
-    display: inline-block;
-    text-align: center;
-}
-
-.power-menu-popup .button .icon {
-    font-size: 64px;
-    padding-top: 54px;
-    color: var(--fg0);
-}
-
-.power-menu-popup .button.cancel {
-    height: 32px;
-}
-
-.power-menu-popup .button.cancel .label {
-    color: var(--red);
-}
-
-.power-menu-popup .profile-info {
-    padding: 0 0 16px 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    background-color: transparent;
-    margin-bottom: 16px;
-}
-.power-menu-popup .profile-info .profile-username {
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--fg0);
-    margin-top: 0;
-    font-family: 'Segoe UI';
-}
-.power-menu-popup .profile-info .profile-account-type {
-    font-size: 15px;
-    color: var(--grey2);
-    margin-top: 8px;
-    font-family: 'Segoe UI'
-}
-.power-menu-popup .profile-info .profile-email {
-    font-size: 13px;
-    color: var(--grey1);
-    margin-top: 4px;
-    font-family: 'Segoe UI'
-}
-.power-menu-overlay {
-    background-color: rgba(0, 0, 0, 0.15);
-}
-.power-menu-overlay .uptime {
-    font-size: 16px;
-    margin-bottom: 20px;
-    color: var(--grey2);
-    font-weight: 600;
-}
-
-/* WEATHER */
-.weather-widget .icon {
-    font-size: 16px;
-}
-
-.weather-card {
-    background-color: var(--bg_dim);
-    border-radius: 8px;
-    min-width: 540px;
-    border: 1px solid var(--grey1);
-}
-
-.weather-card-today {
-    border: 1px solid var(--grey1);
-    border-radius: 8px;
-    background-color: var(--background);
-}
-
-.weather-card-today .label {
-    font-size: 12px;
-}
-
-.weather-card-today .label.location {
-    font-size: 24px;
-    font-weight: 700;
-}
-
-.weather-card-today .label.alert {
-    font-size: 12px;
-    font-weight: 700;
-    background-color: rgba(247, 199, 42, 0.05);
-    border: 1px solid rgba(247, 209, 42, 0.1);
-    color: rgba(196, 181, 162, 0.85);
-    border-radius: 6px;
-    padding: 5px 0;
-}
-
-.weather-card-day {
-    border: 1px solid var(--grey1);
-    border-radius: 8px;
-    background-color: var(--bg_dim);
-}
-
-.weather-card-day .label {
-    font-size: 12px;
-}
-
-.weather-card .hourly-container {
-    background-color: transparent;
-    min-height: 150px;
-    border: none
-}
-.weather-card .hourly-data {
-    background-color: var(--accent);
-    font-size: 12px;
-    font-weight: bold;
+  color: #cdd6f4;
 }
 
 /* MEDIA */
 .media-widget {
-    padding: 0;
-    margin: 0;
-    border-radius: 0;
+  background-color: rgba(17, 17, 27, 0.8);
+  padding: 0 12px 0 12px;
+  outline: none;
 }
-
 .media-widget .label {
-    padding: 0 10px;
+  color: #cdd6f4;
+  background: transparent;
+  font-family: "0xProto Nerd Font";
+  font-size: 12px;
+  font-weight: bold;
+  padding-left: 10px;
+  padding-top: 2px;
 }
-
 .media-widget .btn {
-    color: var(--accent);
-    padding: 0 0px;
-    padding-right: 0px;
-    margin: 4px 0;
-    font-family: Segoe Fluent Icons;
+  background: transparent;
+  font-family: "Segoe Fluent Icons";
+  color: #cdd6f4;
+  font-weight: bold;
+  font-size: 12px;
+  padding: 3px 6px 2px 3px;
+}
+.media-widget .btn.play {
+  font-size: 12px;
 }
 
-.media-widget .btn:hover {
-    color: var(--grey2);
-}
-
-.media-widget .btn.disabled:hover,
-.media-widget .btn.disabled {
-    color: var(--bg5);
-    font-size: 12px;
-    background-color: rgba(0, 0, 0, 0);
-}
-
+/* MEDIA POPUP */
 .media-menu {
-    min-width: 420px;
-    max-width: 420px;
-    background-color: var(--bg_dim);
-    border-radius: 8px;
-    border: 1px solid var(--grey1);
+  min-width: 400px;
+  max-width: 400px;
+  background-color: rgba(17, 17, 27, 0.8);
+  border: 1px solid rgba(205, 214, 244, 0.2);
+  outline: none;
+}
+.media-menu .thumbnail {
+  margin-left: 4px;
+  margin-right: 4px;
+  border: 1px solid rgba(205, 214, 244, 0.2);
 }
 .media-menu .title,
 .media-menu .artist,
 .media-menu .source {
-    font-size: 14px;
-    font-weight: 600;
-    margin-left: 10px;
-    font-family: 'Segoe UI'
+  font-weight: bold;
+  font-family: "0xProto Nerd Font";
+  color: #cdd6f4;
+  margin-left: 10px;
+}
+.media-menu .title {
+  padding-left: 4px;
+  font-size: 16px;
 }
 .media-menu .artist {
-    font-size: 13px;
-    color: var(--grey1);
-    margin-top: 0px;
-    margin-bottom: 8px;
+  font-size: 12px;
+  margin-top: 4px;
+  margin-bottom: 12px;
+  padding-left: 4px;
 }
 .media-menu .source {
-    font-size: 11px;
-    color: var(--bg_dim);
-    font-weight: normal;
-    border-radius: 3px;
-    background-color: var(--grey2);
-    padding: 2px 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #18181b;
+  background-color: #cdd6f4;
+  padding: 2px 4px;
+}
+.media-menu .source.brave {
+  background: transparent;
+  border: 1px solid #fe640b;
+  color: #cdd6f4;
 }
 .media-menu .source.firefox {
-    background-color: #ff583b;
-    color: #ffffff;
+  background-color: #fe640b;
+  color: #cdd6f4;
+}
+.media-menu .source.opera,
+.media-menu .source.vivaldi {
+  background-color: #f38ba8;
+  color: #18181b;
 }
 .media-menu .source.spotify {
-    background-color: #199143;
-    color: #ffffff;
+  background-color: #a6e3a1;
+  color: #18181b;
 }
-.media-menu .source.edge {
-    background-color: #0078d4;
-    color: #ffffff;
-}
+.media-menu .source.edge,
 .media-menu .source.windows-media {
-    background-color: #0078d4;
-    color: #ffffff;
+  background-color: #89b4fa;
+  color: #18181b;
 }
 .media-menu .btn {
-    font-family: "Segoe Fluent Icons";
-    font-size: 14px;
-    font-weight: 400;
-    margin: 10px 2px 0px 2px;
-    min-width: 40px;
-    max-width: 40px;
-    min-height: 40px;
-    max-height: 40px;
-    border-radius: 20px;
+  font-family: "Segoe Fluent Icons";
+  font-size: 12px;
+  font-weight: bold;
+  min-width: 40px;
+  max-width: 40px;
+  min-height: 40px;
+  max-height: 40px;
+  color: #cdd6f4;
 }
 .media-menu .btn.prev {
-    margin-left: 10px;
-}
-.media-menu .btn:hover {
-    color: white;
-    background-color: rgba(255, 255, 255, 0.1);
+  margin-left: 10px;
 }
 .media-menu .btn.play {
-    background-color: rgba(255, 255, 255, 0.1);
-    font-size: 20px
+  background-color: transparent;
+  font-size: 20px;
 }
-.media-menu .btn.disabled:hover,
 .media-menu .btn.disabled {
-    color: var(--bg5);
-    background-color: rgba(0, 0, 0, 0);
+  color: rgba(205, 214, 244, 0.6);
 }
 .media-menu .playback-time {
-    font-size: 13px;
-    font-family: 'Segoe UI';
-    color: var(--grey1);
-    margin-top: 20px;
-    min-width: 100px;
+  font-size: 12px;
+  font-family: "0xProto Nerd Font";
+  font-weight: bold;
+  color: #cdd6f4;
+  margin-top: 12px;
+  min-width: 100px;
 }
 .media-menu .progress-slider {
-    height: 10px;
-    margin: 5px 4px;
-    border-radius: 3px;
+  height: 10px;
 }
 .media-menu .progress-slider::groove {
-    background: transparent;
-    height: 2px;
-    border-radius: 3px;
-    background: rgba(255, 255, 255, 0.1);
+  background: transparent;
+  height: 4px;
 }
 .media-menu .progress-slider::groove:hover {
-    background: transparent;
-    height: 6px;
-    border-radius: 3px;
-    background: rgba(255, 255, 255, 0.2);
+  background: rgba(205, 214, 244, 0.2);
+  height: 6px;
 }
 .media-menu .progress-slider::sub-page {
-    background: var(--accent);
-    border-radius: 3px;
-    height: 4px;
+  background: #cdd6f4;
+  height: 4px;
+}
+
+/* SYSTRAY */
+.systray {
+  background-color: rgba(17, 17, 27, 0.8);
+}
+.systray .button {
+  padding: 2px;
+  border: none;
+  outline: none;
+}
+.systray .unpinned-visibility-btn {
+  color: #cdd6f4;
+  background: transparent;
+  border: none;
+  padding: 1 0 0 7px;
+  font-family: "Segoe Fluent Icons";
+  font-weight: bold;
+  font-size: 14px;
+  outline: none;
+}
+
+/* WEATHER */
+.weather-widget {
+  background-color: rgba(17, 17, 27, 0.8);
+  outline: none;
+}
+.weather-widget .label,
+.weather-widget .label.alt {
+  font-family: "0xProto Nerd Font";
+  font-size: 12px;
+  font-weight: bold;
+  color: #cdd6f4;
+  padding: 2 14px 0 12px;
+}
+.weather-widget .icon {
+  font-family: "Segoe Fluent Icons";
+  font-size: 18px;
+  color: #cdd6f4;
+  padding-left: 12px;
+}
+
+/* WEATHER CARD */
+.weather-card {
+  background-color: rgba(17, 17, 27, 0.8);
+  border: 1px solid rgba(205, 214, 244, 0.2);
+  padding: 10px;
+  outline: none;
+}
+.weather-card-today {
+  background-color: rgba(17, 17, 27, 0.8);
+  font-family: "0xProto Nerd Font";
+  font-weight: bold;
+  padding: 10px;
+}
+.weather-card-today .label {
+  font-family: "0xProto Nerd Font";
+  font-size: 12px;
+  font-weight: bold;
+  color: #cdd6f4;
+}
+.weather-card-today .label.location {
+  font-family: "0xProto Nerd Font";
+  font-weight: bold;
+  font-size: 24px;
+}
+.weather-card-today .label.alert {
+  padding: 5px 0;
+}
+.weather-card-day {
+  background-color: rgba(17, 17, 27, 0.8);
+  font-family: "0xProto Nerd Font";
+  font-weight: bold;
+}
+.weather-card-day .label {
+  font-family: "0xProto Nerd Font";
+  font-weight: bold;
+  font-size: 12px;
+  color: #cdd6f4;
+}
+
+/* CLOCK */
+.clock-widget {
+  background-color: rgba(17, 17, 27, 0.8);
+  padding: 0 10px;
+  padding-top: 2px;
+  outline: none;
+}
+.clock-widget .label {
+  color: #cdd6f4;
+  font-family: "0xProto Nerd Font";
+  font-size: 12px;
+  font-weight: bold;
+  padding: 0 4px 0 4px;
+}
+
+/* CALENDAR */
+.calendar {
+  background-color: rgba(17, 17, 27, 0.8);
+  border: 1px solid rgba(205, 214, 244, 0.2);
+}
+.calendar .calendar-table,
+.calendar .calendar-table::item {
+  background-color: rgba(24, 24, 37, 0);
+  color: #cdd6f4;
+  font-family: "0xProto Nerd Font";
+  font-weight: bold;
+  font-size: 12px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+}
+.calendar .calendar-table::item:selected {
+  background-color: rgba(147, 153, 178, 0.3);
+}
+.calendar .day-label,
+.calendar .month-label,
+.calendar .date-label {
+  font-family: "0xProto Nerd Font";
+  font-weight: bold;
+  color: #cdd6f4;
+  min-width: 140px;
+  max-width: 140px;
+}
+.calendar .day-label {
+  font-size: 14px;
+  margin-top: 20px;
+}
+.calendar .month-label {
+  font-size: 12px;
+}
+.calendar .date-label {
+  font-size: 88px;
+  margin-top: -10px;
 }
 
 /* VOLUME */
+.volume-widget {
+  background-color: rgba(17, 17, 27, 0.8);
+  padding: 0 10px;
+  outline: none;
+  padding-top: 2px;
+}
 .volume-widget .icon {
-    font-size: 17px;
-    color: var(--accent);
-    margin: 0px 2px 0 0;
+  font-family: "Segoe Fluent Icons";
+  color: #cdd6f4;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 0x 4px 0 4px;
+}
+.volume-widget .label {
+  font-family: "0xProto Nerd Font";
+  font-size: 12px;
+  font-weight: bold;
+  color: #cdd6f4;
+  padding: 0 4px 0 4px;
 }
 
-.volume-slider {
-    border: none;
-}
-.volume-slider::groove {
-    color: var(--accent)
-}
-.volume-slider::handle{
-    color: var(--accent)
-}
+/* VOLUME POPUP */
 .audio-menu {
-    background-color: var(--bg_dim);
-    border: 1px solid var(--grey1);
-    border-radius: 6px;
+  background-color: rgba(17, 17, 27, 0.8);
+  border: 1px solid rgba(205, 214, 244, 0.2);
+  outline: none;
 }
 .audio-container .device {
-    background-color:transparent;
-    border: none;
-    padding:6px 8px 6px 4px;
-    margin: 2px 0;
-    font-size: 12px;
-    border-radius: 4px;
+  font-family: "0xProto Nerd Font";
+  color: #cdd6f4;
+  font-weight: bold;
+  border: none;
+  padding: 6px 8px 6px 4px;
+  font-size: 12px;
+  outline: none;
 }
 .audio-container .device.selected {
-    background-color: rgba(255, 255, 255, 0.085);
-}
-.audio-container .device:hover {
-    background-color: rgba(255, 255, 255, 0.06);
-}
-
-/* MICROPHONE */
-.microphone-widget {
-    padding: 0 6px 0 6px;
-}
-.microphone-widget .icon {
-    font-size: 18px;
-    color: var(--accent);
-}
-
-/* HOME */
-.home-widget {
-    padding: 0 4px 0 12px;
-}
-.home-widget .icon {
-    color: var(--accent);
-}
-.home-widget .icon:hover {
-    color: var(--fg0);
-}
-.home-menu {
-    background-color: var(--bg_dim);
-    border-radius: 8px;
-    border: 1px solid var(--grey1);
-}
-.home-menu .menu-item {
-    padding: 8px 48px 9px 16px;
-    font-size: 12px;
-    font-family: 'Segoe UI';
-    color: var(--fg0);
-    font-weight: 600;
-}
-.home-menu .menu-item:hover {
-    background-color: var(--bg4);
-    color: #fff;
-}
-.home-menu .separator {
-    max-height: 1px;
-    background-color: var(--bg5);
+  background-color: rgba(147, 153, 178, 0.2);
 }
 
 /* NOTIFICATIONS */
 .notification-widget {
-    padding: 0 0px 0 4px;
+  background-color: rgba(17, 17, 27, 0.8);
+  outline: none;
 }
 .notification-widget .icon {
-    font-size: 14px;
+  font-family: "0xProto Nerd Font";
+  color: #cdd6f4;
+  padding-right: 10px;
+  padding-left: px;
+  padding-top: 1px;
+  font-size: 14px;
+  font-weight: bold;
 }
-.notification-widget .icon.new-notification {
-    color: var(--accent);
+.notification-widget .label {
+  font-family: "0xProto Nerd Font";
+  color: #cdd6f4;
+  font-size: 12px;
+  font-weight: bold;
+  padding-right: 4px;
+  padding-top: 2px;
 }

@@ -1,0 +1,23 @@
+{{- if ne .chezmoi.os "windows" -}}
+{{- else -}}
+# Register the weekly sysupdate scheduled task (package updates + cruft cleanup + disk report).
+# Runs 'after' so ~/.local/bin/sysupdate.ps1 is already deployed.
+# To undo: Unregister-ScheduledTask -TaskName 'sysupdate' -Confirm:$false
+$script = Join-Path $env:USERPROFILE '.local\bin\sysupdate.ps1'
+
+if (-not (Test-Path $script)) {
+    Write-Host "sysupdate.ps1 not found at $script - skipping task registration."
+} else {
+    $action = New-ScheduledTaskAction -Execute 'pwsh.exe' `
+        -Argument "-NoProfile -NonInteractive -ExecutionPolicy Bypass -File `"$script`" -Quiet"
+    $trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Sunday -At 11:00am
+    $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -DontStopIfGoingOnBatteries `
+        -AllowStartIfOnBatteries -ExecutionTimeLimit (New-TimeSpan -Hours 2) -MultipleInstances IgnoreNew
+
+    # -Force makes this idempotent: re-registering just overwrites the definition.
+    Register-ScheduledTask -TaskName 'sysupdate' -Action $action -Trigger $trigger -Settings $settings `
+        -Description 'Weekly package updates, cruft cleanup, and disk health report. Logs to %LOCALAPPDATA%\sysupdate\logs.' `
+        -Force | Out-Null
+    Write-Host "Registered weekly 'sysupdate' scheduled task (Sundays, 11:00)."
+}
+{{- end -}}
