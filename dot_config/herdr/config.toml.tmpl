@@ -1,0 +1,8 @@
+onboarding = false
+{{- if eq .chezmoi.os "windows" }}
+
+# Windows has no usable $SHELL for herdr to inherit, so point it at pwsh.
+# Linux/macOS herdr follows $SHELL, so default_shell stays unset there.
+[terminal]
+default_shell = "C:\\Program Files\\PowerShell\\7\\pwsh.exe"
+{{- end }}

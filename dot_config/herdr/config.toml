@@ -1,4 +1,0 @@
-onboarding = false
-
-[terminal]
-default_shell = "C:\\Program Files\\PowerShell\\7\\pwsh.exe"
