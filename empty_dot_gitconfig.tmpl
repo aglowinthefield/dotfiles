@@ -10,24 +10,24 @@
     # Sign commits where a signer is available (1Password on macOS/Windows).
     # Disabled only on the 'tomauty' server, which has no signing agent and
     # would otherwise fail commits with "Error connecting to agent".
-    {{ if eq .chezmoi.hostname "tomauty" }}
+    {{- if eq .chezmoi.hostname "tomauty" }}
     gpgsign = false
-    {{ else }}
+    {{- else }}
     gpgsign = true
-    {{ end }}
+    {{- end }}
 
 [gpg]
     # Use SSH signing (1Password)
     format = ssh
 
 [gpg "ssh"]
-  {{ if eq .chezmoi.os "windows" }}
+  {{- if eq .chezmoi.os "windows" }}
   program = "~/AppData/Local/Microsoft/WindowsApps/op-ssh-sign.exe"
-  {{ else if eq .chezmoi.os "darwin" }}
+  {{- else if eq .chezmoi.os "darwin" }}
   program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
-  {{ else }}
+  {{- else }}
   program = ssh-keygen
-  {{ end }}
+  {{- end }}
 
 # ---- Work identity overrides below ----
 # Any repo under ~/dev/ will use ~/.gitconfig_work
@@ -59,8 +59,8 @@
   directory = *
 
 [core]
-  {{ if eq .chezmoi.os "windows" }}
+  {{- if eq .chezmoi.os "windows" }}
   autocrlf = true
   whitespace = cr-at-eol
   sshCommand = "C:/Windows/System32/OpenSSH/ssh.exe"
-  {{ end }}
+  {{- end }}
