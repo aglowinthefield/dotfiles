@@ -1,0 +1,8 @@
+# Managed by chezmoi; values come from the 1Password item "dotfiles-portfolio".
+# Consumed by EnvironmentFile= in portfolio-budget.service and
+# portfolio-close.service. systemd does no shell expansion and treats quotes
+# literally, so keep this strict KEY=value with no quoting.
+{{- $f := onepasswordDetailsFields "dotfiles-portfolio" "Private" }}
+SNAPTRADE_CLIENT_ID={{ (index $f "SNAPTRADE_CLIENT_ID").value }}
+SNAPTRADE_CONSUMER_KEY={{ (index $f "SNAPTRADE_CONSUMER_KEY").value }}
+SIMPLEFIN_TOKEN={{ (index $f "SIMPLEFIN_TOKEN").value }}

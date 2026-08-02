@@ -7,4 +7,10 @@ Documents/PowerShell
 .config/whkd
 komorebi.json
 {{- end }}
+{{- if eq .chezmoi.os "windows" }}
+# Secrets are loaded by config.fish and systemd units, both Linux-only.
+# Ignoring them here also means Windows needs no 1Password CLI session.
+.config/secrets.env
+.config/portfolio/env
+{{- end }}
 .config/nvim/lazy-lock.json
