@@ -50,5 +50,20 @@ if test -S $XDG_RUNTIME_DIR/ssh-agent.socket
     set -g -x SSH_AUTH_SOCK $XDG_RUNTIME_DIR/ssh-agent.socket
     ssh-add -l | grep -q op_signing_key; or ssh-add ~/.ssh/op_signing_key 2>/dev/null
 end
-{{ end }}
 
+# Load secrets from central store (~/.config/secrets.env), skipping comments/blanks
+if test -r ~/.config/secrets.env
+    for line in (grep -vE '^\s*#|^\s*$' ~/.config/secrets.env)
+        set -gx (string split -m1 '=' -- $line)
+    end
+end
+
+
+# Portfolio feed credentials. Kept in their own file rather than secrets.env so
+# the systemd units can EnvironmentFile just these three, not every key above.
+if test -r ~/.config/portfolio/env
+    for line in (grep -vE '^\s*#|^\s*$' ~/.config/portfolio/env)
+        set -gx (string split -m1 '=' -- $line)
+    end
+end
+{{- end }}
