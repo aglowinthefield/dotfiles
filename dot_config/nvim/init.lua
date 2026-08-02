@@ -6,6 +6,7 @@ if vim.fn.has("win32") == 1 then
 end
 
 require("config.lazy")
+require("config.keys")
 
 local o = vim.opt
 
