@@ -13,6 +13,8 @@ komorebi.json
 # secrets.env is loaded by config.fish, which is fish-only.
 # Ignoring it here also means Windows needs no 1Password CLI session.
 .config/secrets.env
+# herdr ssh-status daemon talks to a unix socket
+bin/herdr-ssh-status.py
 {{- end }}
 {{- if ne .chezmoi.hostname "mochi" }}
 # The portfolio feed only runs on mochi, via systemd EnvironmentFile.

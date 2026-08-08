@@ -4,12 +4,27 @@ onboarding = false
 agent_panel_sort = "priority"
 
 [ui.sidebar.spaces]
-# `$ssh` is a custom metadata token, published by the `ssh` wrapper in
-# functions.fish.tmpl — it shows the remote host while a session is up.
-rows = [["state_icon", "workspace", "$ssh"], ["branch", "git_status"]]
+# `$ssh` is a custom metadata token showing the remote host while a session
+# is up. Two things can feed it, and only one runs per OS:
+#   macOS — ~/bin/herdr-ssh-status.py (launchd: com.tauty.herdr-ssh-status),
+#           which polls pane foreground processes, so it also catches
+#           `ssh host cmd`, mosh and autossh, and expires via TTL.
+#   Linux — the `ssh` wrapper in functions.fish.tmpl.
+# Never both at once: they report the same token from different sources and
+# would overwrite each other.
+rows = [
+  ["state_icon", "workspace", { token = "$ssh", fg = "#89b4fa" }],
+  ["branch", "git_status"],
+]
 
+# Agents list (bottom left): show the Claude session summary, which Claude
+# Code publishes as the terminal title, then the agent name on its own row.
 [ui.sidebar.agents.rows_by_agent]
-claude = [["state_icon", "workspace", "tab"], ["terminal_title_stripped"]]
+claude = [
+  ["state_icon", "workspace", "tab"],
+  ["terminal_title_stripped"],
+  ["agent"],
+]
 
 [theme]
 name = "kanagawa"

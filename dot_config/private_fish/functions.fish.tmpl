@@ -1,3 +1,8 @@
+{{ if ne .chezmoi.os "darwin" -}}
+# Feeds herdr's `$ssh` sidebar token. macOS uses the ssh-status daemon
+# (~/bin/herdr-ssh-status.py) instead, which polls pane foreground processes
+# and so also catches `ssh host cmd`, mosh and autossh. Only one feeder may
+# run per machine: both report the token `ssh` and would clobber each other.
 function ssh
     # Show the remote host in herdr's spaces panel while the session is up.
     if not set -q HERDR_ENV
@@ -11,6 +16,7 @@ function ssh
     herdr workspace report-metadata $HERDR_WORKSPACE_ID --source ssh --clear-token ssh >/dev/null 2>&1
     return $status_
 end
+{{ end -}}
 
 function delete-empty-folders-help
     echo "Removes empty folders from a root folder."
