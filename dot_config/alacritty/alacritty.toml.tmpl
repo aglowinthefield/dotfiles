@@ -6,8 +6,10 @@
 # ── General ──────────────────────────────────────────────────────────────────
 
 [general]
+# Same theme on every OS — only the themes checkout differs. Keep it the
+# hard-contrast variant: plain gruvbox_dark is #282828, noticeably lighter.
 import = [
-  {{ if eq .chezmoi.os "windows" }}"~/AppData/Roaming/alacritty/themes/themes/gruvbox_material_hard_dark.toml"{{ else }}"~/.config/alacritty/themes/themes/gruvbox_dark.toml"{{ end }}
+  {{ if eq .chezmoi.os "windows" }}"~/AppData/Roaming/alacritty/themes/themes/gruvbox_material_hard_dark.toml"{{ else }}"~/.config/alacritty/themes/themes/gruvbox_material_hard_dark.toml"{{ end }}
 ]
 
 # Directory the shell is started in. "None" uses parent process's working directory.
