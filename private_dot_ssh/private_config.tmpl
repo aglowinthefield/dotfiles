@@ -1,0 +1,24 @@
+# ~/.ssh/config (managed by chezmoi)
+#
+# Only portable settings belong here. Machine- and host-specific blocks —
+# internal hostnames, login usernames, per-host keys — go in
+# ~/.ssh/config.local, which is deliberately unmanaged so they stay out of
+# this repo, which is public.
+#
+# Include comes first on purpose: ssh takes the FIRST value it finds for each
+# keyword, so host-specific overrides must be read before the catch-all
+# `Host *` below, or they lose to it.
+Include ~/.ssh/config.local
+{{ if eq .chezmoi.os "darwin" }}
+Host *
+    # Keys come from 1Password's SSH agent; the order they are offered in is
+    # pinned locally in ~/.config/1Password/ssh/agent.toml.
+    IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+{{- else if eq .chezmoi.os "windows" }}
+Host *
+    # Same agent, reached over a named pipe on Windows.
+    IdentityAgent \\.\pipe\openssh-ssh-agent
+{{- else }}
+# Linux has no 1Password desktop agent: the system ssh-agent holds
+# ~/.ssh/op_signing_key instead, wired up in config.fish.
+{{- end }}
