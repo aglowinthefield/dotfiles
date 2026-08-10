@@ -12,6 +12,13 @@
 # dragon variant, not wave — wave is #1f1f28, noticeably lighter.
 # NOTE: a missing import path fails *silently* and you get Alacritty's default
 # black instead, so verify the file exists before changing this.
+#
+# To match neovim's `colorscheme kanagawa-paper` instead, comment the line
+# below and uncomment one of these. They need no OS conditional: unlike
+# themes/, which is a vendored checkout living under AppData on Windows,
+# colors/ is chezmoi-managed and lands at the same path on every machine.
+#   "~/.config/alacritty/colors/kanagawa-paper-ink.toml"      # dark,  #1F1F28
+#   "~/.config/alacritty/colors/kanagawa-paper-canvas.toml"   # light, #e1e1de
 import = [
   {{ if eq .chezmoi.os "windows" }}"~/AppData/Roaming/alacritty/themes/themes/kanagawa_dragon.toml"{{ else }}"~/.config/alacritty/themes/themes/kanagawa_dragon.toml"{{ end }}
 ]
