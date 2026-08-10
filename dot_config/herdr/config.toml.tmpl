@@ -1,4 +1,19 @@
 onboarding = false
+
+[ui]
+agent_panel_sort = "priority"
+
+[ui.sidebar.spaces]
+# `$ssh` is a custom metadata token, published by the `ssh` wrapper in
+# functions.fish.tmpl — it shows the remote host while a session is up.
+rows = [["state_icon", "workspace", "$ssh"], ["branch", "git_status"]]
+
+[ui.sidebar.agents.rows_by_agent]
+claude = [["state_icon", "workspace", "tab"], ["terminal_title_stripped"]]
+
+[theme]
+name = "kanagawa"
+auto_switch = false
 {{- if eq .chezmoi.os "windows" }}
 
 # Windows has no usable $SHELL for herdr to inherit, so point it at pwsh.

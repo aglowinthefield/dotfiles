@@ -3,15 +3,20 @@ Documents/PowerShell
 # psmux plugins are Windows-only
 .tmux/plugins/ppm
 .tmux/plugins/psmux-*
-# komorebi + whkd are Windows-only
+# komorebi + whkd are Windows-only. The bare `komorebi.json` only ever
+# matched ~/komorebi.json, so the real one kept applying to macOS/Linux.
 .config/whkd
+.config/komorebi/komorebi.json
 komorebi.json
 {{- end }}
 {{- if eq .chezmoi.os "windows" }}
-# Secrets are loaded by config.fish and systemd units, both Linux-only.
-# Ignoring them here also means Windows needs no 1Password CLI session.
+# secrets.env is loaded by config.fish, which is fish-only.
+# Ignoring it here also means Windows needs no 1Password CLI session.
 .config/secrets.env
+{{- end }}
+{{- if ne .chezmoi.hostname "mochi" }}
+# The portfolio feed only runs on mochi, via systemd EnvironmentFile.
+# Nowhere else needs the credentials, so nowhere else provisions them.
 .config/portfolio/env
 {{- end }}
 .config/nvim/lazy-lock.json
-.config/fish/conf.d/99_local.fish
