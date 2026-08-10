@@ -6,10 +6,14 @@
 # ── General ──────────────────────────────────────────────────────────────────
 
 [general]
-# Same theme on every OS — only the themes checkout differs. Keep it the
-# hard-contrast variant: plain gruvbox_dark is #282828, noticeably lighter.
+# Same theme on every OS — only the themes checkout differs. kanagawa_dragon
+# (#181616) is deliberate: it matches @tmux-dotbar-bg and herdr's kanagawa
+# theme, so terminal, status bar and sidebar share one background. Use the
+# dragon variant, not wave — wave is #1f1f28, noticeably lighter.
+# NOTE: a missing import path fails *silently* and you get Alacritty's default
+# black instead, so verify the file exists before changing this.
 import = [
-  {{ if eq .chezmoi.os "windows" }}"~/AppData/Roaming/alacritty/themes/themes/gruvbox_material_hard_dark.toml"{{ else }}"~/.config/alacritty/themes/themes/gruvbox_material_hard_dark.toml"{{ end }}
+  {{ if eq .chezmoi.os "windows" }}"~/AppData/Roaming/alacritty/themes/themes/kanagawa_dragon.toml"{{ else }}"~/.config/alacritty/themes/themes/kanagawa_dragon.toml"{{ end }}
 ]
 
 # Directory the shell is started in. "None" uses parent process's working directory.
