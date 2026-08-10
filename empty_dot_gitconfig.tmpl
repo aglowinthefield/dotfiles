@@ -31,6 +31,16 @@
   program = ssh-keygen
   {{- end }}
 
+# ---- Never use HTTPS for GitHub ----
+# Rewrites any https://github.com/... URL to SSH, including remotes created by
+# `git clone`, submodules, and tooling that hardcodes HTTPS. GitHub refuses
+# password auth, so an HTTPS remote can fetch but never push — this makes that
+# failure impossible to walk into. Requires an SSH key for github.com on the
+# machine; drop this block if one is ever without.
+[url "git@github.com:"]
+    insteadOf = https://github.com/
+    insteadOf = git://github.com/
+
 # ---- Work identity overrides below ----
 # Any repo under ~/dev/ will use ~/.gitconfig_work
 [includeIf "gitdir:~/dev/"]
