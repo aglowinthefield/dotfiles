@@ -1,4 +1,4 @@
-{{- if eq .chezmoi.os "windows" }}
+{{- if eq .chezmoi.os "windows" -}}
 # =============================================================================
 # psmux config (Windows)
 # =============================================================================
@@ -34,53 +34,67 @@ set -g @plugin 'psmux-plugins/psmux-theme-gruvbox'
 run-shell 'C:\Users\clearing\.tmux\plugins/psmux-theme-gruvbox/psmux-theme-gruvbox.tmux'
 # ── End plugins ──────────────────────────────────────
 
-{{- else }}
+{{- else -}}
 # =============================================================================
 # tmux config (macOS / Linux)
 # =============================================================================
 
-# True color + synchronized output. `sync` matters for nested TUIs (herdr):
-# without it tmux drops the atomic-frame brackets and partial frames get painted.
+# --- Terminal / true color ---------------------------------------------------
+# `sync` matters for nested TUIs (herdr): without it tmux drops the
+# atomic-frame brackets and partial frames get painted. terminal-features
+# supersedes the older terminal-overrides spelling.
 set -g default-terminal "tmux-256color"
 set -as terminal-features ",xterm-256color:RGB:sync"
 set -as terminal-features ",alacritty:RGB:sync"
 
+# --- Prefix ------------------------------------------------------------------
 unbind C-b
 set-option -g prefix C-a
 bind-key C-a send-prefix
 
-bind | split-window -h
-bind - split-window -v
+# --- Splits (open in current path) -------------------------------------------
+bind | split-window -h -c "#{pane_current_path}"
+bind - split-window -v -c "#{pane_current_path}"
 
-# smart pane switching with awareness of vim splits
+# --- Vim-style pane movement / resize ----------------------------------------
 bind h select-pane -L
 bind j select-pane -D
 bind k select-pane -U
 bind l select-pane -R
 
-# Resize with capital variants
 bind H resize-pane -L 5
 bind J resize-pane -D 5
 bind K resize-pane -U 5
 bind L resize-pane -R 5
 
+# --- Behaviour ---------------------------------------------------------------
 set -g mouse on
-
-# don't rename windows automatically
-set-option -g allow-rename off
-
-# List of plugins
-set -g @plugin 'tmux-plugins/tpm'
-set -g @plugin 'tmux-plugins/tmux-sensible'
-
-# set -g @plugin 'Nybkox/tmux-ukiyo'
-# set -g @ukiyo-theme "kanagawa/dragon"  # darker
-set -g @plugin 'thekylehuang/cole-tmux'
+set-option -g allow-rename off       # apps can't rename via escape seq
+# Claude Code's process is named after its version (e.g. 2.1.218); show
+# "claude" for any semver-like command name, otherwise use the command.
+set -g automatic-rename-format '#{?#{m/r:^[0-9]+\.[0-9]+(\.[0-9]+)?$,#{pane_current_command}},claude,#{pane_current_command}}'
+set-option -g renumber-windows on    # keep window numbers gapless
+set -g base-index 1                  # windows start at 1
+setw -g pane-base-index 1            # panes start at 1
 
 setw -g xterm-keys on
-set -sg repeat-time 600                   # increase repeat timeout
+set -sg repeat-time 600              # longer repeat window for resize
 set -s focus-events on
-set -s escape-time 50
+set -s escape-time 50                # snappier ESC
 
+# --- Plugins -----------------------------------------------------------------
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'tmux-plugins/tmux-sensible'
+set -g @plugin 'vaaleyard/tmux-dotbar'
+
+# tmux-dotbar theme (kanagawa-dragon palette)
+set -g @tmux-dotbar-bg          "#181616"
+set -g @tmux-dotbar-fg          "#625e5a"
+set -g @tmux-dotbar-fg-current  "#c5c9c5"
+set -g @tmux-dotbar-fg-session  "#737c73"
+set -g @tmux-dotbar-fg-prefix   "#8ea4a2"
+set -g @tmux-dotbar-status-right-text " %H:%M "
+
+# --- Init (keep last) --------------------------------------------------------
 run '~/.tmux/plugins/tpm/tpm'
 {{- end }}

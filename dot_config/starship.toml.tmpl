@@ -2,9 +2,10 @@
 # instantly distinguishable at a glance. Add a host to the map below;
 # anything not listed falls back to "default".
 {{ $accent := dict
-  "tomauty" "#E0AF68"
-  "mochi"   "#E8A2B8"
-  "default" "#BFA8BF" -}}
+  "tomauty"      "#E0AF68"
+  "mochi"        "#E8A2B8"
+  "visitingstar" "#8EA4A2"
+  "default"      "#BFA8BF" -}}
 {{ $c := get $accent .chezmoi.hostname | default (get $accent "default") }}
 # Starship prompt — ported from OMP uew theme
 # Line 1: ~ username  branch  shell

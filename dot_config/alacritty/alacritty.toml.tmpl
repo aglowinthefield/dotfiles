@@ -109,7 +109,8 @@ dynamic_title = false
 # ── Font ─────────────────────────────────────────────────────────────────────
 
 [font]
-size = {{ if eq .chezmoi.os "windows" }}14{{ else }}16{{ end }}
+# visitingstar runs BlexMono at 14; every other machine uses RecMonoCasual 16.
+size = {{ if or (eq .chezmoi.os "windows") (eq .chezmoi.hostname "visitingstar") }}14{{ else }}16{{ end }}
 
 # Horizontal letter spacing adjustment in pixels.
 # Default: { x = 0, y = 0 }
@@ -124,7 +125,7 @@ size = {{ if eq .chezmoi.os "windows" }}14{{ else }}16{{ end }}
 # builtin_box_drawing = true
 
 [font.normal]
-family = "{{ if eq .chezmoi.os "windows" }}JetBrainsMono NF{{ else }}RecMonoCasual Nerd Font{{ end }}"
+family = "{{ if eq .chezmoi.os "windows" }}JetBrainsMono NF{{ else if eq .chezmoi.hostname "visitingstar" }}BlexMono Nerd Font Mono{{ else }}RecMonoCasual Nerd Font{{ end }}"
 style = "Regular"
 
 [font.bold]

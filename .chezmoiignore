@@ -8,6 +8,11 @@ Documents/PowerShell
 .config/whkd
 .config/komorebi/komorebi.json
 komorebi.json
+# yasb is a Windows status bar and sysupdate.ps1 is a PowerShell script;
+# neither does anything here. Note the path must be the full target path
+# relative to $HOME — a bare `sysupdate.ps1` would only match ~/sysupdate.ps1.
+.config/yasb
+.local/bin/sysupdate.ps1
 {{- end }}
 {{- if eq .chezmoi.os "windows" }}
 # secrets.env is loaded by config.fish, which is fish-only.

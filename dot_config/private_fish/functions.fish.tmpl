@@ -10,7 +10,9 @@ function ssh
         return
     end
     # ponytail: last arg as the host label; breaks on `ssh host cmd`, narrow it if that bites
-    herdr workspace report-metadata $HERDR_WORKSPACE_ID --source ssh --token ssh="@$argv[-1]" >/dev/null 2>&1
+    # 󰌘 is nf-md-lan_connect, matching tmux-dotbar's remote indicator and the
+    # macOS ssh-status daemon, so the badge reads the same on every machine.
+    herdr workspace report-metadata $HERDR_WORKSPACE_ID --source ssh --token ssh="󰌘 $argv[-1]" >/dev/null 2>&1
     command ssh $argv
     set -l status_ $status
     herdr workspace report-metadata $HERDR_WORKSPACE_ID --source ssh --clear-token ssh >/dev/null 2>&1

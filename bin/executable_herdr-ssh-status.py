@@ -22,7 +22,10 @@ TTL_MS = 30000
 # Unchanged values are re-sent only this often, to keep the TTL alive without
 # marking the sidebar dirty on every poll.
 REFRESH_SECONDS = 10.0
-PREFIX = "ssh:"
+# nf-md-lan_connect (U+F0318) — the same glyph tmux-dotbar uses for its remote
+# indicator, so an ssh session looks identical in the tmux bar and the herdr
+# sidebar. Needs a Nerd Font, which every terminal here already uses.
+PREFIX = "\U000f0318 "
 MAX_HOSTS = 2
 
 SOCKET_PATH = os.environ.get(
