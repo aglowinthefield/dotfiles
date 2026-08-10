@@ -21,6 +21,11 @@ komorebi.json
 # herdr ssh-status daemon talks to a unix socket
 bin/herdr-ssh-status.py
 {{- end }}
+{{- if eq .chezmoi.os "linux" }}
+# 1Password's desktop SSH agent is macOS/Windows only. Linux signs with
+# ~/.ssh/op_signing_key through the system ssh-agent, so agent.toml is inert.
+.config/1Password
+{{- end }}
 {{- if ne .chezmoi.hostname "mochi" }}
 # The portfolio feed only runs on mochi, via systemd EnvironmentFile.
 # Nowhere else needs the credentials, so nowhere else provisions them.
