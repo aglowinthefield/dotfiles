@@ -1,3 +1,17 @@
+function ssh
+    # Show the remote host in herdr's spaces panel while the session is up.
+    if not set -q HERDR_ENV
+        command ssh $argv
+        return
+    end
+    # ponytail: last arg as the host label; breaks on `ssh host cmd`, narrow it if that bites
+    herdr workspace report-metadata $HERDR_WORKSPACE_ID --source ssh --token ssh="@$argv[-1]" >/dev/null 2>&1
+    command ssh $argv
+    set -l status_ $status
+    herdr workspace report-metadata $HERDR_WORKSPACE_ID --source ssh --clear-token ssh >/dev/null 2>&1
+    return $status_
+end
+
 function delete-empty-folders-help
     echo "Removes empty folders from a root folder."
     echo "Usage:"

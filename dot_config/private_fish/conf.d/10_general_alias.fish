@@ -2,6 +2,7 @@
 alias x exit
 alias c clear
 alias vim nvim
+alias cc "claude --dangerously-skip-permissions"
 
 # Fish
 alias sf "source ~/.config/fish/config.fish"

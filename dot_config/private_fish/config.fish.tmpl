@@ -16,6 +16,7 @@ set -x XDG_DATA_DIRS "/usr/local/share:$XDG_DATA_DIRS"
 
 
 set -gx EDITOR nvim
+set -gx ENABLE_LSP_TOOL 1
 {{ if eq .chezmoi.os "darwin" }}
 fish_add_path /opt/homebrew/opt/ruby/bin
 fish_add_path /opt/homebrew/lib/ruby/gems/4.0.0/bin

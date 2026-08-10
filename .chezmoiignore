@@ -14,3 +14,4 @@ komorebi.json
 .config/portfolio/env
 {{- end }}
 .config/nvim/lazy-lock.json
+.config/fish/conf.d/99_local.fish

@@ -21,6 +21,8 @@
     format = ssh
 
 [gpg "ssh"]
+  # Verify signatures locally; without this every `%G?` / --show-signature errors out
+  allowedSignersFile = ~/.ssh/allowed_signers
   {{- if eq .chezmoi.os "windows" }}
   program = "~/AppData/Local/Microsoft/WindowsApps/op-ssh-sign.exe"
   {{- else if eq .chezmoi.os "darwin" }}
