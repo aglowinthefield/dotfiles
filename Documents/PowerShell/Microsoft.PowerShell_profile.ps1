@@ -49,6 +49,10 @@ Set-Alias ls lsd
 Set-Alias c clear
 
 function x { exit }
+# Mirrors the fish `cc` alias in .config/fish/conf.d/10_general_alias.fish.
+# A function rather than Set-Alias because Set-Alias cannot carry arguments;
+# @args forwards anything extra, so `cc -p "..."` still works.
+function cc { claude --dangerously-skip-permissions @args }
 function gs { git status }
 function gd { git diff }
 function gdc { git diff --cached }

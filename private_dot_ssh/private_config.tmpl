@@ -17,7 +17,12 @@ Host *
 {{- else if eq .chezmoi.os "windows" }}
 Host *
     # Same agent, reached over a named pipe on Windows.
-    IdentityAgent \\.\pipe\openssh-ssh-agent
+    # Forward slashes are load-bearing. ssh's config parser eats the
+    # backslashes in the literal `\\.\pipe\openssh-ssh-agent`, so the agent
+    # ends up unreachable and ssh silently falls back to on-disk keys that
+    # do not exist — every push fails with "Permission denied (publickey)"
+    # while `ssh-add -l` still happily lists the keys. Quoting does not help.
+    IdentityAgent //./pipe/openssh-ssh-agent
 {{- else }}
 # Linux has no 1Password desktop agent: the system ssh-agent holds
 # ~/.ssh/op_signing_key instead, wired up in config.fish.
