@@ -1,0 +1,17 @@
+# Machine default font.
+#
+# This lives outside alacritty.toml because Alacritty's main config beats its
+# imports: a `family` left in alacritty.toml would silently win over the
+# generated font.toml and alacritty-font would appear to do nothing at all.
+# So the per-machine choice lives here, alacritty-font copies it into font.toml
+# when nothing is overridden, and `alacritty-font reset` comes back to it.
+#
+# Windows never reads this — there is no POSIX shell there to run alacritty-font,
+# so alacritty.toml keeps its font inline on that OS instead.
+
+[font]
+# visitingstar runs BlexMono at 14; every other machine uses RecMonoCasual 16.
+size = {{ if eq .chezmoi.hostname "visitingstar" }}14{{ else }}16{{ end }}
+
+[font.normal]
+family = "{{ if eq .chezmoi.hostname "visitingstar" }}BlexMono Nerd Font Mono{{ else }}RecMonoCasual Nerd Font{{ end }}"

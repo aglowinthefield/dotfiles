@@ -35,7 +35,7 @@ export PATH
 
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/alacritty"
 THEME_FILE="$CONFIG_DIR/theme.toml"
-VARIANTS_FILE="$CONFIG_DIR/variants.conf"
+OVERRIDES="$CONFIG_DIR/overrides.conf"
 TMUX_DIR="$HOME/.tmux"
 TMUX_THEME_FILE="$TMUX_DIR/theme.conf"
 
@@ -45,8 +45,9 @@ case "$0" in
 esac
 
 # Defaults, overridable two ways: $ALACRITTY_THEME_DARK/_LIGHT for a one-off,
-# and variants.conf — written by `pick` — for something that has to survive into
-# the launchd agent, which inherits no shell environment at all.
+# and overrides.conf — written by `pick`, and shared with alacritty-font — for
+# something that has to survive into the launchd agent, which inherits no shell
+# environment at all.
 #
 # Dark is kanagawa_dragon from the vendored alacritty-theme checkout: #181616,
 # deliberately the same as @tmux-dotbar-bg, so don't quietly swap it for wave
@@ -56,25 +57,24 @@ DEFAULT_DARK="$CONFIG_DIR/themes/themes/kanagawa_dragon.toml"
 DEFAULT_LIGHT="$CONFIG_DIR/colors/kanagawa-lotus.toml"
 
 conf_get() {
-	[ -f "$VARIANTS_FILE" ] || return 0
-	sed -n "s/^$1[[:space:]]*=[[:space:]]*//p" "$VARIANTS_FILE" | tail -1
+	[ -f "$OVERRIDES" ] || return 0
+	sed -n "s/^$1[[:space:]]*=[[:space:]]*//p" "$OVERRIDES" | tail -1
 }
 
 conf_set() {
 	key=$1 value=$2
 	tmp=$(mktemp "$CONFIG_DIR/.variants.XXXXXX")
-	if [ -f "$VARIANTS_FILE" ]; then
-		grep -v "^$key[[:space:]]*=" "$VARIANTS_FILE" >"$tmp" || true
+	if [ -f "$OVERRIDES" ]; then
+		grep -v "^$key[[:space:]]*=" "$OVERRIDES" >"$tmp" || true
 	else
 		cat >"$tmp" <<-EOF
-			# Chosen by \`alacritty-theme pick\`. Deleting a line restores the
-			# built-in default for that variant; \$ALACRITTY_THEME_DARK and
-			# _LIGHT still win over both. Read by the launchd agent, which is
-			# why this is a file and not an environment variable.
+			# Local choices made by alacritty-theme and alacritty-font. Deleting a
+			# line restores that machine's default. Read by the launchd agent,
+			# which is why this is a file rather than an environment variable.
 		EOF
 	fi
 	printf '%s = %s\n' "$key" "$value" >>"$tmp"
-	mv "$tmp" "$VARIANTS_FILE"
+	mv "$tmp" "$OVERRIDES"
 }
 
 source_for() {

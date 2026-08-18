@@ -28,10 +28,19 @@
 # black instead — which is why run_onchange_after_55 seeds theme.toml at apply
 # time. Verify the file exists before changing this.
 #
-# Windows imports its theme directly: there is no dark-notify and no POSIX shell
-# there, so nothing would ever generate theme.toml.
+# The font is generated the same way, by alacritty-font into font.toml — see
+# font-default.toml for why it cannot simply live in this file.
+#
+# Windows imports its theme directly and keeps its font inline below: there is
+# no dark-notify and no POSIX shell there, so nothing would ever generate
+# either file.
 import = [
-  {{ if eq .chezmoi.os "windows" }}"~/AppData/Roaming/alacritty/themes/themes/kanagawa_dragon.toml"{{ else }}"~/.config/alacritty/theme.toml"{{ end }}
+{{- if eq .chezmoi.os "windows" }}
+  "~/AppData/Roaming/alacritty/themes/themes/kanagawa_dragon.toml",
+{{- else }}
+  "~/.config/alacritty/theme.toml",
+  "~/.config/alacritty/font.toml",
+{{- end }}
 ]
 
 # Directory the shell is started in. "None" uses parent process's working directory.
@@ -131,8 +140,11 @@ dynamic_title = false
 # ── Font ─────────────────────────────────────────────────────────────────────
 
 [font]
-# visitingstar runs BlexMono at 14; every other machine uses RecMonoCasual 16.
-size = {{ if or (eq .chezmoi.os "windows") (eq .chezmoi.hostname "visitingstar") }}14{{ else }}16{{ end }}
+{{ if eq .chezmoi.os "windows" -}}
+# Inline here only because Windows cannot run alacritty-font; everywhere else
+# size and family come from font.toml, which this file imports above.
+size = 14
+{{ end -}}
 
 # Horizontal letter spacing adjustment in pixels.
 # Default: { x = 0, y = 0 }
@@ -147,7 +159,9 @@ size = {{ if or (eq .chezmoi.os "windows") (eq .chezmoi.hostname "visitingstar")
 # builtin_box_drawing = true
 
 [font.normal]
-family = "{{ if eq .chezmoi.os "windows" }}JetBrainsMono NF{{ else if eq .chezmoi.hostname "visitingstar" }}BlexMono Nerd Font Mono{{ else }}RecMonoCasual Nerd Font{{ end }}"
+{{ if eq .chezmoi.os "windows" -}}
+family = "JetBrainsMono NF"
+{{ end -}}
 style = "Regular"
 
 [font.bold]
