@@ -16,10 +16,13 @@
 # (#181616) from themes/, a vendored checkout of alacritty/alacritty-theme — the
 # background deliberately matches @tmux-dotbar-bg and herdr's kanagawa theme, so
 # terminal, status bar and sidebar share one background. Use dragon, not wave:
-# wave is #1f1f28, noticeably lighter. Light is kanagawa-paper-canvas (#e1e1de)
-# from colors/, which is chezmoi-managed rather than foreign to that checkout.
-# Override either end with $ALACRITTY_THEME_DARK / $ALACRITTY_THEME_LIGHT, e.g.
-# to kanagawa-paper-ink.toml (#1F1F28) to match neovim's kanagawa-paper exactly.
+# wave is #1f1f28, noticeably lighter. Light is kanagawa-lotus (#f2ecbc) from
+# colors/ — the same palette's light half, and the theme herdr switches itself
+# to, so the two agree. It replaced kanagawa-paper-canvas, which at 3.4:1 fg/bg
+# was under the 4.5:1 floor and a third of dragon's 10.8:1 — legibly worse, not
+# just a taste call. Override either end with $ALACRITTY_THEME_DARK /
+# $ALACRITTY_THEME_LIGHT, e.g. to the kanagawa-paper files to match neovim's
+# `colorscheme kanagawa-paper` instead.
 #
 # NOTE: a missing import path fails *silently* and you get Alacritty's default
 # black instead — which is why run_onchange_after_55 seeds theme.toml at apply

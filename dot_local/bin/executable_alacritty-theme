@@ -40,10 +40,11 @@ TMUX_THEME_FILE="$TMUX_DIR/theme.conf"
 # The two Alacritty variants live in different places on purpose. Dark is
 # kanagawa_dragon from the vendored alacritty-theme checkout — #181616,
 # deliberately the same as @tmux-dotbar-bg and herdr, so don't quietly swap it
-# for paper-ink without changing those too. Light is kanagawa-paper-canvas from
-# colors/, which is chezmoi-managed and so lands at the same path everywhere.
+# for paper-ink without changing those too. Light is kanagawa-lotus, the same
+# palette's own light half and the theme herdr switches itself to; both live in
+# colors/, which is chezmoi-managed and lands at the same path everywhere.
 DARK_SOURCE="${ALACRITTY_THEME_DARK:-$CONFIG_DIR/themes/themes/kanagawa_dragon.toml}"
-LIGHT_SOURCE="${ALACRITTY_THEME_LIGHT:-$CONFIG_DIR/colors/kanagawa-paper-canvas.toml}"
+LIGHT_SOURCE="${ALACRITTY_THEME_LIGHT:-$CONFIG_DIR/colors/kanagawa-lotus.toml}"
 
 usage() {
 	sed -n '18,21p' "$0" | sed 's/^# \{0,1\}//'
