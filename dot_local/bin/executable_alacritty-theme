@@ -94,7 +94,20 @@ alacritty_apply() {
 	# Rewriting an unchanged theme would reload every window for nothing, and
 	# dark-notify fires this once at login regardless of whether anything moved.
 	[ "$(variant_of "$THEME_FILE")" = "$variant" ] && [ -s "$THEME_FILE" ] && return 0
+
+	existed=false
+	[ -f "$THEME_FILE" ] && existed=true
 	generate "$THEME_FILE" "#" "$variant" "$source"
+
+	# An Alacritty that started while theme.toml was absent never registered a
+	# watch on it — you cannot watch a file that isn't there — so it ignores
+	# every switch from then on and keeps whatever it loaded, silently. Poking
+	# the top-level config, which *is* watched, makes it re-read the import list
+	# and pick the file up. Only on creation: doing it every time would reload
+	# each window twice.
+	if [ "$existed" = false ]; then
+		touch "$CONFIG_DIR/alacritty.toml" 2>/dev/null || true
+	fi
 }
 
 tmux_apply() {
