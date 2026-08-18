@@ -20,6 +20,9 @@ komorebi.json
 .config/secrets.env
 # herdr ssh-status daemon talks to a unix socket
 bin/herdr-ssh-status.py
+# alacritty-theme is a POSIX shell script, and Windows imports its theme
+# directly rather than through a generated theme.toml.
+.local/bin/alacritty-theme
 {{- end }}
 # ── Deliberately unmanaged: this repo is public ──────────────────────────────
 # 1Password's agent.toml has to name SSH items literally, which would publish

@@ -1,0 +1,17 @@
+{{- if ne .chezmoi.os "windows" -}}
+#!/bin/sh
+# Seed ~/.config/alacritty/theme.toml.
+#
+# alacritty.toml imports that file unconditionally and a missing import is
+# silent — a fresh machine would just get Alacritty's default black with no
+# error — so generate it here rather than waiting for the first manual switch.
+# `auto` follows the system appearance on macOS; anywhere else it fails and we
+# fall back to dark, which is what the config did before any of this existed.
+# Hash: {{ include "dot_local/bin/executable_alacritty-theme" | sha256sum }}
+
+set -e
+
+theme="$HOME/.local/bin/alacritty-theme"
+"$theme" auto 2>/dev/null || "$theme" dark
+echo "Alacritty theme: $("$theme" status | head -1)"
+{{- end }}

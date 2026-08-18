@@ -3,6 +3,7 @@ packages:
     brews:
     - 'chezmoi'
     - 'composer'
+    - 'cormacrelf/tap/dark-notify'
     - 'fd'
     - 'ffmpeg'
     - 'fish'

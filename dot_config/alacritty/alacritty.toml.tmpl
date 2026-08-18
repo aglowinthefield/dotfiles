@@ -6,21 +6,29 @@
 # ── General ──────────────────────────────────────────────────────────────────
 
 [general]
-# Same theme on every OS — only the themes checkout differs. kanagawa_dragon
-# (#181616) is deliberate: it matches @tmux-dotbar-bg and herdr's kanagawa
-# theme, so terminal, status bar and sidebar share one background. Use the
-# dragon variant, not wave — wave is #1f1f28, noticeably lighter.
-# NOTE: a missing import path fails *silently* and you get Alacritty's default
-# black instead, so verify the file exists before changing this.
+# The palette is a *generated* file, not a fixed path. `alacritty-theme
+# dark|light|toggle|auto` (~/.local/bin) rewrites ~/.config/alacritty/theme.toml
+# and live_config_reload repaints every open window. On macOS the
+# com.tauty.alacritty-theme launchd agent runs it from dark-notify, so the
+# terminal follows the system appearance; elsewhere it is a manual command.
 #
-# To match neovim's `colorscheme kanagawa-paper` instead, comment the line
-# below and uncomment one of these. They need no OS conditional: unlike
-# themes/, which is a vendored checkout living under AppData on Windows,
-# colors/ is chezmoi-managed and lands at the same path on every machine.
-#   "~/.config/alacritty/colors/kanagawa-paper-ink.toml"      # dark,  #1F1F28
-#   "~/.config/alacritty/colors/kanagawa-paper-canvas.toml"   # light, #e1e1de
+# The two variants sit in different places on purpose. Dark is kanagawa_dragon
+# (#181616) from themes/, a vendored checkout of alacritty/alacritty-theme — the
+# background deliberately matches @tmux-dotbar-bg and herdr's kanagawa theme, so
+# terminal, status bar and sidebar share one background. Use dragon, not wave:
+# wave is #1f1f28, noticeably lighter. Light is kanagawa-paper-canvas (#e1e1de)
+# from colors/, which is chezmoi-managed rather than foreign to that checkout.
+# Override either end with $ALACRITTY_THEME_DARK / $ALACRITTY_THEME_LIGHT, e.g.
+# to kanagawa-paper-ink.toml (#1F1F28) to match neovim's kanagawa-paper exactly.
+#
+# NOTE: a missing import path fails *silently* and you get Alacritty's default
+# black instead — which is why run_onchange_after_55 seeds theme.toml at apply
+# time. Verify the file exists before changing this.
+#
+# Windows imports its theme directly: there is no dark-notify and no POSIX shell
+# there, so nothing would ever generate theme.toml.
 import = [
-  {{ if eq .chezmoi.os "windows" }}"~/AppData/Roaming/alacritty/themes/themes/kanagawa_dragon.toml"{{ else }}"~/.config/alacritty/themes/themes/kanagawa_dragon.toml"{{ end }}
+  {{ if eq .chezmoi.os "windows" }}"~/AppData/Roaming/alacritty/themes/themes/kanagawa_dragon.toml"{{ else }}"~/.config/alacritty/theme.toml"{{ end }}
 ]
 
 # Directory the shell is started in. "None" uses parent process's working directory.
