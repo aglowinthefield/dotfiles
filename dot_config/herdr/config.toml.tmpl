@@ -29,7 +29,13 @@ claude = [
 
 [theme]
 name = "kanagawa"
-auto_switch = false
+# herdr switches itself: auto_switch follows the *host terminal's* appearance,
+# not the OS, which is the right hook here — alacritty-theme repaints Alacritty
+# and herdr follows it, so nothing has to notify herdr explicitly. kanagawa and
+# kanagawa-lotus are the upstream dark/light pair of the same palette.
+auto_switch = true
+dark_name = "kanagawa"
+light_name = "kanagawa-lotus"
 {{- if eq .chezmoi.os "windows" }}
 
 # Windows has no usable $SHELL for herdr to inherit, so point it at pwsh.

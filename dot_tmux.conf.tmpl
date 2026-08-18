@@ -87,12 +87,17 @@ set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'tmux-plugins/tmux-sensible'
 set -g @plugin 'vaaleyard/tmux-dotbar'
 
-# tmux-dotbar theme (kanagawa-dragon palette)
-set -g @tmux-dotbar-bg          "#181616"
-set -g @tmux-dotbar-fg          "#625e5a"
-set -g @tmux-dotbar-fg-current  "#c5c9c5"
-set -g @tmux-dotbar-fg-session  "#737c73"
-set -g @tmux-dotbar-fg-prefix   "#8ea4a2"
+# tmux-dotbar theme. The palette lives in ~/.tmux/dotbar-{dark,light}.conf and
+# is picked by `alacritty-theme`, which regenerates theme.conf alongside
+# Alacritty's own and re-sources it into every running server — the status bar
+# is meant to share the terminal's background, so the two switch together.
+#
+# Two sources, both -q on purpose: dark first as the fallback, so a machine that
+# has never run alacritty-theme still gets the intended colours rather than
+# tmux-dotbar's own defaults; then the generated file, which wins.
+source-file -q ~/.tmux/dotbar-dark.conf
+source-file -q ~/.tmux/theme.conf
+
 set -g @tmux-dotbar-status-right-text " %H:%M "
 
 # --- Init (keep last) --------------------------------------------------------
