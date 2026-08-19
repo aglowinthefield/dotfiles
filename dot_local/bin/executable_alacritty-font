@@ -135,13 +135,25 @@ apply() { generate "$(current_family)" "$(current_size)"; }
 # the name. The old previewer matched /nerd font mono$/, which silently dropped
 # "RecMonoCasual Nerd Font" — the family configured on every machine but this
 # one, so its own font was missing from its own list.
+#
+# Take only the FIRST comma-separated value per font. fc-list prints a family's
+# aliases too, and splitting on the comma turns every weight into a fake family:
+# "BlexMono Nerd Font Light" is an alias of "BlexMono Nerd Font", not something
+# you can ask for. On macOS Alacritty resolves through Core Text, which has no
+# such family, so picking one logged
+#     [ERROR] font FontDesc { name: "...", style: Specific("Regular") } not found
+# and left the font unchanged. Measured against Core Text's own family list:
+# 429 of the 602 split names did not exist; taking the primary name gives 173
+# that do. Leading-dot names are Apple's hidden system faces (.SF NS Mono,
+# .LastResort) and are not selectable either.
 families() {
 	command -v fc-list >/dev/null 2>&1 ||
 		die "fc-list not found — install fontconfig (brew install fontconfig / pacman -S fontconfig)"
 	fc-list :spacing=100 family |
-		tr ',' '\n' |
+		cut -d, -f1 |
 		sed 's/^[[:space:]]*//; s/[[:space:]]*$//' |
 		grep . |
+		grep -v '^\.' |
 		sort -uf
 }
 
