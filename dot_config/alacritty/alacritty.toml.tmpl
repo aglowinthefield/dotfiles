@@ -12,17 +12,13 @@
 # com.tauty.alacritty-theme launchd agent runs it from dark-notify, so the
 # terminal follows the system appearance; elsewhere it is a manual command.
 #
-# The two variants sit in different places on purpose. Dark is kanagawa_dragon
-# (#181616) from themes/, a vendored checkout of alacritty/alacritty-theme — the
-# background deliberately matches @tmux-dotbar-bg and herdr's kanagawa theme, so
-# terminal, status bar and sidebar share one background. Use dragon, not wave:
-# wave is #1f1f28, noticeably lighter. Light is kanagawa-lotus (#f2ecbc) from
-# colors/ — the same palette's light half, and the theme herdr switches itself
-# to, so the two agree. It replaced kanagawa-paper-canvas, which at 3.4:1 fg/bg
-# was under the 4.5:1 floor and a third of dragon's 10.8:1 — legibly worse, not
-# just a taste call. Override either end with $ALACRITTY_THEME_DARK /
-# $ALACRITTY_THEME_LIGHT, e.g. to the kanagawa-paper files to match neovim's
-# `colorscheme kanagawa-paper` instead.
+# Which palette each variant resolves to is not decided here and is not worth
+# duplicating here — it drifts. The defaults live next to DEFAULT_DARK /
+# DEFAULT_LIGHT in the alacritty-theme script, per-machine picks live in
+# overrides.conf (written by `alacritty-theme pick`, and read by the launchd
+# agent, which inherits no shell environment), and $ALACRITTY_THEME_DARK /
+# $ALACRITTY_THEME_LIGHT override both for a one-off. `alacritty-theme status`
+# prints what is actually loaded.
 #
 # NOTE: a missing import path fails *silently* and you get Alacritty's default
 # black instead — which is why run_onchange_after_55 seeds theme.toml at apply
@@ -81,7 +77,26 @@ dynamic_padding = false
 # Window decorations/frame style.
 # Options: "Full" | "None" | "Transparent" (macOS) | "Buttonless" (macOS)
 # Default: "Full"
+{{ if eq .chezmoi.os "darwin" -}}
+# macOS only: "Transparent" drops the opaque grey chrome bar and lets the
+# terminal background run all the way to the top edge, so the window reads as
+# one surface instead of a pane in a frame. The traffic lights stay (swap to
+# "Buttonless" to lose those too). Both are rejected by other platforms, hence
+# the conditional.
+#
+# The catch: both modes turn on macOS's fullsize content view, so the grid is
+# drawn *behind* the titlebar — without top padding the first row sits under
+# the traffic lights, and the top ~28px stays a drag region that swallows
+# click-drag selection. padding.y below reserves that strip. Alacritty's
+# padding is symmetric, so the same 28px is spent at the bottom; that is the
+# price of the look, not a mistake.
+decorations = "Transparent"
+padding = { x = 8, y = 28 }
+
+{{ else -}}
 # decorations = "Full"
+
+{{ end -}}
 
 # Background opacity from 0.0 (transparent) to 1.0 (opaque).
 # Default: 1.0
@@ -146,6 +161,7 @@ dynamic_title = false
 size = 14
 {{ end -}}
 
+
 # Horizontal letter spacing adjustment in pixels.
 # Default: { x = 0, y = 0 }
 # offset = { x = 0, y = 0 }
@@ -162,6 +178,7 @@ size = 14
 {{ if eq .chezmoi.os "windows" -}}
 family = "JetBrainsMono NF"
 {{ end -}}
+
 style = "Regular"
 
 [font.bold]
@@ -316,6 +333,7 @@ mouse = { enabled = true, mods = "Control" }
 # Skip GPU backend probing — use GL 3.3 directly.
 renderer = "glsl3"
 {{ end -}}
+
 
 # Display frame render time. Default: false
 # render_timer = false
