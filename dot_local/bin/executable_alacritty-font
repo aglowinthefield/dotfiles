@@ -200,10 +200,18 @@ pick() {
 	original_family=$(current_family)
 	original_size=$(current_size)
 
-	chosen=$(families | fzf \
+	# Start *on* the current font rather than searching for it: seeding --query
+	# with the family name filters the list down to that family's own weights
+	# (602 families collapse to 14), which looks exactly like a picker that
+	# knows only one font. --sync so the list is fully loaded before pos() runs.
+	list=$(families)
+	idx=$(printf '%s\n' "$list" | grep -nxF "$original_family" | head -1 | cut -d: -f1) || true
+	[ -n "${idx:-}" ] || idx=1
+
+	chosen=$(printf '%s\n' "$list" | fzf --sync \
 		--prompt='font > ' \
 		--header='live preview — enter keeps, esc restores' \
-		--query="$original_family" \
+		--bind="start:pos($idx)" \
 		--preview="$SELF _sample {}" --preview-window=right,58%,border-left \
 		--bind="focus:execute-silent($SELF _preview {})") || true
 
