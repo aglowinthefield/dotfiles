@@ -1,0 +1,36 @@
+{{- if ne .chezmoi.os "windows" -}}
+#!/bin/sh
+# Install alacritty-theme and alacritty-font from their own repo.
+#
+# They used to live in this repo, but they are tools rather than dotfiles and
+# are wanted on machines that do not run chezmoi. This repo is public and that
+# one is private, so a clone needs the SSH key already working — on a brand new
+# machine that means 1Password unlocked. If it isn't, warn and carry on rather
+# than failing the whole apply; re-run `chezmoi apply` once the key is up.
+#
+# install.sh does the rest: symlinks into ~/.local/bin, links the palettes where
+# alacritty.toml and .tmux.conf expect them, seeds the generated theme.toml and
+# font.toml, and loads the dark-notify agent on macOS.
+#
+# This only re-runs when the script below changes, so `git -C ~/code/alacritty-tools
+# pull` is the way to take updates in between.
+# Hash: {{ include ".chezmoiscripts/run_onchange_after_55_alacritty-tools.sh.tmpl" | sha256sum }}
+
+set -e
+
+repo="$HOME/code/alacritty-tools"
+url="git@github.com:aglowinthefield/alacritty-tools.git"
+
+if [ -d "$repo/.git" ]; then
+	git -C "$repo" pull --ff-only --quiet 2>/dev/null ||
+		echo "alacritty-tools: could not pull, using the checkout as-is"
+else
+	mkdir -p "$(dirname "$repo")"
+	if ! git clone --quiet "$url" "$repo" 2>/dev/null; then
+		echo "alacritty-tools: clone failed (SSH key not available?) — skipping"
+		exit 0
+	fi
+fi
+
+"$repo/install.sh"
+{{- end }}

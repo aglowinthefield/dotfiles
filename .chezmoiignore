@@ -20,11 +20,9 @@ komorebi.json
 .config/secrets.env
 # herdr ssh-status daemon talks to a unix socket
 bin/herdr-ssh-status.py
-# alacritty-theme and alacritty-font are POSIX shell scripts, and Windows
-# imports its theme directly and keeps its font inline rather than going
-# through the generated theme.toml / font.toml.
-.local/bin/alacritty-theme
-.local/bin/alacritty-font
+# Windows imports its theme directly and keeps its font inline rather than
+# going through the generated theme.toml / font.toml, so it needs neither the
+# per-host font default nor the alacritty-tools checkout that reads it.
 .config/alacritty/font-default.toml
 {{- end }}
 # ── Deliberately unmanaged: this repo is public ──────────────────────────────
