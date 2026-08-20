@@ -1,3 +1,12 @@
+{{ if stat (joinPath .chezmoi.homeDir ".colima/ssh_config") -}}
+# Colima writes this Include into ~/.ssh/config itself on `colima start`.
+# Reproducing it here — guarded on the file existing, so it renders only on
+# machines that actually run Colima — stops `chezmoi apply` from deleting it
+# and leaving the VM unreachable until the next `colima start`. The absolute
+# path matches what Colima writes, so neither side rewrites the other.
+Include {{ .chezmoi.homeDir }}/.colima/ssh_config
+
+{{ end -}}
 # ~/.ssh/config (managed by chezmoi)
 #
 # Only portable settings belong here. Machine- and host-specific blocks —
