@@ -14,6 +14,11 @@ komorebi.json
 .config/yasb
 .local/bin/sysupdate.ps1
 {{- end }}
+{{- if ne .chezmoi.os "darwin" }}
+# Homebrew only exists on the laptops; the aliases in here would be dead
+# commands on mochi/tomauty/Windows.
+.config/fish/conf.d/40_darwin_alias.fish
+{{- end }}
 {{- if eq .chezmoi.os "windows" }}
 # secrets.env is loaded by config.fish, which is fish-only.
 # Ignoring it here also means Windows needs no 1Password CLI session.
