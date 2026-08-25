@@ -1,0 +1,27 @@
+# darkman — the light/dark oracle for this machine.
+#
+# mochi is meant to look like the time of day *where it is*, not like whatever
+# the laptop I happen to be SSH'd in from looks like. So the mode comes from
+# this box's own sunrise/sunset, and tmux's mode-2031 client theme is
+# deliberately left unwired: it tracks the far-end terminal and would fight this.
+#
+# Transitions run every executable in ~/.local/share/darkman/ with `dark` or
+# `light` as $1 — the same calling convention dark-notify uses on macOS, which
+# is why alacritty-theme is a hook here with no wrapper.
+usegeoclue: true
+
+# geoclue answers by GeoIP on this box: wlan0 is down so there is no wifi scan
+# to use, and [ip] method=ichnaea (beacondb) resolves to ~25km — far finer than
+# a sunrise time needs. Note geoclue authorises per-application: darkman needs
+# an [darkman] allowed=true block in /etc/geoclue/geoclue.conf, or every lookup
+# hangs waiting for an agent that a bare i3 session never starts.
+#
+# These coordinates are only the *startup seed*. darkman uses them until geoclue
+# answers and is superseded by it after; without them a cold boot sits on the
+# wrong mode until the first lookup lands.
+lat: 41.8268
+lng: -74.1263
+
+# Also publish on org.freedesktop.appearance/color-scheme so anything on the i3
+# session that speaks the XDG portal follows without needing its own hook.
+portal: true
