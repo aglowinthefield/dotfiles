@@ -1,27 +1,30 @@
 # darkman — the light/dark oracle for this machine.
 #
 # mochi is meant to look like the time of day *where it is*, not like whatever
-# the laptop I happen to be SSH'd in from looks like. So the mode comes from
-# this box's own sunrise/sunset, and tmux's mode-2031 client theme is
-# deliberately left unwired: it tracks the far-end terminal and would fight this.
+# laptop I happen to be SSH'd in from. So the mode comes from this box's own
+# sunrise/sunset, and tmux's mode-2031 client theme is deliberately left
+# unwired: it tracks the far-end terminal and would fight this over theme.conf.
 #
 # Transitions run every executable in ~/.local/share/darkman/ with `dark` or
 # `light` as $1 — the same calling convention dark-notify uses on macOS, which
 # is why alacritty-theme is a hook here with no wrapper.
-usegeoclue: true
 
-# geoclue answers by GeoIP on this box: wlan0 is down so there is no wifi scan
-# to use, and [ip] method=ichnaea (beacondb) resolves to ~25km — far finer than
-# a sunrise time needs. Note geoclue authorises per-application: darkman needs
-# an [darkman] allowed=true block in /etc/geoclue/geoclue.conf, or every lookup
-# hangs waiting for an agent that a bare i3 session never starts.
+# Fixed coordinates, not geoclue. These came *from* a geoclue GeoIP lookup
+# (~25km, far finer than a sunrise time needs), but mochi does not move, so
+# resolving them again on every boot buys nothing and costs three things: a
+# network round-trip to beacondb, a wrong answer the day this box egresses
+# through a VPN, and a [darkman] allowed=true block in /etc/geoclue/geoclue.conf
+# — without which every lookup hangs waiting for an authorisation agent that a
+# bare i3 session never starts.
 #
-# These coordinates are only the *startup seed*. darkman uses them until geoclue
-# answers and is superseded by it after; without them a cold boot sits on the
-# wrong mode until the first lookup lands.
+# usegeoclue already defaults to false, but say it out loud: whoever reads this
+# next should not have to know the default to be sure geoclue is not in play.
+usegeoclue: false
 lat: 41.8268
 lng: -74.1263
 
-# Also publish on org.freedesktop.appearance/color-scheme so anything on the i3
-# session that speaks the XDG portal follows without needing its own hook.
+# Publish on org.freedesktop.appearance/color-scheme as well. Nothing reads it
+# yet — xdg-desktop-portal needs org.freedesktop.impl.portal.Settings=darkman in
+# /etc/xdg-desktop-portal before its frontend routes to the darkman.portal the
+# package ships — but it costs nothing and is ready if something wants it.
 portal: true
