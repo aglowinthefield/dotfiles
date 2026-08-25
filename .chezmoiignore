@@ -18,6 +18,12 @@ komorebi.json
 # Homebrew only exists on the laptops; the aliases in here would be dead
 # commands on mochi/tomauty/Windows.
 .config/fish/conf.d/40_darwin_alias.fish
+# ~/Library is a macOS-only tree; Feishin uses .config/feishin elsewhere.
+# Both lines on purpose: the directory prunes the subtree, the full path is
+# the belt-and-braces against the bare-pattern trap that let komorebi.json
+# leak onto macOS for months.
+Library
+Library/Application Support/feishin/config.json
 {{- end }}
 {{- if eq .chezmoi.os "windows" }}
 # secrets.env is loaded by config.fish, which is fish-only.
