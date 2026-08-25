@@ -1,7 +1,15 @@
 onboarding = false
 
 [ui]
-agent_panel_sort = "priority"
+agent_panel_sort = "spaces"
+show_agent_labels_on_pane_borders = false
+status_indicators = "symbols"
+
+# Toasts go to the terminal rather than the macOS notification centre, so they
+# stay with the session that raised them instead of needing Do Not Disturb
+# managed separately.
+[ui.toast]
+delivery = "terminal"
 
 [ui.sidebar.spaces]
 # `$ssh` is a custom metadata token showing the remote host while a session
