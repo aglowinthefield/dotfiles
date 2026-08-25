@@ -1,0 +1,14 @@
+#!/bin/sh
+# chezmoi pipes the live config.json in on stdin; our stdout replaces it.
+# The settings in .chezmoidata/feishin.json win, so `chezmoi update` brings
+# this machine into line with the repo. Everything Feishin owns per-machine --
+# the Navidrome server credential, window bounds, accessibility prompts,
+# migration state -- passes straight through, which is what makes this safe to
+# apply to a machine that is already set up. Those keys are also why the repo
+# holds a filtered copy rather than the whole file: it is public.
+#
+# --tab and the stripped trailing newline reproduce Feishin's own writer byte
+# for byte. Without them every window move would show up as chezmoi drift.
+set -eu
+printf '%s' "$(jq --tab -s --slurpfile m \
+  "$CHEZMOI_SOURCE_DIR/.chezmoidata/feishin.json" '(.[0] // {}) * $m[0]')"
