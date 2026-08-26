@@ -1,11 +1,17 @@
 # Per-host accent: each machine gets a distinct color so hosts are
 # instantly distinguishable at a glance. Add a host to the map below;
 # anything not listed falls back to "default".
+#
+# ANSI palette *names*, not hex. The terminal redefines these per theme, so the
+# prompt follows alacritty-theme into light mode instead of staying at the
+# dark-mode pastels it used to hardcode (#BFA8BF was 1.7:1 on a light bg —
+# no single fixed hex can clear 4.5:1 against both a near-white and a
+# near-black background, so hosts are told apart by hue slot, not by tint).
 {{ $accent := dict
-  "tomauty"      "#E0AF68"
-  "mochi"        "#E8A2B8"
-  "visitingstar" "#8EA4A2"
-  "default"      "#BFA8BF" -}}
+  "tomauty"      "yellow"
+  "mochi"        "red"
+  "visitingstar" "cyan"
+  "default"      "purple" -}}
 {{ $c := get $accent .chezmoi.hostname | default (get $accent "default") }}
 # Starship prompt — ported from OMP uew theme
 # Line 1: ~ username  branch  shell
@@ -19,8 +25,8 @@ format = """
 right_format = ""
 
 [username]
-style_user = "fg:#BBC4B9"
-style_root = "fg:#BBC4B9"
+style_user = "fg:green"
+style_root = "fg:green"
 format = "[$user ]($style)"
 show_always = true
 
@@ -36,14 +42,14 @@ format = "[$symbol$branch]($style) "
 
 [shell]
 disabled = false
-format = "[\uf120](fg:#fff) [$indicator]($style) "
+format = "[\uf120](fg:{{ $c }}) [$indicator]($style) "
 style = "fg:{{ $c }}"
 pwsh_indicator = "pwsh"
 bash_indicator = "bash"
 fish_indicator = "fish"
 
 [directory]
-style = "fg:#B6D6F2"
+style = "fg:blue"
 format = "[\ue5ff $path]($style) "
 truncation_length = 0
 home_symbol = "home"
@@ -51,5 +57,5 @@ fish_style_pwd_dir_length = 0
 
 [character]
 success_symbol = "[~](fg:{{ $c }})"
-error_symbol = "[~](fg:#fff)"
+error_symbol = "[~](fg:red)"
 vimcmd_symbol = "[~](fg:{{ $c }})"
