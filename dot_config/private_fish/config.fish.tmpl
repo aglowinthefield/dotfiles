@@ -37,13 +37,10 @@ end
 
 if status is-interactive
     and not set -q TMUX
-    if test "$DISPLAY" = ":0"
-        # VNC / local desktop session
-        set SESSION_NAME vnc
-    else
-        # SSH session
-        set SESSION_NAME home
-    end
+    and test "$DISPLAY" = ":0"
+    # Automatically use tmux for VNC / local desktop sessions only.
+    # SSH sessions should open a regular interactive shell.
+    set SESSION_NAME vnc
 
     if tmux has-session -t $SESSION_NAME
         exec tmux attach-session -t $SESSION_NAME
