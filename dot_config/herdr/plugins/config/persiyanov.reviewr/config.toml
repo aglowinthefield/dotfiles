@@ -1,0 +1,12 @@
+# reviewr's own settings. herdr's config.toml never reaches this file; the two
+# are read by different programs. reviewr re-reads this on every refresh and
+# toggle, so edits land without relaunching the pane.
+
+# reviewr ships no kanagawa and cannot follow the terminal's light/dark switch
+# the way herdr does, so this is fixed dark and will read wrong against
+# kanagawa-lotus. tokyo-night is the closest muted ink-blue in its set.
+theme = "tokyo-night"
+
+# The pane opens on prefix+d and not before. Left at the default, reviewr
+# attaches itself to every new worktree workspace.
+auto_open = false

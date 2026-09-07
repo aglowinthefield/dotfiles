@@ -35,6 +35,17 @@ claude = [
   ["agent"],
 ]
 
+# reviewr (persiyanov/herdr-reviewr): a code-review pane for the agent's diff.
+# The qualified action id is required — `toggle` alone is not unique across
+# plugins. prefix+d rather than a bare ctrl+alt chord, which Alacritty on macOS
+# swallows unless Option is mapped to Alt. reviewr's own settings live in
+# plugins/config/persiyanov.reviewr/config.toml.
+[[keys.command]]
+key = "prefix+d"
+type = "plugin_action"
+command = "persiyanov.reviewr.toggle"
+description = "toggle reviewr"
+
 [theme]
 name = "kanagawa"
 # herdr switches itself: auto_switch follows the *host terminal's* appearance,
