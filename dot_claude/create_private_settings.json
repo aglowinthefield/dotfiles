@@ -1,0 +1,45 @@
+{
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "enabledPlugins": {
+    "cloudflare@cloudflare": true,
+    "obsidian@obsidian-skills": true,
+    "caveman@caveman": true
+  },
+  "extraKnownMarketplaces": {
+    "cloudflare": {
+      "source": {
+        "source": "github",
+        "repo": "cloudflare/skills"
+      }
+    },
+    "obsidian-skills": {
+      "source": {
+        "source": "github",
+        "repo": "kepano/obsidian-skills"
+      }
+    },
+    "caveman": {
+      "source": {
+        "source": "github",
+        "repo": "JuliusBrussee/caveman"
+      }
+    }
+  },
+  "theme": "dark",
+  "tui": "fullscreen",
+  "verbose": false,
+  "remoteControlAtStartup": true,
+  "isolatePeerMachines": false,
+  "agentPushNotifEnabled": true,
+  "skipDangerousModePermissionPrompt": true,
+  "autoMode": {
+    "soft_deny": [
+      "$defaults",
+      "Bash(sqlite3:*) writes/deletes against `~/portfolio` or `~/code/portfolio` DuckDB/SQLite files — financial data, local-only, must not leave the machine",
+      "Bash(ssh mochi:*) commands that sync/rotate credentials or modify systemd timers (portfolio-close.timer, portfolio-budget.timer) without confirmation"
+    ]
+  }
+}

@@ -1,5 +1,6 @@
 {{- if ne .chezmoi.os "windows" }}
 Documents/PowerShell
+AppData
 # psmux plugins are Windows-only
 .tmux/plugins/ppm
 .tmux/plugins/psmux-*
@@ -50,3 +51,6 @@ bin/herdr-ssh-status.py
 .local/share/darkman
 {{- end }}
 .config/nvim/lazy-lock.json
+# Guidance for agents working on this source repo, not a dotfile. Without this
+# chezmoi would render it to ~/AGENTS.md, where it describes the wrong tree.
+AGENTS.md
