@@ -5,8 +5,8 @@
 # They used to live in this repo, but they are tools rather than dotfiles and
 # are wanted on machines that do not run chezmoi. This repo is public and that
 # one is private, so a clone needs the SSH key already working — on a brand new
-# machine that means 1Password unlocked. If it isn't, warn and carry on rather
-# than failing the whole apply; re-run `chezmoi apply` once the key is up.
+# machine that means 1Password unlocked. Fail if cloning fails so chezmoi
+# retries on the next `chezmoi apply` once the key is available.
 #
 # install.sh does the rest: symlinks into ~/.local/bin, links the palettes where
 # alacritty.toml and .tmux.conf expect them, seeds the generated theme.toml and
@@ -26,9 +26,9 @@ if [ -d "$repo/.git" ]; then
 		echo "alacritty-tools: could not pull, using the checkout as-is"
 else
 	mkdir -p "$(dirname "$repo")"
-	if ! git clone --quiet "$url" "$repo" 2>/dev/null; then
-		echo "alacritty-tools: clone failed (SSH key not available?) — skipping"
-		exit 0
+	if ! git clone --quiet "$url" "$repo"; then
+		echo "alacritty-tools: clone failed; unlock SSH access and retry chezmoi apply" >&2
+		exit 1
 	fi
 fi
 

@@ -1,18 +1,23 @@
 source ~/.config/fish/functions.fish
 
 if status is-interactive
-    # Commands to run in interactive sessions can go here
+    set -g fish_greeting
+    fish_vi_key_bindings
+    if command -q starship
+        starship init fish | source
+    end
+    if command -q fnm
+        fnm env --use-on-cd --shell fish | source
+    end
 end
-
-set -U fish_greeting
-
-fish_vi_key_bindings
-starship init fish | source
-fnm env --use-on-cd --shell fish | source
 
 set -x XDG_CONFIG_HOME $HOME/.config
 # czkawka_gui requires $XDG_DATA_DIRS to contain "/usr/local/share".
-set -x XDG_DATA_DIRS "/usr/local/share:$XDG_DATA_DIRS"
+if not set -q XDG_DATA_DIRS[1]; or test -z "$XDG_DATA_DIRS"
+    set -gx XDG_DATA_DIRS /usr/local/share:/usr/share
+else if not contains -- /usr/local/share (string split : -- $XDG_DATA_DIRS)
+    set -gx XDG_DATA_DIRS /usr/local/share:$XDG_DATA_DIRS
+end
 
 
 set -gx EDITOR nvim
@@ -23,6 +28,7 @@ fish_add_path /opt/homebrew/lib/ruby/gems/4.0.0/bin
 {{ end }}
 
 fish_add_path ~/.cargo/bin
+fish_add_path ~/.opencode/bin
 
 # Load secrets from central store (~/.config/secrets.env), skipping comments/blanks.
 # Every OS with fish: the file is provisioned from 1Password on macOS and Linux,
