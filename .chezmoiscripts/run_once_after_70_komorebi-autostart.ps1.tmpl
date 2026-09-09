@@ -1,0 +1,12 @@
+{{- if eq .chezmoi.os "windows" -}}
+$ErrorActionPreference = 'Stop'
+$PSNativeCommandUseErrorActionPreference = $false
+{{ template "scoop-path.ps1" . }}
+
+# Packages and whkd configuration must be installed before registering autostart.
+komorebic enable-autostart --whkd
+if ($LASTEXITCODE -ne 0) {
+    throw "komorebic enable-autostart failed (exit code $LASTEXITCODE)"
+}
+Write-Host "Komorebi autostart enabled."
+{{- end -}}

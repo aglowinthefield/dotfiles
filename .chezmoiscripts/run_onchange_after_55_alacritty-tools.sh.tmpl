@@ -1,5 +1,6 @@
 {{- if ne .chezmoi.os "windows" -}}
 #!/bin/sh
+{{ template "homebrew-path.sh" . }}
 # Install alacritty-theme and alacritty-font from their own repo.
 #
 # They used to live in this repo, but they are tools rather than dotfiles and

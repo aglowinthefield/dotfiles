@@ -1,5 +1,6 @@
 {{- if ne .chezmoi.os "windows" -}}
 #!/bin/sh
+{{ template "homebrew-path.sh" . }}
 # Rebuild bat's theme cache after the token themes land.
 #
 # bat does not read ~/.config/bat/themes at runtime — it reads a binary cache,

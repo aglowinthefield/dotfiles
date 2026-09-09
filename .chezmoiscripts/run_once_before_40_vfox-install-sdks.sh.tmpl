@@ -1,5 +1,6 @@
 {{- if and (dig "vfox" false .) (ne .chezmoi.os "windows") -}}
 #!/bin/sh
+{{ template "homebrew-path.sh" . }}
 {{ if eq .chezmoi.os "darwin" -}}
 brew install vfox
 {{ end -}}

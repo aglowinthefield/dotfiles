@@ -1,0 +1,73 @@
+{{- if eq .chezmoi.os "windows" -}}
+# Package lists are rendered below, so changes trigger another install pass.
+$ErrorActionPreference = 'Stop'
+# Handle native exit codes explicitly, including Winget's successful no-op codes.
+$PSNativeCommandUseErrorActionPreference = $false
+$script:installFailures = @()
+{{ template "scoop-path.ps1" . }}
+
+function Invoke-PackageCommand {
+    param(
+        [string]$Command,
+        [string[]]$Arguments,
+        [int[]]$SuccessCodes = @(0)
+    )
+    $label = "$Command $($Arguments -join ' ')"
+    Write-Host "==> $label"
+    try {
+        $LASTEXITCODE = 0
+        & $Command @Arguments
+        if ($LASTEXITCODE -notin $SuccessCodes) {
+            throw "exit code $LASTEXITCODE"
+        }
+    } catch {
+        $script:installFailures += "${label}: $($_.Exception.Message)"
+        Write-Warning $script:installFailures[-1]
+    }
+}
+
+# Existing buckets are a no-op; retain errors when listing or adding fails.
+$LASTEXITCODE = 0
+$existingBuckets = @(scoop bucket list)
+if ($LASTEXITCODE -notin @(0, 2)) {
+    throw "Could not list Scoop buckets (exit code $LASTEXITCODE)"
+}
+{{ range .packages.windows.scoop_buckets -}}
+{{ $parts := splitList " " . -}}
+if ('{{ index $parts 0 }}' -notin $existingBuckets.Name) {
+    Invoke-PackageCommand -Command scoop -Arguments @('bucket', 'add'{{ range $parts }}, '{{ . }}'{{ end }})
+}
+{{ end }}
+$scoopPackages = @(
+{{ range .packages.windows.scoop -}}
+    '{{ . }}'
+{{ end -}}
+{{ range .packages.windows.scoop_fonts -}}
+    '{{ . }}'
+{{ end -}}
+)
+# One package per call gives failures a package name and supports safe retries.
+foreach ($package in $scoopPackages) {
+    Invoke-PackageCommand -Command scoop -Arguments @('install', $package)
+}
+
+$wingetPackages = @(
+{{ range .packages.windows.winget -}}
+    '{{ . }}'
+{{ end -}}
+)
+# Serial installs avoid competing MSI installers and unbounded background jobs.
+# 0x8A15002B = no applicable update; 0x8A150061 = already installed.
+foreach ($package in $wingetPackages) {
+    Invoke-PackageCommand -Command winget -Arguments @(
+        'install', '--exact', '--id', $package,
+        '--accept-source-agreements', '--accept-package-agreements', '--disable-interactivity'
+    ) -SuccessCodes @(0, -1978335189, -1978335135)
+}
+
+if ($script:installFailures.Count) {
+    Write-Warning ($script:installFailures -join "`n")
+    # Do not record this run_onchange script as successful after partial failure.
+    exit 1
+}
+{{- end -}}

@@ -1,0 +1,9 @@
+{{- if eq .chezmoi.os "windows" -}}
+$ErrorActionPreference = 'Stop'
+{{ template "scoop-path.ps1" . }}
+# Install Scoop if not installed
+if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
+    Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+    Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
+}
+{{- end -}}

@@ -1,5 +1,6 @@
 {{- if ne .chezmoi.os "windows" -}}
 #!/usr/bin/env bash
+{{ template "homebrew-path.sh" . }}
 set -euo pipefail
 
 OS="{{ .chezmoi.os }}"
