@@ -55,4 +55,29 @@ if command -v kitty >/dev/null 2>&1; then
 	"$HOME/.local/bin/kitty-palettes" ||
 		echo "kitty-palettes: could not convert palettes, kitty keeps its downloaded themes"
 fi
+
+# Same conversion again for ghostty, which reads its own flat format out of
+# ~/.config/ghostty/themes and resolves a theme by file name. It ships 463
+# themes and token is not among them either.
+if command -v ghostty >/dev/null 2>&1; then
+	"$HOME/.local/bin/ghostty-palettes" ||
+		echo "ghostty-palettes: could not convert palettes, ghostty keeps its built-in themes"
+
+	# Converting the palettes only makes them selectable; ghostty still has to be
+	# pointed at the pair. Seeded only when absent, the same bargain as
+	# create_ files elsewhere here: auto/theme.ghostty is where `ghostty-theme`
+	# records a local pick, and this script re-runs on every edit to it, so
+	# writing unconditionally would throw that pick away. An absent file is
+	# meaningful to ghostty-theme — it means the machine default — so the test
+	# is on the file, not on its contents.
+	#
+	# Called by absolute path, like kitty-palettes above: install.sh has just
+	# symlinked it into ~/.local/bin, but chezmoi runs this under sh and only
+	# fish puts that directory on PATH, so a bare name would silently skip on a
+	# new machine.
+	if [ ! -e "$HOME/.config/ghostty/auto/theme.ghostty" ]; then
+		"$HOME/.local/bin/ghostty-theme" auto "Token Light" "Token Dark" ||
+			echo "ghostty-theme: could not set the token pair, ghostty keeps its default"
+	fi
+fi
 {{- end }}
