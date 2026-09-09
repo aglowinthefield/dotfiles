@@ -9,3 +9,20 @@ shell-integration-features = sudo,ssh-env,ssh-terminfo
 # optional — a machine that has not run the installer still starts, on ghostty's
 # own default theme, instead of failing to launch.
 config-file = ?auto/theme.ghostty
+
+# RecMonoLinear ships Regular/Bold/Italic/Bold Italic as separate faces, so
+# the style-specific keys are left unset and ghostty matches them by family.
+# Nerd Font build is used over plain "Rec Mono Linear" so prompt glyphs come
+# from the same face rather than ghostty's bundled symbol fallback.
+font-family = RecMonoLinear Nerd Font Mono
+font-size = 12.5
+
+# ghostty-font writes auto/font.ghostty. It is included *after* the font-family
+# and font-size above, not next to the theme include, because Ghostty takes the
+# last assignment of a single-value key: included earlier, the machine default
+# would win and every pick would appear to do nothing.
+#
+# font.ghostty clears the list with `font-family = ""` before setting its own —
+# font-family is a repeatable key, so a bare second assignment appends a
+# fallback rather than replacing the primary face.
+config-file = ?auto/font.ghostty
