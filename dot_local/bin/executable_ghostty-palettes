@@ -1,10 +1,10 @@
 #!/bin/sh
-# Convert terminal-tools' vendored palettes into Ghostty theme files.
+# Convert Alacritty-format palettes into Ghostty theme files.
 #
 # Sibling of kitty-palettes, and there for the same reason: Ghostty ships 463
 # themes of its own, but not `token` — that palette exists only as the neovim
 # colorscheme's kitty extra, vendored in terminal-tools as TOML for alacritty.
-# This writes each one into ~/.config/ghostty/themes, where Ghostty resolves
+# This writes each palette into ~/.config/ghostty/themes, where Ghostty resolves
 # `theme = Token Dark` by file name and `ghostty +list-themes` lists it as
 # "(user)" alongside the built-ins.
 #
@@ -14,16 +14,30 @@
 # given, and what kitty-palettes produces, so all three terminals name the same
 # palette the same way.
 #
-# Re-run after refreshing terminal-tools' share/colors. Output files are
-# overwritten; nothing else in the themes directory is touched.
+# Sources are the same trio alacritty-theme's theme_files() reads, deduplicated
+# by file name for the same reason: install.sh exposes the vendored palettes
+# through symlinks in colors/, so the two directories overlap. themes/themes is
+# a checkout of alacritty/alacritty-theme, which is where all but 17 of these
+# come from.
+#
+# Re-run after refreshing terminal-tools' share/colors or pulling the themes
+# checkout. Output files are overwritten; nothing else in the directory is
+# touched.
 set -eu
 
 SHARE="${ALACRITTY_TOOLS_SHARE:-$HOME/code/terminal-tools/share}"
-SRC="$SHARE/colors"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/alacritty"
 DEST="${XDG_CONFIG_HOME:-$HOME/.config}/ghostty/themes"
 
-[ -d "$SRC" ] || { echo "ghostty-palettes: no palettes at $SRC" >&2; exit 1; }
 mkdir -p "$DEST"
+
+# Deduplicate the sorted paths by file name, exactly as alacritty-theme does:
+# colors/ is symlinks into share/colors, so every vendored palette appears twice.
+palettes() {
+	ls "$SHARE"/colors/*.toml "$CONFIG_DIR"/colors/*.toml \
+		"$CONFIG_DIR"/themes/themes/*.toml 2>/dev/null |
+		awk '{ n = $0; sub(/.*\//, "", n); if (!seen[n]++) print }'
+}
 
 # token-flint-dark -> "Token Flint Dark". Underscores and hyphens both split;
 # the picker sorts on this, not on the file name.
@@ -31,40 +45,113 @@ pretty() {
 	printf '%s\n' "$1" | tr '_-' '  ' | awk '{for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) substr($i,2)}1'
 }
 
-count=0
-for f in "$SRC"/*.toml; do
+# `tr -cd '[:alnum:]'` deletes the trailing newline along with the spaces, so
+# the printf puts one back: without it every name in the builtin list runs into
+# the next and the whole file is one unmatchable line.
+normalize() { printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | tr -cd '[:alnum:]'; printf '\n'; }
+
+# Ghostty's own themes are audited and 65 of the checkout's names collide with
+# them; a "(user)" file of the same name is duplication, not a new theme, so the
+# built-in wins. Only `(resources)` counts: this script's *own* output lists as
+# `(user)`, and matching that would make every re-run skip everything it wrote
+# the first time.
+BUILTINS=$(mktemp)
+trap 'rm -f "$BUILTINS"' EXIT INT TERM
+if command -v ghostty >/dev/null 2>&1; then
+	ghostty +list-themes --plain 2>/dev/null |
+		sed -n 's/[[:space:]]*(resources)[[:space:]]*$//p' |
+		while IFS= read -r n; do normalize "$n"; done |
+		grep . >"$BUILTINS" || true
+fi
+
+# The vendored palettes are hand-converted and complete. The 156 upstream ones
+# are not: 125 carry no [colors.selection], 88 no [colors.cursor], one no
+# [colors.bright], selection's foreground is spelled `text` in 29 of them and
+# `foreground` in 2, and six set cursors to the symbolic "CellForeground" that
+# Ghostty has no equivalent for. So every key is emitted only when its source
+# holds a real hex, rather than unconditionally — an empty `cursor-color =` is a
+# broken theme file, not a theme missing a cursor colour.
+convert() {
+	awk '
+	function hex(v) { return (v ~ /^#[0-9a-fA-F]{6}$/) ? v : "" }
+	function emit(key, v) { if (v != "") printf "%s = %s\n", key, v }
+	/^\[/ { table = $0; sub(/^\[colors\./, "", table); sub(/\]$/, "", table); next }
+	/^[a-z_]+[ \t]*=/ {
+		key = $1
+		val = $0; sub(/^[^=]*=[ \t]*/, "", val)
+		# The catppuccin themes annotate every colour, quoted hex then a
+		# trailing comment, so the comment is stripped before the quotes are;
+		# the hash inside the value has no space before it and survives. Upper
+		# case is theirs too, folded here so the written files are uniform.
+		sub(/[[:space:]]+#.*$/, "", val)
+		gsub(/['"'"'"]/, "", val)
+		sub(/[[:space:]]*$/, "", val)
+		m[table "." key] = tolower(val)
+	}
+	END {
+		split("black red green yellow blue magenta cyan white", names, " ")
+		# Without a background, a foreground and the eight normal slots there is
+		# no usable theme, so the caller is told rather than handed a stub.
+		if (hex(m["primary.background"]) == "" || hex(m["primary.foreground"]) == "") exit 1
+		for (i = 1; i <= 8; i++) if (hex(m["normal." names[i]]) == "") exit 1
+
+		for (i = 1; i <= 8; i++) printf "palette = %d=%s\n", i - 1, m["normal." names[i]]
+		# doom_one has no [colors.bright]; Ghostty falls back to its own bright
+		# half rather than showing eight empty slots.
+		for (i = 1; i <= 8; i++) emit("palette = " (i + 7), hex(m["bright." names[i]]))
+		printf "\n"
+		emit("background", hex(m["primary.background"]))
+		emit("foreground", hex(m["primary.foreground"]))
+		emit("cursor-color", hex(m["cursor.cursor"]))
+		emit("cursor-text", hex(m["cursor.text"]))
+		emit("selection-background", hex(m["selection.background"]))
+		# Alacritty spells this `text`; the vendored palettes and two upstream
+		# ones use `foreground`. Accept either.
+		emit("selection-foreground", hex(m["selection.text"]) hex(m["selection.foreground"]))
+	}' "$1"
+}
+
+# `palette = N=#hex` is one assignment, not two, so emit() cannot format it and
+# the slot number is glued into the key above. Keep the two spellings in step.
+
+# All three source directories are optional individually — a machine may have
+# the terminal-tools checkout without the alacritty-theme one — but none of them
+# existing means nothing was installed, which is worth an error rather than a
+# cheerful "wrote 0 themes".
+[ -n "$(palettes)" ] || {
+	echo "ghostty-palettes: no palettes found under $SHARE/colors or $CONFIG_DIR" >&2
+	exit 1
+}
+
+wrote=0 skipped_builtin=0 skipped_bad=0
+for f in $(palettes); do
 	[ -e "$f" ] || continue
 	base=${f##*/}; base=${base%.toml}
 	name=$(pretty "$base")
 
+	if grep -qxF "$(normalize "$name")" "$BUILTINS" 2>/dev/null; then
+		skipped_builtin=$((skipped_builtin + 1))
+		continue
+	fi
+
+	body=$(convert "$f") || {
+		printf 'ghostty-palettes: %s has no usable palette, skipped\n' "$base" >&2
+		skipped_bad=$((skipped_bad + 1))
+		continue
+	}
+
 	{
 		printf '# %s\n' "$name"
 		printf '# Generated by ghostty-palettes from %s — edits are overwritten.\n\n' "$f"
-
-		# Alacritty groups colours in [colors.*] tables; Ghostty uses a flat key
-		# space plus a repeatable `palette = N=#hex`. Track the current table and
-		# map on (table, key), the same way kitty-palettes does.
-		awk '
-		/^\[/ { table = $0; sub(/^\[colors\./, "", table); sub(/\]$/, "", table); next }
-		/^[a-z_]+[ \t]*=/ {
-			key = $1
-			val = $0; sub(/^[^=]*=[ \t]*/, "", val); gsub(/['"'"'"]/, "", val)
-			m[table "." key] = val
-		}
-		END {
-			split("black red green yellow blue magenta cyan white", names, " ")
-			for (i = 1; i <= 8; i++) printf "palette = %d=%s\n", i - 1, m["normal." names[i]]
-			for (i = 1; i <= 8; i++) printf "palette = %d=%s\n", i + 7, m["bright." names[i]]
-			printf "\nbackground = %s\n", m["primary.background"]
-			printf "foreground = %s\n", m["primary.foreground"]
-			printf "cursor-color = %s\n", m["cursor.cursor"]
-			printf "cursor-text = %s\n", m["cursor.text"]
-			printf "selection-background = %s\n", m["selection.background"]
-			printf "selection-foreground = %s\n", m["selection.foreground"]
-		}' "$f"
+		printf '%s\n' "$body"
 	} > "$DEST/$name"
 
-	count=$((count + 1))
+	wrote=$((wrote + 1))
 done
 
-printf 'ghostty-palettes: wrote %d themes to %s\n' "$count" "$DEST"
+printf 'ghostty-palettes: wrote %d themes to %s' "$wrote" "$DEST"
+[ "$skipped_builtin" -gt 0 ] && printf ' (%d already built in' "$skipped_builtin"
+[ "$skipped_builtin" -gt 0 ] && [ "$skipped_bad" -gt 0 ] && printf ', %d unusable' "$skipped_bad"
+[ "$skipped_builtin" -eq 0 ] && [ "$skipped_bad" -gt 0 ] && printf ' (%d unusable' "$skipped_bad"
+[ $((skipped_builtin + skipped_bad)) -gt 0 ] && printf ')'
+printf '\n'
