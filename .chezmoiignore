@@ -60,6 +60,14 @@ bin/herdr-ssh-status.py
 .local/share/darkman
 {{- end }}
 .config/nvim/lazy-lock.json
+# herdr writes these itself and stamps each with a HERDR_INTEGRATION_VERSION it
+# bumps on update — they were already 9 (claude) and 8 (codex) at the time of
+# writing, drifting apart per agent. Managed as regular files, every
+# `chezmoi apply` would revert whatever herdr last installed. Same bargain as
+# .claude/settings.json, which is create_private_settings.json for this exact
+# reason; these are ignored outright because nothing here needs to seed them.
+.claude/hooks/herdr-agent-state.sh
+.codex/herdr-agent-state.sh
 # Guidance for agents working on this source repo, not a dotfile. Without this
 # chezmoi would render it to ~/AGENTS.md, where it describes the wrong tree.
 AGENTS.md
