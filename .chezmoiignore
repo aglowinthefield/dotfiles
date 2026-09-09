@@ -49,6 +49,13 @@ bin/herdr-ssh-status.py
 # --config-file-name. Nothing seeds it, so it is ignored rather than managed.
 .config/kitty/current-theme.conf
 
+# ghostty-palettes generates ~/.config/ghostty/themes from terminal-tools'
+# share/colors, the same bargain as .config/kitty/themes above: Ghostty resolves
+# `theme = Token Dark` by file name out of this directory, and the converter
+# rewrites every file in it. Full target path — a bare `themes` would only match
+# ~/themes.
+.config/ghostty/themes
+
 # ── Deliberately unmanaged: this repo is public ──────────────────────────────
 # 1Password's agent.toml has to name SSH items literally, which would publish
 # work identities. Keep it local; if a new machine needs the same key order,
