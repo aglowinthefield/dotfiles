@@ -76,3 +76,13 @@
   whitespace = cr-at-eol
   sshCommand = "C:/Windows/System32/OpenSSH/ssh.exe"
   {{- end }}
+
+{{ if eq .chezmoi.os "darwin" -}}
+# Preserve GitHub CLI authentication for HTTPS consumers.
+[credential "https://github.com"]
+    helper =
+    helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+    helper =
+    helper = !/opt/homebrew/bin/gh auth git-credential
+{{- end }}
