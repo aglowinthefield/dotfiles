@@ -40,6 +40,15 @@ bin/herdr-ssh-status.py
 # would sit unread — and `bat cache --build` is not there to compile them.
 .config/bat
 {{- end }}
+# kitty-palettes generates ~/.config/kitty/themes from terminal-tools'
+# share/colors on every apply, and `kitten themes` writes downloaded themes into
+# the same directory. Managing either set here would fight both writers. Full
+# target path — a bare `themes` would only match ~/themes.
+.config/kitty/themes
+# `kitten themes` writes current-theme.conf whenever a theme is picked without
+# --config-file-name. Nothing seeds it, so it is ignored rather than managed.
+.config/kitty/current-theme.conf
+
 # ── Deliberately unmanaged: this repo is public ──────────────────────────────
 # 1Password's agent.toml has to name SSH items literally, which would publish
 # work identities. Keep it local; if a new machine needs the same key order,

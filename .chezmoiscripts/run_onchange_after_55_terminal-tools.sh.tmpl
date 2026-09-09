@@ -45,4 +45,14 @@ else
 fi
 
 "$repo/install.sh"
+
+# kitty reads a flat .conf where alacritty reads TOML, so the vendored palettes
+# have to be converted before `kitten themes` can list them. kitty's own theme
+# repository has gruvbox, nord, kanagawa and the rest, but not token — that one
+# exists only here. Seeded from the same checkout install.sh just refreshed, so
+# it runs after it and is a skip rather than a failure when kitty is absent.
+if command -v kitty >/dev/null 2>&1; then
+	"$HOME/.local/bin/kitty-palettes" ||
+		echo "kitty-palettes: could not convert palettes, kitty keeps its downloaded themes"
+fi
 {{- end }}

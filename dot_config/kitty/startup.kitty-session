@@ -1,0 +1,14 @@
+# Startup session, loaded via startup_session in kitty.conf.
+#
+# Covers the two alacritty settings kitty has no plain config option for:
+#
+#   working_directory = "/Users/clearing" — launched from the Dock or Finder,
+#   kitty otherwise inherits "/".
+#
+#   title + dynamic_title = false — `launch --title` takes the title away from
+#   the child process, which is the same effect.
+#
+# Ignored when kitty is invoked with a command to run, which is correct: a
+# one-off `kitty some-command` should not be forced into $HOME.
+cd ~
+launch --title "˚❀　.　˚　　✦　　✿　.　˚　. 　 ˚　✿.　˚　　❀"
