@@ -25,10 +25,12 @@
 #
 # Windows imports its theme directly and keeps its font inline below: there is
 # no dark-notify and no POSIX shell there, so nothing would ever generate
-# either file.
+# either file. It reads colors/token-dark.toml — a chezmoi-managed copy of the
+# palette alacritty-tools ships, since that checkout is not there to symlink
+# from — and so stays on dark rather than following the system appearance.
 import = [
 {{- if eq .chezmoi.os "windows" }}
-  "~/AppData/Roaming/alacritty/themes/themes/kanagawa_dragon.toml",
+  "~/AppData/Roaming/alacritty/colors/token-dark.toml",
 {{- else }}
   "~/.config/alacritty/theme.toml",
   "~/.config/alacritty/font.toml",

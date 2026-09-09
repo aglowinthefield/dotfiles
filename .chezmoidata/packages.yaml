@@ -1,6 +1,7 @@
 packages:
   darwin:
     brews:
+    - 'bat'
     - 'chezmoi'
     - 'composer'
     - 'cormacrelf/tap/dark-notify'

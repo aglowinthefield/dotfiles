@@ -1,0 +1,13 @@
+# Targets chezmoi should delete, not just stop managing.
+#
+# Dropping a file from the source tree only makes chezmoi forget it — the copy
+# already applied to a machine stays on disk. For a Neovim plugin spec that is
+# not "unmanaged", it is "still loaded by lazy.nvim", so the old colorscheme
+# would keep installing itself alongside token forever.
+#
+# Paths are target paths relative to $HOME, same as .chezmoiignore.
+
+# Replaced by token (dot_config/nvim/lua/plugins/token.lua). The palettes for
+# kanagawa are still in alacritty-tools and still reachable via `theme pick`;
+# this only removes the editor half.
+.config/nvim/lua/plugins/kanagawa-paper.lua

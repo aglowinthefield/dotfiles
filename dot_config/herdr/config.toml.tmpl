@@ -21,8 +21,13 @@ delivery = "terminal"
 # Never both at once: they report the same token from different sources and
 # would overwrite each other.
 rows = [
-  # #7E9CD8 is kanagawa's crystalBlue, to match the theme set below.
-  ["state_icon", "workspace", { token = "$ssh", fg = "#7E9CD8" }],
+  # This fg has to be a literal hex — herdr's sidebar rows reject ANSI colour
+  # names ("data did not match any variant of RawSidebarToken"), so unlike the
+  # starship prompt it cannot follow the terminal's light/dark switch. #6184a2
+  # is token's dark blue (#81a5c4) walked 40% toward its light blue (#315270):
+  # the point that maximises the *worse* of the two contrasts, 3.85:1 on
+  # #262624 and 3.74:1 on #faf9f5. The old #7E9CD8 managed 2.61:1 on light.
+  ["state_icon", "workspace", { token = "$ssh", fg = "#6184a2" }],
   ["branch", "git_status"],
 ]
 
@@ -46,12 +51,63 @@ type = "plugin_action"
 command = "persiyanov.reviewr.toggle"
 description = "toggle reviewr"
 
+# Vendored from the token colorscheme's own herdr extra so the sidebar matches
+# the editor and the terminal exactly:
+#   ThorstenRhau/token  contrib/herdr/token.toml
+# Do not hand-tune. Re-copy after updating the plugin, alongside the Alacritty
+# palettes in ~/code/alacritty-tools (share/colors/token-{dark,light}.toml).
+#
+# `name = "terminal"` takes the 16 ANSI colours from the host terminal; the
+# custom blocks below only fill in the chrome herdr draws itself, which has no
+# ANSI slot. auto_switch is on so herdr follows the terminal's own light/dark
+# flip — nothing drives it from alacritty-theme.
 [theme]
 name = "terminal"
-# Follow the terminal palette directly.
-auto_switch = false
-dark_name = "kanagawa"
-light_name = "kanagawa-lotus"
+auto_switch = true
+dark_name = "terminal"
+light_name = "terminal"
+
+[theme.custom.dark]
+accent = "#b67059"
+panel_bg = "#1d1d1c"
+sidebar_bg = "#1d1d1c"
+active_row_bg = "#262624"
+selection_bg = "#3a3a37"
+surface0 = "#2f2f2d"
+surface1 = "#383835"
+surface_dim = "#212120"
+overlay0 = "#53524f"
+overlay1 = "#a19c94"
+text = "#c3c0b8"
+subtext0 = "#a6a198"
+mauve = "#b195ca"
+green = "#8fb78c"
+yellow = "#b99d4a"
+red = "#d68585"
+blue = "#81a5c4"
+teal = "#7dbbba"
+peach = "#d6924c"
+
+[theme.custom.light]
+accent = "#975437"
+panel_bg = "#ecebe7"
+sidebar_bg = "#ecebe7"
+active_row_bg = "#faf9f5"
+selection_bg = "#dddcd6"
+surface0 = "#f0efeb"
+surface1 = "#eae9e5"
+surface_dim = "#f6f5f1"
+overlay0 = "#bfbdb8"
+overlay1 = "#504b44"
+text = "#323128"
+subtext0 = "#565141"
+mauve = "#573c72"
+green = "#365a33"
+yellow = "#857238"
+red = "#ad5253"
+blue = "#315270"
+teal = "#185b5b"
+peach = "#613500"
 {{- if eq .chezmoi.os "windows" }}
 
 # Windows has no usable $SHELL for herdr to inherit, so point it at pwsh.

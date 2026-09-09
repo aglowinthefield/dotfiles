@@ -37,7 +37,7 @@
     {
         "defaults": 
         {
-            "colorScheme": "Gruvbox Dark",
+            "colorScheme": "Token Dark",
             "cursorShape": "vintage",
             "font": 
             {
@@ -9741,6 +9741,52 @@
             "selectionBackground": "#FF3399",
             "white": "#B1B1D6",
             "yellow": "#E5B24D"
+        },
+        {
+            "background": "#262624",
+            "black": "#1d1d1c",
+            "blue": "#81a5c4",
+            "brightBlack": "#8a8884",
+            "brightBlue": "#8fb1cb",
+            "brightCyan": "#88c0c0",
+            "brightGreen": "#a0c89d",
+            "brightPurple": "#bea5d4",
+            "brightRed": "#f4906f",
+            "brightWhite": "#c3c0b8",
+            "brightYellow": "#f7c699",
+            "cursorColor": "#c3c0b8",
+            "cyan": "#7dbbba",
+            "foreground": "#c3c0b8",
+            "green": "#8fb78c",
+            "name": "Token Dark",
+            "purple": "#b195ca",
+            "red": "#d68585",
+            "selectionBackground": "#3a3a37",
+            "white": "#a6a198",
+            "yellow": "#b99d4a"
+        },
+        {
+            "background": "#faf9f5",
+            "black": "#323128",
+            "blue": "#315270",
+            "brightBlack": "#504b44",
+            "brightBlue": "#335471",
+            "brightCyan": "#387272",
+            "brightGreen": "#274b24",
+            "brightPurple": "#6b5488",
+            "brightRed": "#863716",
+            "brightWhite": "#faf9f5",
+            "brightYellow": "#6d4717",
+            "cursorColor": "#323128",
+            "cyan": "#185b5b",
+            "foreground": "#323128",
+            "green": "#365a33",
+            "name": "Token Light",
+            "purple": "#573c72",
+            "red": "#ad5253",
+            "selectionBackground": "#dddcd6",
+            "white": "#b4b2ab",
+            "yellow": "#857238"
         },
         {
             "background": "#1A1B26",

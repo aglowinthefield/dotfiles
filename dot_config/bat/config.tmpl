@@ -1,0 +1,27 @@
+# bat configuration (managed by chezmoi). One command-line argument per line.
+
+# The token themes in themes/ are vendored from the neovim colorscheme's own
+# extras (ThorstenRhau/token, contrib/bat), so `bat` matches the editor and the
+# terminal. They are *not* built into bat: run_onchange_56_bat-cache runs
+# `bat cache --build` at apply time, and without that both names below fail to
+# resolve and bat falls back to its built-in default.
+{{ if eq .chezmoi.os "darwin" -}}
+# auto:system reads the macOS appearance directly — the same oracle dark-notify
+# uses to drive `alacritty-theme auto`, so bat flips with everything else.
+#
+# Plain `auto` would ask the *terminal* for its background over OSC 11, and that
+# query goes unanswered whenever output is redirected or tmux swallows it. It
+# does not then fall back to --theme-dark; it falls back to bat's own default,
+# so `bat file | cat` silently comes out Monokai. auto:system has no such hole,
+# but it is macOS-only, hence the split.
+--theme=auto:system
+{{ else -}}
+# auto:system is macOS-only, so Linux asks the terminal over OSC 11. Alacritty
+# answers it, but a redirect or a tmux pane that eats the reply falls back to
+# bat's built-in default rather than to --theme-dark below. If bat starts
+# looking like Monokai in a pipeline, that is this — pass `--theme=dark` for the
+# one-off, don't change this line.
+--theme=auto
+{{ end -}}
+--theme-dark=token-dark
+--theme-light=token-light

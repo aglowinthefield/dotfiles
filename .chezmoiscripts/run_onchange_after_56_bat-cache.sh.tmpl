@@ -1,0 +1,22 @@
+{{- if ne .chezmoi.os "windows" -}}
+#!/bin/sh
+# Rebuild bat's theme cache after the token themes land.
+#
+# bat does not read ~/.config/bat/themes at runtime — it reads a binary cache,
+# and a theme name that is not in that cache does not error: bat silently falls
+# back to its built-in default, so `--theme-dark=token-dark` in the config would
+# look like the theme simply doesn't apply. `bat cache --build` compiles the
+# directory into ~/.cache/bat.
+#
+# Hashed on the themes themselves, not just this script, so re-copying them from
+# a newer release of the colorscheme rebuilds the cache on the next apply.
+# Themes: {{ include "dot_config/bat/themes/token-dark.tmTheme" | sha256sum }} {{ include "dot_config/bat/themes/token-light.tmTheme" | sha256sum }}
+
+set -e
+
+# bat is installed on the laptops and on mochi, but this repo also applies to
+# hosts without it; no bat is a reason to skip, not to fail the apply.
+command -v bat >/dev/null 2>&1 || exit 0
+
+bat cache --build >/dev/null
+{{- end }}

@@ -10,7 +10,7 @@ require("config.keys")
 
 local o = vim.opt
 
-vim.cmd("colorscheme kanagawa-paper")
+vim.cmd("colorscheme token")
 vim.cmd("set number")
 
 o.tabstop = 2

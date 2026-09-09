@@ -1,0 +1,45 @@
+# -----------------------------------------------------------------------------
+# Token (dark) — the Windows copy.
+#
+# On macOS and Linux this directory is filled with symlinks into
+# ~/code/alacritty-tools/share/colors by that repo's install.sh, and
+# alacritty.toml imports the *generated* theme.toml instead, so nothing here is
+# managed by chezmoi — see .chezmoiignore, which drops this whole directory
+# everywhere but Windows.
+#
+# Windows has no POSIX shell to run alacritty-theme and therefore no generated
+# theme.toml, so it imports this file directly and stays on dark. That makes
+# this a second copy of share/colors/token-dark.toml. That file is the source of
+# truth; re-copy from it after updating the colorscheme.
+
+[colors.primary]
+background = '#262624'
+foreground = '#c3c0b8'
+
+[colors.cursor]
+cursor = '#c3c0b8'
+text = '#262624'
+
+[colors.selection]
+background = '#3a3a37'
+foreground = '#c3c0b8'
+
+[colors.normal]
+black = '#1d1d1c'
+red = '#d68585'
+green = '#8fb78c'
+yellow = '#b99d4a'
+blue = '#81a5c4'
+magenta = '#b195ca'
+cyan = '#7dbbba'
+white = '#a6a198'
+
+[colors.bright]
+black = '#8a8884'
+red = '#f4906f'
+green = '#a0c89d'
+yellow = '#f7c699'
+blue = '#8fb1cb'
+magenta = '#bea5d4'
+cyan = '#88c0c0'
+white = '#c3c0b8'
