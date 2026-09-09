@@ -2,7 +2,11 @@
 alias x exit
 alias c clear
 alias vim nvim
-alias cc "claude --dangerously-skip-permissions"
+
+# AI Agents
+alias cc "caveman claude --dangerously-skip-permissions"
+alias co "caveman codex"
+alias cl "claude --dangerously-skip-permissions"
 
 # Alacritty appearance. Bare `theme`/`font` report what is set; `theme pick` and
 # `font pick` browse every installed palette or family with the terminal
