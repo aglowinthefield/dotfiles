@@ -2,7 +2,7 @@
 # Token (dark) — the Windows copy.
 #
 # On macOS and Linux this directory is filled with symlinks into
-# ~/code/alacritty-tools/share/colors by that repo's install.sh, and
+# ~/code/terminal-tools/share/colors by that repo's install.sh, and
 # alacritty.toml imports the *generated* theme.toml instead, so nothing here is
 # managed by chezmoi — see .chezmoiignore, which drops this whole directory
 # everywhere but Windows.

@@ -2,7 +2,7 @@
 --
 -- Pinned to the release tag range rather than main: the plugin regenerates its
 -- contrib/ extras on every release, and the terminal palette in
--- ~/code/alacritty-tools (share/colors/token-{dark,light}.toml) is a manual
+-- ~/code/terminal-tools (share/colors/token-{dark,light}.toml) is a manual
 -- conversion of contrib/kitty. Tracking main would let the editor drift ahead
 -- of the terminal without warning.
 --

@@ -13,22 +13,33 @@
 # alacritty.toml and .tmux.conf expect them, seeds the generated theme.toml and
 # font.toml, and loads the dark-notify agent on macOS.
 #
-# This only re-runs when the script below changes, so `git -C ~/code/alacritty-tools
+# This only re-runs when the script below changes, so `git -C ~/code/terminal-tools
 # pull` is the way to take updates in between.
-# Hash: {{ include ".chezmoiscripts/run_onchange_after_55_alacritty-tools.sh.tmpl" | sha256sum }}
+# Hash: {{ include ".chezmoiscripts/run_onchange_after_55_terminal-tools.sh.tmpl" | sha256sum }}
 
 set -e
 
-repo="$HOME/code/alacritty-tools"
-url="git@github.com:aglowinthefield/alacritty-tools.git"
+repo="$HOME/code/terminal-tools"
+url="git@github.com:aglowinthefield/terminal-tools.git"
+
+# The repo was called alacritty-tools until it grew kitty and ghostty support.
+# Renaming it changes this script, so run_onchange re-runs everywhere; move an
+# existing checkout across rather than cloning a second one and orphaning the
+# first. install.sh below repoints the ~/.local/bin and palette symlinks.
+old="$HOME/code/alacritty-tools"
+if [ -d "$old/.git" ] && [ ! -d "$repo/.git" ]; then
+	echo "terminal-tools: moving $old to $repo"
+	mv "$old" "$repo"
+	git -C "$repo" remote set-url origin "$url"
+fi
 
 if [ -d "$repo/.git" ]; then
 	git -C "$repo" pull --ff-only --quiet 2>/dev/null ||
-		echo "alacritty-tools: could not pull, using the checkout as-is"
+		echo "terminal-tools: could not pull, using the checkout as-is"
 else
 	mkdir -p "$(dirname "$repo")"
 	if ! git clone --quiet "$url" "$repo"; then
-		echo "alacritty-tools: clone failed; unlock SSH access and retry chezmoi apply" >&2
+		echo "terminal-tools: clone failed; unlock SSH access and retry chezmoi apply" >&2
 		exit 1
 	fi
 fi

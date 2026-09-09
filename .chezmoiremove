@@ -8,6 +8,6 @@
 # Paths are target paths relative to $HOME, same as .chezmoiignore.
 
 # Replaced by token (dot_config/nvim/lua/plugins/token.lua). The palettes for
-# kanagawa are still in alacritty-tools and still reachable via `theme pick`;
+# kanagawa are still in terminal-tools and still reachable via `theme pick`;
 # this only removes the editor half.
 .config/nvim/lua/plugins/kanagawa-paper.lua

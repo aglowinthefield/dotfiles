@@ -15,7 +15,7 @@ komorebi.json
 .config/yasb
 .local/bin/sysupdate.ps1
 # The Alacritty palettes are Windows' substitute for the generated theme.toml.
-# Everywhere else alacritty-tools' install.sh fills this directory with
+# Everywhere else terminal-tools' install.sh fills this directory with
 # symlinks into its own share/colors, and a chezmoi-managed regular file would
 # fight those symlinks on every apply. Full target path — a bare `colors` would
 # only match ~/colors.
@@ -34,7 +34,7 @@ komorebi.json
 bin/herdr-ssh-status.py
 # Windows imports its theme directly and keeps its font inline rather than
 # going through the generated theme.toml / font.toml, so it needs neither the
-# per-host font default nor the alacritty-tools checkout that reads it.
+# per-host font default nor the terminal-tools checkout that reads it.
 .config/alacritty/font-default.toml
 # bat is not in the scoop/winget lists, so the config and its two token themes
 # would sit unread — and `bat cache --build` is not there to compile them.
