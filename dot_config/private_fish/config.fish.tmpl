@@ -73,24 +73,3 @@ if test -r ~/.config/portfolio/env
     end
 end
 {{- end }}
-
-{{- if eq .chezmoi.hostname "visitingstar" }}
-
-# Ghostty windows open straight into tmux. Gated on the hostname, not on
-# `.chezmoi.os`, because the other macOS machines and the servers pull this same
-# repo and should keep getting a plain login shell.
-#
-# `$TERM_PROGRAM` keeps this to ghostty: kitty is still used for the cases where
-# a bare shell is wanted, so it must not be wrapped too.
-#
-# This sits at the end of the file so `exec` only happens once the PATH additions
-# and secrets above have been applied — tmux inherits the finished environment.
-if status is-interactive
-    and not set -q TMUX
-    and test "$TERM_PROGRAM" = ghostty
-    and command -q tmux
-    # -A attaches to `main` if it exists and creates it otherwise, so a second
-    # window joins the first rather than piling up sessions.
-    exec tmux new-session -A -s main
-end
-{{- end }}
