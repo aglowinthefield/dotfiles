@@ -1,3 +1,10 @@
+# `create_` on purpose: chezmoi writes this file only when it is absent, so it
+# seeds a new machine and then never touches it again. herdr's TUI writes the
+# file back whenever the theme is changed from inside it, and a plain managed
+# file would have chezmoi apply revert that pick on the next run. Same bargain
+# as ~/.claude/settings.json and secrets.env. Edit here to move the baseline a
+# fresh machine starts from; delete the live file and re-apply to take it.
+
 onboarding = false
 
 [ui]
@@ -54,8 +61,10 @@ description = "toggle reviewr"
 # Vendored from the token colorscheme's own herdr extra so the sidebar matches
 # the editor and the terminal exactly:
 #   ThorstenRhau/token  contrib/herdr/token.toml
-# Do not hand-tune. Re-copy after updating the plugin, alongside the Alacritty
-# palettes in ~/code/alacritty-tools (share/colors/token-{dark,light}.toml).
+# Do not hand-tune the custom blocks. Re-copy after updating the plugin,
+# alongside the palettes in ~/code/alacritty-tools
+# (share/colors/token-{dark,light}.toml). `name`/`auto_switch` above them are
+# fair game — that is what the TUI writes, and why this file is `create_`.
 #
 # `name = "terminal"` takes the 16 ANSI colours from the host terminal; the
 # custom blocks below only fill in the chrome herdr draws itself, which has no
