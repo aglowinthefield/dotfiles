@@ -8,6 +8,15 @@ alias cc "caveman claude --dangerously-skip-permissions"
 alias co "caveman codex"
 alias cl "claude --dangerously-skip-permissions"
 
+# Silk work. Same as `cc`, but under Doppler so the session inherits
+# silk-ops/dev_personal — the Neon MCP server reads NEON_API_KEY from the
+# environment via ${NEON_API_KEY} in its Authorization header, so it only
+# authenticates when launched this way. Kept as its own alias rather than
+# shadowing `claude`: this environment also carries PGPASSWORD,
+# STRIPE_SECRET_KEY and the R2 keys, which have no business in unrelated
+# sessions.
+alias cs "doppler run --no-fallback --project silk-ops --config dev_personal -- caveman claude --dangerously-skip-permissions"
+
 # Alacritty appearance. Bare `theme`/`font` report what is set; `theme pick` and
 # `font pick` browse every installed palette or family with the terminal
 # repainting live as you move.

@@ -65,3 +65,12 @@ function no_music_folders
         end
     end
 end
+
+function hd
+    # Run Hermes in a detached tmux session so the launching pane can close.
+    if tmux has-session -t hermes-dashboard 2>/dev/null
+        echo "Hermes dashboard is already running."
+        return 0
+    end
+    tmux new-session -d -s hermes-dashboard 'hermes dashboard'
+end
