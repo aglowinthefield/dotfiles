@@ -49,7 +49,11 @@ bash_indicator = "bash"
 fish_indicator = "fish"
 
 [directory]
-style = "fg:blue"
+# bright-black, not blue: Kanagawa Paper's ANSI blue is #435965 on ink and
+# #809ba7 on canvas — 2.2:1 either way, the least readable slot in the palette.
+# bright-black (#aca9a4 / #99958a) is 7.0:1 on ink and 2.3:1 on canvas, the best
+# worse-case of any slot that is not already carrying the host accent.
+style = "fg:bright-black"
 format = "[\ue5ff $path]($style) "
 truncation_length = 0
 home_symbol = "home"
