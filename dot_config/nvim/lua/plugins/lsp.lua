@@ -53,7 +53,11 @@ return {
         'docker_language_server',
         'fish_lsp',
         'gopls',
-        'ts_ls',
+        -- vtsls rather than ts_ls: it drives the same tsserver but handles a
+        -- large multi-project workspace better, which is what silk-remix is —
+        -- 6 apps and 6 packages, ~3.6k TS files, with packages/shared imported
+        -- as source rather than as a built package.
+        'vtsls',
       }
     },
     lazy = false,
