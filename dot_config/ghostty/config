@@ -15,7 +15,25 @@ config-file = ?auto/theme.ghostty
 # Nerd Font build is used over plain "Rec Mono Linear" so prompt glyphs come
 # from the same face rather than ghostty's bundled symbol fallback.
 font-family = RecMonoLinear Nerd Font Mono
-font-size = 12.5
+font-size = 14
+
+# Cozy layout and decoration
+window-padding-x = 16
+window-padding-y = 12
+window-padding-balance = true
+adjust-cell-height = 10%
+mouse-hide-while-typing = true
+
+# Steady cursor
+cursor-style = bar
+cursor-style-blink = false
+
+# Pink ghost with a lavender/blue screen. macos-* keys are inert on Linux, so
+# this stays a plain file rather than a template.
+macos-icon = custom-style
+macos-icon-frame = beige
+macos-icon-ghost-color = #f5c2e7
+macos-icon-screen-color = #cba6f7,#89b4fa
 
 # ghostty-font writes auto/font.ghostty. It is included *after* the font-family
 # and font-size above, not next to the theme include, because Ghostty takes the
