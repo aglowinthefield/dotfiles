@@ -123,7 +123,6 @@ packages:
     - 'jq'
     - 'lazydocker'
     - 'lsd'
-    - 'mdcat'
     - 'nano'
     - 'neovim'
     - 'ripgrep'
