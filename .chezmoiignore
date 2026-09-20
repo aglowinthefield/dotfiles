@@ -69,9 +69,6 @@ bin/herdr-ssh-status.py
 .ssh/config.local
 .ssh/config.backup-*
 {{- if ne .chezmoi.hostname "mochi" }}
-# The portfolio feed only runs on mochi, via systemd EnvironmentFile.
-# Nowhere else needs the credentials, so nowhere else provisions them.
-.config/portfolio/env
 # darkman is mochi's light/dark oracle: it has the i3 session worth theming,
 # the laptops already have dark-notify, and tomauty has no desktop at all.
 # Full target paths — a bare `darkman` would only match ~/darkman.
