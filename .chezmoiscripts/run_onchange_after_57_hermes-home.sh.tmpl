@@ -48,4 +48,17 @@ else
 	git -C "$home" checkout --quiet -f -B main origin/main
 	git -C "$home" branch --quiet -u origin/main main
 fi
+
+# kanban board.json default_workdir must be an absolute existing path (the
+# dashboard validator rejects ~), so the repo carries the Mac's /Users/clearing
+# and each other host rewrites it locally. config.yaml uses ~ and ${HOME}, which
+# Hermes expands itself, so only the board manifests need this. Marked
+# assume-unchanged so `git status` stays quiet and a pull never fights it.
+if [ "$HOME" != "/Users/clearing" ]; then
+	for b in "$home"/kanban/boards/*/board.json; do
+		[ -f "$b" ] || continue
+		sed -i.bak "s#/Users/clearing#$HOME#g" "$b" && rm -f "$b.bak"
+		git -C "$home" update-index --assume-unchanged "${b#"$home"/}"
+	done
+fi
 {{- end }}
