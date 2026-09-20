@@ -1,0 +1,51 @@
+{{- if ne .chezmoi.os "windows" -}}
+#!/bin/sh
+{{ template "homebrew-path.sh" . }}
+# Lay the portable half of ~/.hermes over a Hermes install.
+#
+# aglowinthefield/hermes-home is a whitelist repo: custom skills, SOUL, config,
+# hooks, plugins, profile identities, kanban board manifests. Secrets, sessions
+# and caches never enter it; .env is seeded separately by
+# dot_hermes/create_private_dot_env.tmpl from 1Password. That repo is private
+# and this one is public, so the clone needs the SSH key working — on a brand
+# new machine that means 1Password unlocked. Fail so chezmoi retries on the
+# next `chezmoi apply`, the same bargain as terminal-tools.
+#
+# ~/.hermes is usually already populated (the Hermes installer wrote it, or
+# this is an existing machine), so `git clone` into it would refuse. Init in
+# place, fetch, and check out over the top instead — the whitelist means the
+# only files git touches are ones this repo owns.
+#
+# This only re-runs when the script changes; `git -C ~/.hermes pull` is the
+# way to take updates in between.
+# Hash: {{ include ".chezmoiscripts/run_onchange_after_57_hermes-home.sh.tmpl" | sha256sum }}
+
+set -e
+
+home="$HOME/.hermes"
+url="git@github.com:aglowinthefield/hermes-home.git"
+
+if ! command -v hermes >/dev/null 2>&1 && [ ! -x "$home/bin/hermes" ]; then
+	echo "hermes-home: installing Hermes Agent"
+	curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash
+fi
+
+if [ -d "$home/.git" ]; then
+	git -C "$home" pull --ff-only --quiet 2>/dev/null ||
+		echo "hermes-home: could not pull, using the checkout as-is"
+else
+	mkdir -p "$home"
+	git -C "$home" init --quiet -b main
+	git -C "$home" remote add origin "$url"
+	if ! git -C "$home" fetch --quiet origin main; then
+		echo "hermes-home: fetch failed; unlock SSH access and retry chezmoi apply" >&2
+		rm -rf "$home/.git"
+		exit 1
+	fi
+	# Bundled skills seeded by the installer may already sit where the repo
+	# wants its own files (same path, same content); a plain checkout refuses
+	# to overwrite untracked files, so take the repo's version.
+	git -C "$home" checkout --quiet -f -B main origin/main
+	git -C "$home" branch --quiet -u origin/main main
+fi
+{{- end }}

@@ -1,0 +1,35 @@
+# ~/.hermes/.env — secrets ONLY (settings belong in config.yaml).
+#
+# Values come from the 1Password items "hermes-env" (Hermes-specific) and
+# "dotfiles-secrets" (shared LLM keys). The create_ prefix means chezmoi writes
+# this file only when it is absent, so local edits are never clobbered; to pull
+# a rotated key, delete the file and apply again. Anything added here by hand
+# and not to the 1Password item is lost on the next fresh machine.
+#
+# hermes-home (the git side of ~/.hermes) never tracks this file.
+{{- /* onepasswordItemFields, not onepasswordDetailsFields: fields created by
+       `op item create` land in a section, which DetailsFields skips. */}}
+{{- $h := onepasswordItemFields "hermes-env" "Private" }}
+{{- $d := onepasswordDetailsFields "dotfiles-secrets" "Private" }}
+
+ANTHROPIC_API_KEY={{ (index $d "ANTHROPIC_API_KEY").value }}
+DISCORD_BOT_TOKEN={{ (index $h "DISCORD_BOT_TOKEN").value }}
+
+# Discord routing ids are not secrets but are per-account, so they live with the
+# token rather than in the public config.
+DISCORD_ALLOWED_USERS={{ (index $h "DISCORD_ALLOWED_USERS").value }}
+DISCORD_HOME_CHANNEL={{ (index $h "DISCORD_HOME_CHANNEL").value }}
+
+# Terminal / browser tool tuning. Hermes reads these from .env today; move them
+# to config.yaml if a `hermes config set` key appears for them.
+TERMINAL_TIMEOUT=60
+TERMINAL_LIFETIME_SECONDS=300
+TERMINAL_MODAL_IMAGE=nikolaik/python-nodejs:python3.11-nodejs20
+BROWSERBASE_PROXIES=true
+BROWSERBASE_ADVANCED_STEALTH=false
+BROWSER_SESSION_TIMEOUT=300
+BROWSER_INACTIVITY_TIMEOUT=120
+WEB_TOOLS_DEBUG=false
+VISION_TOOLS_DEBUG=false
+MOA_TOOLS_DEBUG=false
+IMAGE_TOOLS_DEBUG=false
