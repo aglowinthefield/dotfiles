@@ -12,8 +12,16 @@
 {{- $h := onepasswordItemFields "hermes-env" "Private" }}
 {{- $d := onepasswordDetailsFields "dotfiles-secrets" "Private" }}
 
-ANTHROPIC_API_KEY={{ (index $d "ANTHROPIC_API_KEY").value }}
+{{- /* Hermes resolves anthropic auth from ("ANTHROPIC_API_KEY", "ANTHROPIC_TOKEN",
+       "CLAUDE_CODE_OAUTH_TOKEN"), first match wins — so an API key here beats the
+       subscription token and silently bills per request. Keep the metered key out
+       unless there is a reason to meter. */}}
+CLAUDE_CODE_OAUTH_TOKEN={{ (index $d "CLAUDE_OAUTH_TOKEN").value }}
 DISCORD_BOT_TOKEN={{ (index $h "DISCORD_BOT_TOKEN").value }}
+
+# Read by the typesafe-tool-gate and typesafe-model-router plugins. Without it both
+# fail open and the agent runs ungated and unrouted.
+TYPESAFE_API_KEY={{ (index $d "TYPESAFE_API_KEY").value }}
 
 # Discord routing ids are not secrets but are per-account, so they live with the
 # token rather than in the public config.
