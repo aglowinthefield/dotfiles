@@ -4,7 +4,14 @@
     # Personal identity (default)
     name = aglowinthefield
     email = 146008217+aglowinthefield@users.noreply.github.com
+    {{- if stat (joinPath .chezmoi.homeDir ".ssh/silk_agent_sign") }}
+    # Unattended agents commit here, and 1Password cannot prompt with nobody at the
+    # keyboard ("failed to fill whole buffer"). A file key registered on GitHub signs
+    # without anyone present.
+    signingkey = ~/.ssh/silk_agent_sign.pub
+    {{- else }}
     signingkey = ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEu7PGIiUMTrrk1KhsAUZPgRNPCfLg5sSsYlNwSo4sho
+    {{- end }}
 
 [commit]
     # Sign commits where a signer is available (1Password on macOS/Windows).
@@ -25,6 +32,8 @@
   allowedSignersFile = ~/.ssh/allowed_signers
   {{- if eq .chezmoi.os "windows" }}
   program = "~/AppData/Local/Microsoft/WindowsApps/op-ssh-sign.exe"
+  {{- else if stat (joinPath .chezmoi.homeDir ".ssh/silk_agent_sign") }}
+  program = ssh-keygen
   {{- else if eq .chezmoi.os "darwin" }}
   program = "/Applications/1Password.app/Contents/MacOS/op-ssh-sign"
   {{- else }}
