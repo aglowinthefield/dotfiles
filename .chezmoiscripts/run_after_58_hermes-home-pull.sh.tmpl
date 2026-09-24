@@ -10,6 +10,11 @@
 home="$HOME/.hermes"
 [ -d "$home/.git" ] || exit 0
 
+# .gitattributes routes cron/jobs.json through this clean filter so the
+# scheduler's per-tick runtime fields never show as changes. Filter drivers live
+# in per-clone config, not in the repo, so register it here on every host.
+git -C "$home" config filter.hermes-cron-state.clean scripts/cron-jobs-clean.sh
+
 git -C "$home" pull --ff-only --quiet ||
 	echo "hermes-home: could not fast-forward, leaving the checkout as-is" >&2
 exit 0
