@@ -1,0 +1,16 @@
+{{- if ne .chezmoi.os "windows" -}}
+#!/bin/sh
+# Keep ~/.hermes current with hermes-home on every apply. 57 only re-runs when its
+# own text changes, so without this each host drifts behind until someone pulls
+# by hand. Runs every apply, so it always shows as `R` in `chezmoi status`.
+#
+# Fast-forward only, and never fails the apply: a diverged or dirty checkout is
+# someone's work in progress, so say so and leave it.
+
+home="$HOME/.hermes"
+[ -d "$home/.git" ] || exit 0
+
+git -C "$home" pull --ff-only --quiet ||
+	echo "hermes-home: could not fast-forward, leaving the checkout as-is" >&2
+exit 0
+{{- end }}

@@ -16,8 +16,8 @@
 # place, fetch, and check out over the top instead — the whitelist means the
 # only files git touches are ones this repo owns.
 #
-# This only re-runs when the script changes; `git -C ~/.hermes pull` is the
-# way to take updates in between.
+# This only re-runs when the script changes; run_after_58_hermes-home-pull
+# takes updates on every apply in between.
 # Hash: {{ include ".chezmoiscripts/run_onchange_after_57_hermes-home.sh.tmpl" | sha256sum }}
 
 set -e
