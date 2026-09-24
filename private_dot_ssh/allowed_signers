@@ -1,2 +1,4 @@
 tom.auty@gmail.com,tom@truemarkets.co ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDZWaYcTGacmcNVCFLCilwP6vxcBFqf2qZXIEvtOoJr8
 146008217+aglowinthefield@users.noreply.github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEu7PGIiUMTrrk1KhsAUZPgRNPCfLg5sSsYlNwSo4sho
+# mochi file key for unattended agent commits (~/.ssh/silk_agent_sign); agents cannot answer a 1Password prompt.
+tom@somewhere.garden,146008217+aglowinthefield@users.noreply.github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIpoIbedeoucS6+QAMMKPnJ+qbVWUn4WhHabvV19zPCF
