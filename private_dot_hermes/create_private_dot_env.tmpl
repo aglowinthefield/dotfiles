@@ -23,6 +23,10 @@
 CLAUDE_CODE_OAUTH_TOKEN={{ (index $d "CLAUDE_OAUTH_TOKEN").value }}
 DISCORD_BOT_TOKEN={{ (index $h "DISCORD_BOT_TOKEN").value }}
 
+# Read by scripts/linear-intake.py under hermes cron, where `op` has no session to
+# fall back on.
+LINEAR_API_KEY={{ onepasswordRead "op://Private/Linear API/credential" }}
+
 # Read by the typesafe-tool-gate and typesafe-model-router plugins. Without it both
 # fail open and the agent runs ungated and unrouted.
 TYPESAFE_API_KEY={{ (index $d "TYPESAFE_API_KEY").value }}
