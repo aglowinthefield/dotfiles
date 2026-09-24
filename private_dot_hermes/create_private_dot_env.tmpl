@@ -10,7 +10,11 @@
 {{- /* onepasswordItemFields, not onepasswordDetailsFields: fields created by
        `op item create` land in a section, which DetailsFields skips. */}}
 {{- $h := onepasswordItemFields "hermes-env" "Private" }}
-{{- $d := onepasswordDetailsFields "dotfiles-secrets" "Private" }}
+{{- /* Keyed by label from the full item, not onepasswordDetailsFields: that keys
+       by field id, and fields added after the item was created get random ids
+       ("emj2hof…") instead of their label, so lookups by name come back nil. */}}
+{{- $d := dict }}
+{{- range (onepassword "dotfiles-secrets" "Private").fields }}{{ $_ := set $d .label . }}{{ end }}
 
 {{- /* Hermes resolves anthropic auth from ("ANTHROPIC_API_KEY", "ANTHROPIC_TOKEN",
        "CLAUDE_CODE_OAUTH_TOKEN"), first match wins — so an API key here beats the
