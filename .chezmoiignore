@@ -69,6 +69,12 @@ bin/herdr-ssh-status.py
 .ssh/config.local
 .ssh/config.backup-*
 {{- if ne .chezmoi.hostname "mochi" }}
+# Hermes profiles read the root ~/.hermes/.env through these symlinks, since
+# Hermes loads only a profile's own .env. mochi is the Hermes host; elsewhere
+# the profiles keep their own files.
+.hermes/profiles
+{{- end }}
+{{- if ne .chezmoi.hostname "mochi" }}
 # darkman is mochi's light/dark oracle: it has the i3 session worth theming,
 # the laptops already have dark-notify, and tomauty has no desktop at all.
 # Full target paths — a bare `darkman` would only match ~/darkman.
