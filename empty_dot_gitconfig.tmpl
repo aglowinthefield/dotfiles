@@ -63,6 +63,14 @@
 [includeIf "hasconfig:remote.*.url:https://github.com/aglowinthefield/**"]
     path = ~/.gitconfig_personal
 
+# ---- Silk identity for silkcx repos ----
+# Keyed on the remote rather than a directory so it holds wherever a silk repo is
+# cloned (~/silk on the Mac and mochi, agent worktrees elsewhere).
+[includeIf "hasconfig:remote.*.url:git@github.com:silkcx/**"]
+    path = ~/.gitconfig_silk
+[includeIf "hasconfig:remote.*.url:https://github.com/silkcx/**"]
+    path = ~/.gitconfig_silk
+
 [init]
     defaultBranch = main
 

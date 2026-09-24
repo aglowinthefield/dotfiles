@@ -1,0 +1,4 @@
+# ~/.gitconfig_silk (managed by chezmoi) — included for silkcx repos by ~/.gitconfig.
+# Silk history is authored under this address, not the GitHub noreply default.
+[user]
+    email = tom@somewhere.garden
