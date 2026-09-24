@@ -31,6 +31,13 @@ LINEAR_API_KEY={{ onepasswordRead "op://Private/Linear API/credential" }}
 # same way LINEAR_API_KEY is, instead of an OAuth login per profile per host.
 SENTRY_ACCESS_TOKEN={{ onepasswordRead "op://Private/Sentry MCP/credential" }}
 
+# Login for the `hermes serve` backend Hermes Desktop connects to over the
+# tailnet (hermes-serve.service on mochi). A non-loopback bind always requires
+# auth; the stable secret keeps desktop sessions valid across restarts.
+HERMES_DASHBOARD_BASIC_AUTH_USERNAME={{ onepasswordRead "op://Private/Hermes Dashboard/username" }}
+HERMES_DASHBOARD_BASIC_AUTH_PASSWORD={{ onepasswordRead "op://Private/Hermes Dashboard/password" }}
+HERMES_DASHBOARD_BASIC_AUTH_SECRET={{ onepasswordRead "op://Private/Hermes Dashboard/signing_secret" }}
+
 # Read by the typesafe-tool-gate and typesafe-model-router plugins. Without it both
 # fail open and the agent runs ungated and unrouted.
 TYPESAFE_API_KEY={{ (index $d "TYPESAFE_API_KEY").value }}
