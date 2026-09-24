@@ -6,7 +6,9 @@
 #
 # herdr installs itself rather than coming from a package manager, so on a
 # machine that has not run its installer this exits quietly instead of failing
-# the apply. Run on every apply so installing herdr later retries setup.
+# the apply. Re-runs when herdr's install path below changes, so installing herdr
+# later retries setup without the script showing in `chezmoi status` forever.
+# herdr: {{ lookPath "herdr" }}
 
 set -e
 
