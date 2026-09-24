@@ -16,5 +16,6 @@ EOF
 set -euo pipefail
 
 sudo pacman -S --needed --noconfirm {{ join " " .packages.arch.pacman }}
+yay -S --needed --noconfirm {{ join " " .packages.arch.aur }}
 {{- end -}}
 

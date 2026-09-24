@@ -116,8 +116,10 @@ packages:
     - 'fd'
     - 'fdupes'
     - 'fish'
+    - 'fnm'
     - 'fzf'
     - 'git'
+    - 'github-cli'
     - 'glow'
     - 'iwd'
     - 'jq'
@@ -135,6 +137,10 @@ packages:
     - 'vi'
     - 'vim'
     - 'yq'
+    # AUR, installed with yay (bootstrapped by run_once_before_00).
+    aur:
+    - '1password-cli'
+    - 'doppler-cli-bin'
 
   windows:
     scoop_buckets:
