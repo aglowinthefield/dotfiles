@@ -1,0 +1,19 @@
+# Outgoing mail for scripts and agents: `msmtp -t < message.eml`.
+# somewhere.garden is hosted on Proton, which takes SMTP submission directly
+# with a per-address SMTP token — no Proton Bridge needed on a headless box.
+# The token is read from secrets.env at send time so this file stays public.
+defaults
+auth           on
+tls            on
+tls_starttls   on
+tls_trust_file system
+logfile        ~/.local/state/msmtp.log
+
+account        proton
+host           smtp.protonmail.ch
+port           587
+from           tom@somewhere.garden
+user           tom@somewhere.garden
+passwordeval   "sed -n 's/^PROTON_SMTP_TOKEN=//p' ~/.config/secrets.env"
+
+account default : proton

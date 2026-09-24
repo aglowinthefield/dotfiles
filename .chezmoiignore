@@ -30,6 +30,8 @@ komorebi.json
 # secrets.env is loaded by config.fish, which is fish-only.
 # Ignoring it here also means Windows needs no 1Password CLI session.
 .config/secrets.env
+# msmtp's passwordeval reads secrets.env, which Windows does not get.
+.config/msmtp
 # Hermes Agent does not run on the Windows box; its .env would only pull a
 # Discord token nothing reads. Full target path, per the note above.
 .hermes/.env
