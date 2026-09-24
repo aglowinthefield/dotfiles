@@ -27,6 +27,10 @@ DISCORD_BOT_TOKEN={{ (index $h "DISCORD_BOT_TOKEN").value }}
 # fall back on.
 LINEAR_API_KEY={{ onepasswordRead "op://Private/Linear API/credential" }}
 
+# Sentry user auth token for the sentry MCP server, shared by every profile the
+# same way LINEAR_API_KEY is, instead of an OAuth login per profile per host.
+SENTRY_ACCESS_TOKEN={{ onepasswordRead "op://Private/Sentry MCP/credential" }}
+
 # Read by the typesafe-tool-gate and typesafe-model-router plugins. Without it both
 # fail open and the agent runs ungated and unrouted.
 TYPESAFE_API_KEY={{ (index $d "TYPESAFE_API_KEY").value }}
