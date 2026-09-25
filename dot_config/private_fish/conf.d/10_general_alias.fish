@@ -4,8 +4,8 @@ alias c clear
 alias vim nvim
 
 # AI Agents
-alias cc "caveman claude --dangerously-skip-permissions"
-alias co "caveman codex"
+alias cc "claude --dangerously-skip-permissions"
+alias co "codex"
 alias cl "claude --dangerously-skip-permissions"
 
 # Silk work. Same as `cc`, but under Doppler so the session inherits
@@ -15,7 +15,7 @@ alias cl "claude --dangerously-skip-permissions"
 # shadowing `claude`: this environment also carries PGPASSWORD,
 # STRIPE_SECRET_KEY and the R2 keys, which have no business in unrelated
 # sessions.
-alias cs "doppler run --no-fallback --project silk-ops --config dev_personal -- caveman claude --dangerously-skip-permissions"
+alias cs "doppler run --no-fallback --project silk-ops --config dev_personal -- claude --dangerously-skip-permissions"
 
 # Alacritty appearance. Bare `theme`/`font` report what is set; `theme pick` and
 # `font pick` browse every installed palette or family with the terminal

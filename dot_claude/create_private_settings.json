@@ -5,8 +5,7 @@
   },
   "enabledPlugins": {
     "cloudflare@cloudflare": true,
-    "obsidian@obsidian-skills": true,
-    "caveman@caveman": true
+    "obsidian@obsidian-skills": true
   },
   "extraKnownMarketplaces": {
     "cloudflare": {
@@ -19,12 +18,6 @@
       "source": {
         "source": "github",
         "repo": "kepano/obsidian-skills"
-      }
-    },
-    "caveman": {
-      "source": {
-        "source": "github",
-        "repo": "JuliusBrussee/caveman"
       }
     }
   },
