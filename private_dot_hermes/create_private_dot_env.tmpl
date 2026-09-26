@@ -31,6 +31,12 @@ LINEAR_API_KEY={{ onepasswordRead "op://Private/Linear API/credential" }}
 # same way LINEAR_API_KEY is, instead of an OAuth login per profile per host.
 SENTRY_ACCESS_TOKEN={{ onepasswordRead "op://Private/Sentry MCP/credential" }}
 
+# Statsig Console API keys for the statsig MCP server. Every profile .env is a
+# symlink to this file, so per-profile access is split by variable name: scribe's
+# config.yaml connects with the write key, every other profile with the read-only one.
+STATSIG_CONSOLE_API_KEY={{ onepasswordRead "op://Private/Statsig Console Read/credential" }}
+STATSIG_CONSOLE_WRITE_API_KEY={{ onepasswordRead "op://Private/Statsig Console Write/credential" }}
+
 # Login for the `hermes serve` backend Hermes Desktop connects to over the
 # tailnet (hermes-serve.service on mochi). A non-loopback bind always requires
 # auth; the stable secret keeps desktop sessions valid across restarts.
