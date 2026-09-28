@@ -38,6 +38,12 @@ return {
     },
   },
   init = function()
+    -- Remember stdin launches (`cmd | nvim -`) so the explorer stays out of them
+    vim.api.nvim_create_autocmd("StdinReadPre", {
+      callback = function()
+        vim.g.snacks_stdin = true
+      end,
+    })
     vim.api.nvim_create_autocmd("User", {
       pattern = "VeryLazy",
       callback = function()
@@ -70,6 +76,15 @@ return {
         Snacks.toggle.inlay_hints():map("<leader>uh")
         Snacks.toggle.indent():map("<leader>ug")
         Snacks.toggle.dim():map("<leader>uD")
+
+        -- Open the explorer sidebar on launch, except when nvim is just the
+        -- $EDITOR for a one-off buffer (git commit/rebase, piped stdin)
+        local ft = vim.bo.filetype
+        if vim.g.snacks_stdin or ft == "gitcommit" or ft == "gitrebase" then
+          return
+        end
+        -- enter = false keeps the cursor in the file/dashboard, not the sidebar
+        Snacks.explorer({ enter = false })
       end,
     })
   end,
