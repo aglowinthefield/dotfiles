@@ -62,7 +62,10 @@ return {
         'eslint',
         -- className completion/hover; attaches only where a tailwind config exists
         'tailwindcss',
-      }
+      },
+      -- ts_ls got installed at some point and was being auto-enabled alongside
+      -- vtsls, doubling tsserver memory and every diagnostic/completion
+      automatic_enable = { exclude = { 'ts_ls' } },
     },
     lazy = false,
     dependencies = {
