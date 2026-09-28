@@ -58,9 +58,19 @@ $wingetPackages = @(
 )
 # Serial installs avoid competing MSI installers and unbounded background jobs.
 # 0x8A15002B = no applicable update; 0x8A150061 = already installed.
+#
+# --no-upgrade is load-bearing. Without it `winget install` on a package that is
+# already present tries to UPGRADE it, which is not what provisioning means —
+# upgrades are sysupdate.ps1's job, on the schedule 60_register-sysupdate-task
+# registers. Worse, an upgrade of a machine-scope package needs elevation, and
+# chezmoi apply runs unelevated: Visual Studio's bootstrapper failed on
+# "Access to the path ... \Microsoft Visual Studio\Installer is denied", then
+# hung forever in Watson crash reporting rather than exiting, so every apply
+# blocked here with no output. With --no-upgrade an installed package returns
+# 0x8A150061 in about a second and the loop moves on.
 foreach ($package in $wingetPackages) {
     Invoke-PackageCommand -Command winget -Arguments @(
-        'install', '--exact', '--id', $package,
+        'install', '--exact', '--id', $package, '--no-upgrade',
         '--accept-source-agreements', '--accept-package-agreements', '--disable-interactivity'
     ) -SuccessCodes @(0, -1978335189, -1978335135)
 }
