@@ -1,7 +1,29 @@
 return {
   "stevearc/conform.nvim",
-  event = { "BufWritePre" },
   cmd = { "ConformInfo" },
+  init = function()
+    -- Owns save-time formatting instead of conform's format_on_save so the
+    -- order is fixed: prettier, then ESLint's fix-all — the same two steps, in
+    -- the same order, as silk-remix's lint-staged. Two separate BufWritePre
+    -- hooks would run in registration order, which lazy-loading makes
+    -- unpredictable.
+    vim.api.nvim_create_autocmd("BufWritePre", {
+      group = vim.api.nvim_create_augroup("format_on_save", { clear = true }),
+      callback = function(args)
+        local conform = require("conform")
+        -- Only auto-format filetypes that have a formatter configured
+        if #conform.list_formatters(args.buf) > 0 then
+          conform.format({ bufnr = args.buf, timeout_ms = 3000, lsp_format = "fallback" })
+        end
+        -- Buffer-local command lspconfig defines when the eslint server attaches
+        if vim.api.nvim_buf_get_commands(args.buf, {}).LspEslintFixAll then
+          vim.api.nvim_buf_call(args.buf, function()
+            vim.cmd("LspEslintFixAll")
+          end)
+        end
+      end,
+    })
+  end,
   keys = {
     {
       "<leader>cf",
@@ -30,13 +52,6 @@ return {
       css = { "prettier" },
       html = { "prettier" },
     },
-    format_on_save = function(bufnr)
-      -- Only auto-format filetypes that have a formatter configured
-      if #require("conform").list_formatters(bufnr) == 0 then
-        return
-      end
-      return { timeout_ms = 3000, lsp_format = "fallback" }
-    end,
     formatters = {
       csharpier = {
         command = "dotnet-csharpier",

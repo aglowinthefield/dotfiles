@@ -4,6 +4,7 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       { "williamboman/mason.nvim" },
+      "b0o/SchemaStore.nvim",
     },
 
     config = function()
@@ -25,6 +26,46 @@ return {
         root_markers = { 'buildServer.json', 'Package.swift', '*.xcodeproj', '.git' },
       })
       vim.lsp.enable('sourcekit')
+
+      -- tailwindcss registers `**/` file watchers from the workspace root. With
+      -- no inotifywait installed, nvim falls back to walking the tree itself,
+      -- and in silk-remix that includes .worktrees (60-odd checkouts, ~400k
+      -- files): nvim sat at 100% CPU for as long as the server ran. The
+      -- watchers only pick up tailwind config/lockfile edits, which
+      -- :LspRestart covers. The exclude also stops the server creating a
+      -- project for every worktree's copy of tailwind.config.ts.
+      vim.lsp.config('tailwindcss', {
+        capabilities = {
+          workspace = { didChangeWatchedFiles = { dynamicRegistration = false } },
+        },
+        settings = {
+          tailwindCSS = {
+            files = {
+              exclude = { '**/.git/**', '**/node_modules/**', '**/.hg/**', '**/.svn/**', '**/.worktrees/**' },
+            },
+          },
+        },
+      })
+
+      -- SchemaStore catalog: package.json, tsconfig, .eslintrc, eas.json,
+      -- GitHub workflows, compose files, ... validated and completed by name
+      vim.lsp.config('jsonls', {
+        settings = {
+          json = {
+            schemas = require('schemastore').json.schemas(),
+            validate = { enable = true },
+          },
+        },
+      })
+      vim.lsp.config('yamlls', {
+        settings = {
+          yaml = {
+            -- yamlls's own catalog fetch would duplicate SchemaStore.nvim's
+            schemaStore = { enable = false, url = "" },
+            schemas = require('schemastore').yaml.schemas(),
+          },
+        },
+      })
 
       local ft_lsp_group = vim.api.nvim_create_augroup("ft_lsp_group", { clear = true })
       vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
@@ -60,8 +101,10 @@ return {
         'vtsls',
         -- Surfaces lint errors in-editor instead of only in CI
         'eslint',
-        -- className completion/hover; attaches only where a tailwind config exists
+        -- className completion/hover (see the tailwindcss config above)
         'tailwindcss',
+        'jsonls',
+        'yamlls',
       },
       -- ts_ls got installed at some point and was being auto-enabled alongside
       -- vtsls, doubling tsserver memory and every diagnostic/completion
