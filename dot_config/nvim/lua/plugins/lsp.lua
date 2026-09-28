@@ -58,6 +58,10 @@ return {
         -- 6 apps and 6 packages, ~3.6k TS files, with packages/shared imported
         -- as source rather than as a built package.
         'vtsls',
+        -- Surfaces lint errors in-editor instead of only in CI
+        'eslint',
+        -- className completion/hover; attaches only where a tailwind config exists
+        'tailwindcss',
       }
     },
     lazy = false,

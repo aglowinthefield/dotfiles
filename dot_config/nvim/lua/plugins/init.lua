@@ -9,7 +9,10 @@ return {
     build = ":TSUpdate",
     config = function()
       -- main branch dropped ensure_installed from setup(); install explicitly
-      local wanted = { "typescript", "tsx", "javascript", "yaml", "c_sharp", "swift", "rust" }
+      local wanted = {
+        "typescript", "tsx", "javascript", "yaml", "c_sharp", "swift", "rust",
+        "css", "json", "bash", "sql",
+      }
       local installed = require("nvim-treesitter").get_installed()
       local missing = vim.tbl_filter(function(lang)
         return not vim.list_contains(installed, lang)
@@ -17,6 +20,16 @@ return {
       if #missing > 0 then
         require("nvim-treesitter").install(missing)
       end
+
+      -- main branch doesn't start highlighting either; without this most
+      -- filetypes fall back to regex syntax and TS-aware plugins (ts-comments)
+      -- see no tree. pcall because not every filetype has a parser.
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("treesitter_start", { clear = true }),
+        callback = function(args)
+          pcall(vim.treesitter.start, args.buf)
+        end,
+      })
     end,
   },
   {
@@ -49,6 +62,8 @@ return {
     end,
   },
   { "j-hui/fidget.nvim", event = "LspAttach", opts = {} },
+  -- Makes gc use {/* */} inside JSX instead of the file's // commentstring
+  { "folke/ts-comments.nvim", event = "VeryLazy", opts = {} },
   { "brenoprata10/nvim-highlight-colors", event = { "BufReadPre", "BufNewFile" }, opts = {} },
   {
     'alker0/chezmoi.vim',
