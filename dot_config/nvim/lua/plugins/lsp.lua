@@ -27,13 +27,16 @@ return {
       })
       vim.lsp.enable('sourcekit')
 
-      -- tailwindcss registers `**/` file watchers from the workspace root. With
-      -- no inotifywait installed, nvim falls back to walking the tree itself,
-      -- and in silk-remix that includes .worktrees (60-odd checkouts, ~400k
-      -- files): nvim sat at 100% CPU for as long as the server ran. The
-      -- watchers only pick up tailwind config/lockfile edits, which
-      -- :LspRestart covers. The exclude also stops the server creating a
-      -- project for every worktree's copy of tailwind.config.ts.
+      -- tailwindcss registers `**/` file watchers from the workspace root, and
+      -- in silk-remix that root holds ~1.2M directories (node_modules plus
+      -- .worktrees' 60-odd checkouts). Without inotifywait, nvim walked the
+      -- tree itself and sat at 100% CPU; with it, `inotifywait --recursive`
+      -- blows through fs.inotify.max_user_watches (524288), errors, and eats
+      -- the user's watch budget while it tries. nvim only excludes .git, so
+      -- there's no way to scope it. The watchers only pick up tailwind
+      -- config/lockfile edits, which :LspRestart covers. The exclude also
+      -- stops the server creating a project for every worktree's copy of
+      -- tailwind.config.ts.
       vim.lsp.config('tailwindcss', {
         capabilities = {
           workspace = { didChangeWatchedFiles = { dynamicRegistration = false } },
