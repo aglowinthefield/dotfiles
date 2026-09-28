@@ -1,3 +1,17 @@
 [data]
     # Set to true to enable vfox (version manager for Node, Bun, Java)
     vfox = {{ dig "vfox" false . }}
+{{- if eq .chezmoi.os "windows" }}
+
+# chezmoi's built-in default for .ps1 is `pwsh -NoLogo -File`, which loads
+# ~/Documents/PowerShell/Microsoft.PowerShell_profile.ps1 — scripts have no
+# business depending on the interactive profile, and this one actively breaks
+# them: it imports CompletionPredictor, whose ICommandPredictor subsystem blocks
+# forever when there is no console host and stdout is redirected. The symptom is
+# the worst kind: `chezmoi apply` hangs on the first run_once_before script with
+# no output, no error and no timeout. Verified with
+# `pwsh -NoLogo -File x.ps1` (hangs) vs `pwsh -NoLogo -NoProfile -File x.ps1`.
+[interpreters.ps1]
+    command = "pwsh"
+    args = ["-NoLogo", "-NoProfile", "-File"]
+{{- end }}
