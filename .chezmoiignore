@@ -44,6 +44,17 @@ bin/herdr-ssh-status.py
 # bat is not in the scoop/winget lists, so the config and its two token themes
 # would sit unread — and `bat cache --build` is not there to compile them.
 .config/bat
+# Neither kitty nor ghostty runs on Windows, and the two palette generators
+# that feed them are #!/bin/sh. All four would sit unread; the themes/ dirs
+# below are already ignored for a different reason. Full target paths, per the
+# note above — a bare `kitty` would only match ~/kitty.
+.config/kitty
+.config/ghostty
+.local/bin/kitty-palettes
+.local/bin/ghostty-palettes
+# .hermes/.env is ignored just above and .hermes/profiles is mochi-only, so
+# without this an empty ~/.hermes is all that would land here.
+.hermes
 {{- end }}
 # kitty-palettes generates ~/.config/kitty/themes from terminal-tools'
 # share/colors on every apply, and `kitten themes` writes downloaded themes into
