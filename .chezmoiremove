@@ -11,3 +11,7 @@
 # kanagawa are still in terminal-tools and still reachable via `theme pick`;
 # this only removes the editor half.
 .config/nvim/lua/plugins/kanagawa-paper.lua
+
+# Kanagawa Paper took the editor back from token (1dddc55); the token spec was
+# the half of that migration it left behind, still loading at startup unused.
+.config/nvim/lua/plugins/token.lua

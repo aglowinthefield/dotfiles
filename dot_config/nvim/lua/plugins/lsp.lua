@@ -3,8 +3,12 @@ return {
     'neovim/nvim-lspconfig',
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
-      { "williamboman/mason.nvim" },
+      { "mason-org/mason.nvim" },
       "b0o/SchemaStore.nvim",
+      -- blink registers its client capabilities (snippets, resolve, ...) in
+      -- vim.lsp.config('*') when it loads; it must load before any server
+      -- starts, or those servers run without them
+      "saghen/blink.cmp",
     },
 
     config = function()
@@ -80,8 +84,14 @@ return {
         end
       })
 
+      -- Full multi-line messages only under the cursor's line; a short inline
+      -- hint everywhere else, so a file full of lint warnings doesn't push the
+      -- code around
       vim.diagnostic.config({
-        virtual_lines = true,
+        virtual_lines = { current_line = true },
+        virtual_text = { current_line = false, spacing = 2 },
+        severity_sort = true,
+        float = { border = 'rounded', source = true },
       })
 
     end
@@ -120,81 +130,57 @@ return {
     }
   },
   {
-    'hrsh7th/nvim-cmp',
-    lazy = true,
-    -- load cmp on InsertEnter
-    event = "InsertEnter",
-    -- these dependencies will only be loaded when cmp loads
-    -- dependencies are always lazy-loaded unless specified otherwise
-    dependencies = {
-      "hrsh7th/cmp-nvim-lsp",
-      "hrsh7th/cmp-buffer",
-      "hrsh7th/cmp-path",
-      "hrsh7th/cmp-cmdline",
-      "onsails/lspkind.nvim",
+    -- blink.cmp over nvim-cmp: native vim.snippet expansion (nvim-cmp had no
+    -- snippet engine wired, so LSP snippets inserted raw), buffer/path sources
+    -- in insert mode, built-in signature help, and a Rust fuzzy matcher. On
+    -- nvim 0.11+ it registers its LSP capabilities itself via vim.lsp.config('*'),
+    -- which is why nvim-lspconfig and roslyn list it as a dependency.
+    'saghen/blink.cmp',
+    -- 1.* pulls the prebuilt fuzzy-matcher binary for the release tag
+    version = '1.*',
+    event = { "InsertEnter", "CmdlineEnter" },
+    ---@module 'blink.cmp'
+    ---@type blink.cmp.Config
+    opts = {
+      keymap = {
+        preset = 'none',
+        ['<C-space>'] = { 'show', 'show_documentation', 'hide_documentation' },
+        ['<C-e>'] = { 'hide', 'fallback' },
+        ['<CR>'] = { 'accept', 'fallback' },
+        -- Tab accepts, taking the first item when nothing is selected — the
+        -- behaviour the old nvim-cmp mapping had
+        ['<Tab>'] = { 'select_and_accept', 'snippet_forward', 'fallback' },
+        ['<S-Tab>'] = { 'snippet_backward', 'fallback' },
+        ['<C-n>'] = { 'select_next', 'fallback' },
+        ['<C-p>'] = { 'select_prev', 'fallback' },
+        ['<Down>'] = { 'select_next', 'fallback' },
+        ['<Up>'] = { 'select_prev', 'fallback' },
+        ['<C-b>'] = { 'scroll_documentation_up', 'fallback' },
+        ['<C-f>'] = { 'scroll_documentation_down', 'fallback' },
+        ['<C-k>'] = { 'show_signature', 'hide_signature', 'fallback' },
+      },
+      completion = {
+        -- Pre-highlight the first item so <CR> accepts it, like select = true did
+        list = { selection = { preselect = true, auto_insert = false } },
+        menu = { border = 'rounded', scrollbar = true },
+        documentation = {
+          auto_show = true,
+          auto_show_delay_ms = 200,
+          window = { border = 'rounded', max_width = 60, max_height = 20 },
+        },
+      },
+      signature = { enabled = true, window = { border = 'rounded' } },
+      sources = {
+        default = { 'lsp', 'path', 'snippets', 'buffer' },
+      },
+      cmdline = {
+        keymap = {
+          preset = 'cmdline',
+          ['<Tab>'] = { 'show_and_insert', 'select_and_accept' },
+        },
+        completion = { menu = { auto_show = true } },
+      },
+      fuzzy = { implementation = 'prefer_rust_with_warning' },
     },
-    config = function()
-      local cmp = require('cmp')
-      cmp.setup({
-        window = {
-          completion = cmp.config.window.bordered({
-            border = "rounded",
-            scrollbar = true,
-          }),
-          documentation = cmp.config.window.bordered({
-            border = "rounded",
-            max_width = 60,
-            max_height = 20,
-          }),
-        },
-        formatting = {
-          fields = { "kind", "abbr", "menu" },
-          format = function(entry, vim_item)
-            local kind = require("lspkind").cmp_format({
-              mode = "symbol_text",
-              maxwidth = 50,
-              ellipsis_char = "…",
-            })(entry, vim_item)
-            -- Split "Icon Text" into separate kind and abbr fields
-            local strings = vim.split(kind.kind, "%s", { trimempty = true })
-            kind.kind = " " .. (strings[1] or "") .. " "
-            kind.menu = "  (" .. (strings[2] or "") .. ")"
-            return kind
-          end,
-        },
-        mapping = cmp.mapping.preset.insert({
-          ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-          ['<C-f>'] = cmp.mapping.scroll_docs(4),
-          ['<C-Space>'] = cmp.mapping.complete(),
-          ['<C-e>'] = cmp.mapping.abort(),
-          ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
-          ["<Tab>"] = cmp.mapping(function(fallback)
-            -- This little snippet will confirm with tab, and if no entry is selected, will confirm the first item
-            if cmp.visible() then
-              local entry = cmp.get_selected_entry()
-              if not entry then
-                cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
-              end
-              cmp.confirm()
-            else
-              fallback()
-            end
-          end, { "i", "s", "c", }),
-        }),
-
-        sources = cmp.config.sources({
-          { name = 'nvim_lsp' }
-        }),
-      })
-      cmp.setup.cmdline(':', {
-        mapping = cmp.mapping.preset.cmdline(),
-        sources = cmp.config.sources({
-          { name = 'path' }
-        }, {
-          { name = 'cmdline' }
-        }),
-        matching = { disallow_symbol_nonprefix_matching = false }
-      })
-    end
-  }
+  },
 }

@@ -3,7 +3,8 @@ return {
     "seblyng/roslyn.nvim",
     ft = "cs",
     dependencies = {
-      "hrsh7th/nvim-cmp",
+      -- load blink first so roslyn starts with its client capabilities
+      "saghen/blink.cmp",
     },
     opts = {
       broad_search = true,

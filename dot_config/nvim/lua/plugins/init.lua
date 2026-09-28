@@ -27,7 +27,19 @@ return {
       vim.api.nvim_create_autocmd("FileType", {
         group = vim.api.nvim_create_augroup("treesitter_start", { clear = true }),
         callback = function(args)
-          pcall(vim.treesitter.start, args.buf)
+          if not pcall(vim.treesitter.start, args.buf) then
+            return
+          end
+          -- Syntax-aware folds, all open on load (zc/zo/za to use them)
+          vim.wo[0][0].foldmethod = "expr"
+          vim.wo[0][0].foldexpr = "v:lua.vim.treesitter.foldexpr()"
+          vim.wo[0][0].foldlevel = 99
+          -- Treesitter indent only where the parser ships an indents query;
+          -- elsewhere keep the filetype's own indentexpr
+          local lang = vim.treesitter.language.get_lang(vim.bo[args.buf].filetype)
+          if lang and vim.treesitter.query.get(lang, "indents") then
+            vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
         end,
       })
     end,
