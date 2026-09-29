@@ -27,3 +27,26 @@ If the sweep found nothing, say so plainly and name what you checked.
 Ask which items to act on, with a multi-select question listing each item. Do the chosen ones. Commits, pushes, posting to external services, and deletions still need the user's explicit say-so, as they would outside this skill.
 
 Finish by stating what you did, what is still open, and where each open item now lives, so nothing important remains only in this conversation.
+
+## 4. Banner
+
+The last thing you print is this tally, in a fenced code block so the columns hold. Nothing comes after it.
+
+```
+╭─ ✦ wrapped up ✦ ──────────────────────────╮
+│  📋 Linear    2   SIL-468, SIL-469          │
+│  🧠 Memory    1   pr-body-hook-file-order   │
+│  📄 Repo docs 0                             │
+│  🔀 PRs       0                             │
+├─────────────────────────────────────────────┤
+│  ⏳ Still open 5 → Linear ×4, PR #2604 ×1   │
+│  🗑  Dropped   5                             │
+╰─────────────────────────────────────────────╯
+   nothing left only in this chat. bye! 👋
+```
+
+- The export rows count only what this wrap-up actually wrote in step 3: issues filed, memory files saved, repo docs changed, PR descriptions or comments updated. Name the issue tracker the project uses. Always show those four rows, zeros included; add a row only for another destination that received something, such as a handoff doc.
+- List the IDs, file names or PR numbers after each count. If they do not fit, show the first two and `+N more`.
+- **Still open** counts the open items from your closing statement, grouped by where each now lives. **Dropped** counts the Safe to drop items.
+- Count an emoji as two columns when padding, so the right border lines up.
+- If an item still lives only in this conversation, replace the sign-off line with `⚠ N item(s) still only in this chat` and name them above the banner.
