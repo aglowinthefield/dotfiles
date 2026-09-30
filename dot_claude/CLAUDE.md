@@ -8,3 +8,6 @@
   golf or cramming logic into one place.
 - Do not add speculative generality: no config knobs, extension points, or modes the task doesn't
   need.
+
+## ClearStack
+- Apply the `clear-mode` skill to every non-trivial engineering task. Repo instructions still win where they are stricter.
