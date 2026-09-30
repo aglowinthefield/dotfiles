@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# Runs the Node pinned by the nearest .nvmrc or .node-version, resolved when the
+# command runs rather than when the shell started. Agent harnesses build their own
+# PATH (Hermes puts its bundled Node first), so a PATH set up at shell start does
+# not follow a repo's pin. Without a pin file this hands off to the next node on PATH.
+set -euo pipefail
+
+name=${0##*/}
+shim_dir=$(cd "${0%/*}" && pwd)
+
+dir=$PWD
+pin_file=
+while [[ -z $pin_file ]]; do
+  for f in .nvmrc .node-version; do
+    [[ -f $dir/$f ]] && pin_file=$dir/$f && break
+  done
+  [[ $dir == / ]] && break
+  dir=${dir%/*}
+  dir=${dir:-/}
+done
+
+if [[ -n $pin_file ]]; then
+  pin=$(tr -d ' \t\r\n' < "$pin_file")
+  pin=${pin#v}
+  versions=${FNM_DIR:-$HOME/.local/share/fnm}/node-versions
+  found=()
+  shopt -s nullglob
+  for d in "$versions/v$pin" "$versions/v$pin".*; do
+    if [[ -d $d ]]; then found+=("$d"); fi
+  done
+  shopt -u nullglob
+  if (( ${#found[@]} == 0 )); then
+    echo "node-shim: $pin_file pins Node $pin, which fnm has not installed. Run: fnm install $pin" >&2
+    exit 1
+  fi
+  bin=$(printf '%s\n' "${found[@]}" | sort -V | tail -n 1)
+  bin=$bin/installation/bin
+  PATH=$bin:$PATH exec "$bin/$name" "$@"
+fi
+
+IFS=: read -ra path_dirs <<< "$PATH"
+for p in "${path_dirs[@]}"; do
+  [[ -z $p || $p -ef $shim_dir ]] && continue
+  [[ -x $p/$name ]] && exec "$p/$name" "$@"
+done
+echo "node-shim: no $name on PATH besides this shim" >&2
+exit 127
