@@ -34,6 +34,9 @@ return {
     },
   },
   opts = {
+    -- Missing optional binaries are a no-op; actual formatter errors still show.
+    -- list_formatters() already filters unavailable tools in the save hook.
+    notify_no_formatters = false,
     -- The prettier entries mirror, language for language, the per-language
     -- block in silk-remix's tracked .vscode/settings.json. That repo gates
     -- `npm run format:check` in CI and runs prettier through lint-staged on
@@ -41,6 +44,7 @@ return {
     -- pre-commit hook — the diff you read stops being the diff you commit.
     formatters_by_ft = {
       cs = { "csharpier" },
+      lua = { "stylua" },
       javascript = { "prettier" },
       javascriptreact = { "prettier" },
       typescript = { "prettier" },
@@ -63,19 +67,8 @@ return {
       -- repo that happens to contain a .json file. conform resolves the binary
       -- from node_modules first, so the project's pinned version wins.
       prettier = {
-        condition = function(_, ctx)
-          return vim.fs.find({
-            ".prettierrc",
-            ".prettierrc.json",
-            ".prettierrc.yaml",
-            ".prettierrc.yml",
-            ".prettierrc.js",
-            ".prettierrc.cjs",
-            ".prettierrc.mjs",
-            "prettier.config.js",
-            "prettier.config.cjs",
-            "prettier.config.mjs",
-          }, { path = ctx.dirname, upward = true })[1] ~= nil
+        condition = function(self, ctx)
+          return require("config.formatting").prettier_condition(self, ctx)
         end,
       },
     },

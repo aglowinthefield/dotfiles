@@ -37,11 +37,18 @@ return {
       end
 
       -- C# / .NET debugging with netcoredbg
-      dap.adapters.coreclr = {
-        type = "executable",
-        command = "netcoredbg",
-        args = { "--interpreter=vscode" },
-      }
+      dap.adapters.coreclr = function(callback)
+        if not require("config.runtime").has("netcoredbg") then
+          vim.notify("netcoredbg is missing. Install it on PATH for .NET debugging; see :checkhealth dotfiles.", vim.log.levels.WARN)
+          -- Do not invoke the resolver callback: no adapter/session is spawned.
+          return
+        end
+        callback({
+          type = "executable",
+          command = "netcoredbg",
+          args = { "--interpreter=vscode" },
+        })
+      end
 
       dap.configurations.cs = {
         {

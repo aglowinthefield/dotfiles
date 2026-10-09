@@ -40,7 +40,13 @@ return {
       { "<leader>gd", function() Snacks.picker.git_diff() end, desc = "Git Diff (Hunks)" },
       { "<leader>gf", function() Snacks.picker.git_log_file() end, desc = "Git Log File" },
       { "<leader>gB", function() Snacks.gitbrowse() end, desc = "Git Browse", mode = { "n", "v" } },
-      { "<leader>gg", function() Snacks.lazygit() end, desc = "Lazygit" },
+      { "<leader>gg", function()
+        if not require("config.runtime").has("lazygit") then
+          vim.notify("lazygit is missing. Install it on PATH to use <leader>gg; see :checkhealth dotfiles.", vim.log.levels.WARN)
+          return
+        end
+        Snacks.lazygit()
+      end, desc = "Lazygit" },
 
       -- GitHub
       { "<leader>gi", function() Snacks.picker.gh_issue() end, desc = "GitHub Issues (open)" },

@@ -106,3 +106,6 @@ bin/herdr-ssh-status.py
 # Guidance for agents working on this source repo, not a dotfile. Without this
 # chezmoi would render it to ~/AGENTS.md, where it describes the wrong tree.
 AGENTS.md
+# Neovim verification and setup notes belong to the source repo, not $HOME.
+tests/nvim
+docs/neovim.md
