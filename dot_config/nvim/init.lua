@@ -10,7 +10,8 @@ require("config.keys")
 
 local o = vim.opt
 
-vim.cmd("colorscheme kanagawa-paper-ink")
+o.background = "dark"
+vim.cmd("colorscheme horizon")
 vim.cmd("set number")
 
 o.tabstop = 2

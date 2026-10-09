@@ -33,7 +33,7 @@ require("lazy").setup({
   },
   -- Configure any other settings here. See the documentation for more details.
   -- colorscheme that will be used when installing plugins.
-  install = { colorscheme = { "kanagawa-paper-ink" } },
+  install = { colorscheme = { "horizon" } },
   -- Daily startup updates handle fetching; avoid a second periodic checker.
   checker = { enabled = false },
   change_detection = {
