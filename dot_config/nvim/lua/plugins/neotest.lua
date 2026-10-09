@@ -8,8 +8,18 @@ return {
     "nvim-neotest/neotest-jest",
   },
   keys = {
-    { "<leader>tt", function() require("neotest").run.run() end, desc = "Run Nearest Test" },
-    { "<leader>tf", function() require("neotest").run.run(vim.fn.expand("%")) end, desc = "Run File Tests" },
+    -- node:test files (everything outside apps/mobile) go to config.node-test;
+    -- jest files stay with neotest
+    { "<leader>tt", function()
+      local nt = require("config.node-test")
+      if nt.applies(vim.api.nvim_buf_get_name(0)) then return nt.run_nearest() end
+      require("neotest").run.run()
+    end, desc = "Run Nearest Test" },
+    { "<leader>tf", function()
+      local nt = require("config.node-test")
+      if nt.applies(vim.api.nvim_buf_get_name(0)) then return nt.run_file() end
+      require("neotest").run.run(vim.fn.expand("%"))
+    end, desc = "Run File Tests" },
     { "<leader>tT", function()
       -- Use the adapter's project root so it works from monorepo roots
       local neotest = require("neotest")
@@ -23,7 +33,11 @@ return {
       end
       neotest.run.run(vim.uv.cwd())
     end, desc = "Run All Tests" },
-    { "<leader>tl", function() require("neotest").run.run_last() end, desc = "Run Last Test" },
+    { "<leader>tl", function()
+      local nt = require("config.node-test")
+      if nt.applies(vim.api.nvim_buf_get_name(0)) and nt.run_last() then return end
+      require("neotest").run.run_last()
+    end, desc = "Run Last Test" },
     { "<leader>ts", function() require("neotest").summary.toggle() end, desc = "Toggle Summary" },
     { "<leader>to", function() require("neotest").output.open({ enter_on_open = true }) end, desc = "Show Output" },
     { "<leader>tO", function() require("neotest").output_panel.toggle() end, desc = "Toggle Output Panel" },
