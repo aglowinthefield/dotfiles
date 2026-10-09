@@ -22,6 +22,9 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = ","
 vim.g.maplocalleader = "\\"
 
+-- Register startup hooks before lazy.nvim emits VeryLazy.
+require("config.auto-update").setup()
+
 -- Setup lazy.nvim
 require("lazy").setup({
   spec = {
@@ -31,8 +34,8 @@ require("lazy").setup({
   -- Configure any other settings here. See the documentation for more details.
   -- colorscheme that will be used when installing plugins.
   install = { colorscheme = { "kanagawa-paper-ink" } },
-  -- automatically check for plugin updates
-  checker = { enabled = true },
+  -- Daily startup updates handle fetching; avoid a second periodic checker.
+  checker = { enabled = false },
   change_detection = {
     enabled = true,
     notify = false
