@@ -25,8 +25,10 @@ format = """
 right_format = ""
 
 [username]
-style_user = "fg:green"
-style_root = "fg:green"
+# Blue because no host accent uses it, so the user never blends into the host
+# colour (mochi's green accent swallowed the old green username).
+style_user = "fg:blue"
+style_root = "fg:blue"
 format = "[$user ]($style)"
 show_always = true
 
@@ -51,11 +53,10 @@ bash_indicator = "bash"
 fish_indicator = "fish"
 
 [directory]
-# bright-black, not blue: Kanagawa Paper's ANSI blue is #435965 on ink and
-# #809ba7 on canvas — 2.2:1 either way, the least readable slot in the palette.
-# bright-black (#aca9a4 / #99958a) is 7.0:1 on ink and 2.3:1 on canvas, the best
-# worse-case of any slot that is not already carrying the host accent.
-style = "fg:bright-black"
+# The terminal's own foreground: the one colour every theme guarantees reads on
+# its background. bright-black was picked for Kanagawa Paper and sat at 4.3:1
+# on Token Dark, the dimmest thing on the line.
+style = ""
 format = "[\ue5ff $path]($style) "
 truncation_length = 0
 home_symbol = "home"
