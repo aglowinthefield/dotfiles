@@ -24,7 +24,7 @@
   "theme": "dark",
   "tui": "fullscreen",
   "verbose": false,
-  "remoteControlAtStartup": true,
+  "remoteControlAtStartup": false,
   "isolatePeerMachines": false,
   "agentPushNotifEnabled": true,
   "skipDangerousModePermissionPrompt": true,
@@ -32,6 +32,21 @@
     "soft_deny": [
       "$defaults",
       "Bash(ssh mochi:*) commands that sync/rotate credentials or modify systemd timers without confirmation"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$HOME/.agents/hooks/pr-body-humanized.sh\"",
+            "timeout": 10,
+            "statusMessage": "PR body humanizer gate"
+          }
+        ]
+      }
     ]
   }
 }
