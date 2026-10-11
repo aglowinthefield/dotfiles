@@ -11,6 +11,11 @@ if status is-interactive
     end
 end
 
+# Node shims pick the Node pinned by the nearest .nvmrc each time node runs, so
+# agents started from this shell follow a repo's pin after they change directory.
+# After fnm env, which prepends its own directory.
+fish_add_path --global --move --path ~/.local/share/node-shims
+
 set -x XDG_CONFIG_HOME $HOME/.config
 # czkawka_gui requires $XDG_DATA_DIRS to contain "/usr/local/share".
 if not set -q XDG_DATA_DIRS[1]; or test -z "$XDG_DATA_DIRS"
@@ -63,5 +68,18 @@ set -g -x SYSTEMD_EDITOR vim
 if test -S $XDG_RUNTIME_DIR/ssh-agent.socket
     set -g -x SSH_AUTH_SOCK $XDG_RUNTIME_DIR/ssh-agent.socket
     ssh-add -l | grep -q op_signing_key; or ssh-add ~/.ssh/op_signing_key 2>/dev/null
+end
+{{- end }}
+{{- if eq .chezmoi.hostname "mochi" }}
+
+# Tint the background dark red in SSH sessions so a mochi shell can't pass for
+# a local one. OSC 11 sets the background and OSC 111 hands it back to the
+# terminal's theme; both make it through tmux and herdr to Ghostty. The tint is
+# fixed, not theme-aware, so it reads poorly with a light theme.
+if status is-interactive; and set -q SSH_CONNECTION
+    printf '\e]11;#300\a'
+    function __mochi_untint --on-event fish_exit
+        printf '\e]111\a'
+    end
 end
 {{- end }}
