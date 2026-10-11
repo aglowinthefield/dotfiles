@@ -3,7 +3,7 @@
 [user]
     # Personal identity (default)
     name = aglowinthefield
-    email = 146008217+aglowinthefield@users.noreply.github.com
+    email = tom@somewhere.garden
     {{- if stat (joinPath .chezmoi.homeDir ".ssh/silk_agent_sign") }}
     # Unattended agents commit here, and 1Password cannot prompt with nobody at the
     # keyboard ("failed to fill whole buffer"). A file key registered on GitHub signs
@@ -40,15 +40,7 @@
   program = ssh-keygen
   {{- end }}
 
-# ---- Never use HTTPS for GitHub ----
-# Rewrites any https://github.com/... URL to SSH, including remotes created by
-# `git clone`, submodules, and tooling that hardcodes HTTPS. GitHub refuses
-# password auth, so an HTTPS remote can fetch but never push — this makes that
-# failure impossible to walk into. Requires an SSH key for github.com on the
-# machine; drop this block if one is ever without.
 [url "git@github.com:"]
-    insteadOf = https://github.com/
-    insteadOf = git://github.com/
 
 # ---- Work identity overrides below ----
 # Any repo under ~/dev/ will use ~/.gitconfig_work
@@ -62,14 +54,6 @@
     path = ~/.gitconfig_personal
 [includeIf "hasconfig:remote.*.url:https://github.com/aglowinthefield/**"]
     path = ~/.gitconfig_personal
-
-# ---- Silk identity for silkcx repos ----
-# Keyed on the remote rather than a directory so it holds wherever a silk repo is
-# cloned (~/silk on the Mac and mochi, agent worktrees elsewhere).
-[includeIf "hasconfig:remote.*.url:git@github.com:silkcx/**"]
-    path = ~/.gitconfig_silk
-[includeIf "hasconfig:remote.*.url:https://github.com/silkcx/**"]
-    path = ~/.gitconfig_silk
 
 [init]
     defaultBranch = main
@@ -103,3 +87,11 @@
     helper =
     helper = !/opt/homebrew/bin/gh auth git-credential
 {{- end }}
+
+[filter "lfs"]
+    required = true
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+[url "https://github.com/"]
+    insteadOf = git@github.com:

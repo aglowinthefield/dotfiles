@@ -11,11 +11,6 @@ if status is-interactive
     end
 end
 
-# Node shims pick the Node pinned by the nearest .nvmrc each time node runs, so
-# agents started from this shell follow a repo's pin after they change directory.
-# After fnm env, which prepends its own directory.
-fish_add_path --global --move --path ~/.local/share/node-shims
-
 set -x XDG_CONFIG_HOME $HOME/.config
 # czkawka_gui requires $XDG_DATA_DIRS to contain "/usr/local/share".
 if not set -q XDG_DATA_DIRS[1]; or test -z "$XDG_DATA_DIRS"
