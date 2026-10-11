@@ -10,10 +10,21 @@
 home="$HOME/.hermes"
 [ -d "$home/.git" ] || exit 0
 
-# .gitattributes routes cron/jobs.json through this clean filter so the
-# scheduler's per-tick runtime fields never show as changes. Filter drivers live
-# in per-clone config, not in the repo, so register it here on every host.
-git -C "$home" config filter.hermes-cron-state.clean scripts/cron-jobs-clean.sh
+# .gitattributes routes the config.yaml files through hermes-local-keys so each
+# host keeps its own pet and dashboard theme. Filter drivers live in per-clone
+# config, not in the repo, so register it here on every host. The driver comes
+# from chezmoi rather than the repo so it is on disk before the first pull that
+# needs it.
+filter="$HOME/.local/bin/hermes-local-keys"
+git -C "$home" config filter.hermes-local-keys.clean "'$filter' clean %f"
+git -C "$home" config filter.hermes-local-keys.smudge "'$filter' smudge %f"
+git -C "$home" config --unset filter.hermes-cron-state.clean 2>/dev/null
+
+# Seed the host's values before pulling: git skips the clean filter on files
+# whose stat matches the index, and smudge can only restore what clean stashed.
+(cd "$home" && for f in config.yaml profiles/*/config.yaml; do
+	[ -f "$f" ] && "$filter" clean "$f" <"$f" >/dev/null
+done) || echo "hermes-home: could not stash per-host config keys" >&2
 
 git -C "$home" pull --ff-only --quiet ||
 	echo "hermes-home: could not fast-forward, leaving the checkout as-is" >&2
