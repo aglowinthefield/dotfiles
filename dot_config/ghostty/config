@@ -2,7 +2,11 @@
 # https://ghostty.zerebos.com
 
 shell-integration = fish
-shell-integration-features = sudo,ssh-env,ssh-terminfo
+# ssh-terminfo installs xterm-ghostty on the remote, so the session can keep
+# TERM=xterm-ghostty. ssh-env would downgrade TERM to xterm-256color, and
+# remote tools that check TERM (Hermes pet graphics, for one) would then fall
+# back to half-block rendering.
+shell-integration-features = sudo,no-ssh-env,ssh-terminfo
 
 # The palette is generated, not fixed: auto/theme.ghostty is written by the
 # theme switcher, so it is included rather than inlined here. The `?` makes it

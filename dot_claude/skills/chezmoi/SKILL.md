@@ -54,18 +54,16 @@ drops every comment. Merge changes into templates by hand and show the user the 
 
 ## Claude Code config
 
-`~/.claude/settings.json` is written by tooling at runtime — the caveman CLI rewrites
-its `hooks` block, herdr installs its own session hook — so it is managed as
-`create_private_settings.json`: chezmoi seeds a new machine and then never touches it
-again, the same bargain as `secrets.env`. To change the baseline, edit the source; the
-live file on an existing machine stays under the tools' ownership.
+`~/.claude/settings.json` is written by tooling at runtime — herdr installs its own
+session hook — so it is managed as `create_private_settings.json`: chezmoi seeds a new
+machine and then never touches it again, the same bargain as `secrets.env`. To change
+the baseline, edit the source; the live file on an existing machine stays under the
+tools' ownership.
 
-The source deliberately omits three things. `env.ANTHROPIC_BASE_URL` points at a
-localhost caveman proxy and would break Claude Code on any machine not running one.
-The `hooks` block hardcodes absolute fnm node paths (one of them PID-scoped) that are
-valid on exactly one machine. `autoMode.environment` names the Tailscale IP, mochi's
-login user and a list of credential file paths — **the repo is public**. Let the tools
-regenerate all three locally.
+The source deliberately omits two things. The `hooks` block hardcodes absolute fnm node
+paths (one of them PID-scoped) that are valid on exactly one machine.
+`autoMode.environment` names the Tailscale IP, mochi's login user and a list of
+credential file paths — **the repo is public**. Let the tools regenerate both locally.
 
 `~/.claude/settings.local.json` is machine-local by design and stays unmanaged.
 
