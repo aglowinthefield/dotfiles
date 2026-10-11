@@ -9,7 +9,7 @@
 # near-black background, so hosts are told apart by hue slot, not by tint).
 {{ $accent := dict
   "tomauty"      "yellow"
-  "mochi"        "red"
+  "mochi"        "green"
   "visitingstar" "cyan"
   "default"      "purple" -}}
 {{ $c := get $accent .chezmoi.hostname | default (get $accent "default") }}

@@ -72,14 +72,34 @@ end
 {{- end }}
 {{- if eq .chezmoi.hostname "mochi" }}
 
-# Tint the background dark red in SSH sessions so a mochi shell can't pass for
-# a local one. OSC 11 sets the background and OSC 111 hands it back to the
-# terminal's theme; both make it through tmux and herdr to Ghostty. The tint is
-# fixed, not theme-aware, so it reads poorly with a light theme.
-if status is-interactive; and set -q SSH_CONNECTION
-    printf '\e]11;#300\a'
-    function __mochi_untint --on-event fish_exit
-        printf '\e]111\a'
-    end
-end
+# On hold (2026-10-11): reading the colour back through herdr and tmux is
+# untested. Uncomment to try it again.
+#
+# Warm the background a shade in SSH sessions so a mochi shell can't pass for a
+# local one. The terminal theme flips between light and dark, so no fixed colour
+# works: ask the terminal for its current background (OSC 11 query) and nudge
+# that toward red. No reply within 0.2s means leave it alone. OSC 111 hands the
+# background back to the theme on exit. Run `mochi-tint` after the theme flips.
+# function mochi-tint
+#     set -l saved (stty -g </dev/tty)
+#     stty -echo -icanon min 0 time 2 </dev/tty
+#     # Reset first so a second run reads the theme's colour, not the last tint.
+#     printf '\e]111\a\e]11;?\a' >/dev/tty
+#     set -l reply (dd bs=64 count=1 </dev/tty 2>/dev/null | string collect)
+#     stty $saved </dev/tty
+#     set -l rgb (string match -rg 'rgb:(\w\w)\w*/(\w\w)\w*/(\w\w)' -- $reply); or return
+#     set -l r (math 0x$rgb[1]); set -l g (math 0x$rgb[2]); set -l b (math 0x$rgb[3])
+#     if test (math "$r + $g + $b") -lt 384
+#         set r (math "min($r + 10, 255)")
+#     else
+#         set g (math "max($g - 6, 0)"); set b (math "max($b - 6, 0)")
+#     end
+#     printf '\e]11;#%02x%02x%02x\a' $r $g $b
+# end
+# if status is-interactive; and set -q SSH_CONNECTION
+#     mochi-tint
+#     function __mochi_untint --on-event fish_exit
+#         printf '\e]111\a'
+#     end
+# end
 {{- end }}
