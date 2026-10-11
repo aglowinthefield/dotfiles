@@ -33,5 +33,20 @@
       "$defaults",
       "Bash(ssh mochi:*) commands that sync/rotate credentials or modify systemd timers without confirmation"
     ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$HOME/.agents/hooks/dispatch-pr-body.py\"",
+            "timeout": 10,
+            "statusMessage": "PR body humanizer gate"
+          }
+        ]
+      }
+    ]
   }
 }

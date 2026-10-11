@@ -191,6 +191,7 @@ packages:
     - 'nodejs'
     - 'perl'
     - 'psmux'
+    - 'python'
     - 'qbittorrent'
     - 'ripgrep'
     - 'ruby'
