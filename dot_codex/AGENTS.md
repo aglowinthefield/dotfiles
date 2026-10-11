@@ -10,6 +10,11 @@
 - Preserve existing script shebangs and repository-required languages (for example, POSIX sh); this preference does not require converting project scripts to fish.
 - Match commands executed by tools to the tool's actual shell, or explicitly invoke fish when validating fish snippets.
 
+## Dotfiles (chezmoi)
+- Source is `~/.local/share/chezmoi`, a public repo. Edit the source and apply; never copy live files back into it.
+- Never run `chezmoi re-add`, or `chezmoi add` on a file chezmoi already manages. A live file that differs from the source is usually stale, not newer, and `re-add` flattens `.tmpl` conditionals. "Push my chezmoi changes" means committing what is already in the source, not syncing live files into it. A blanket sync on 2026-10-11 undid two weeks of commits.
+- Show `chezmoi diff` before any apply, and treat every removal as possible data loss.
+
 ## Less code
 - Prefer the change that leaves less code to maintain: reuse an existing seam, delete dead or superseded paths, and justify every new file, abstraction, option, or dependency. A diff that removes more than it adds is a good sign. "Less" means fewer concepts to maintain, not line-count golf or cramming logic into one place.
 - Do not add speculative generality: no config knobs, extension points, or modes the task doesn't need.
