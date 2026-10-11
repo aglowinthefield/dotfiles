@@ -31,9 +31,11 @@ format = "[$user ]($style)"
 show_always = true
 
 [hostname]
-# Show the host name only over SSH, so the local machine stays clean.
+# Show the host name only over SSH, so the local machine stays clean. Filled
+# rather than plain text: a coloured word was easy to miss, and a block in the
+# host's accent makes "this is mochi" obvious from across the room.
 ssh_only = true
-format = "[$hostname ](fg:{{ $c }})"
+format = "[ $hostname ](bold fg:black bg:{{ $c }}) "
 
 [git_branch]
 symbol = "\ue725 "
