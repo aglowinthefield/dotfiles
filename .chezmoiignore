@@ -107,5 +107,8 @@ bin/herdr-ssh-status.py
 # chezmoi would render it to ~/AGENTS.md, where it describes the wrong tree.
 AGENTS.md
 # Neovim verification and setup notes belong to the source repo, not $HOME.
-tests/nvim
-docs/neovim.md
+# Ignore the directories too, or chezmoi creates empty ~/docs and ~/tests.
+tests
+tests/**
+docs
+docs/**
