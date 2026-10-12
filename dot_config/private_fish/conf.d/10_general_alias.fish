@@ -17,11 +17,9 @@ alias cl "claude --dangerously-skip-permissions"
 # sessions.
 alias cs "doppler run --no-fallback --project silk-ops --config dev_personal -- claude --dangerously-skip-permissions"
 
-# Alacritty appearance. Bare `theme`/`font` report what is set; `theme pick` and
-# `font pick` browse every installed palette or family with the terminal
-# repainting live as you move.
-alias theme alacritty-theme
-alias font alacritty-font
+# Ghostty appearance tools from terminal-tools.
+alias theme ghostty-theme
+alias font ghostty-font
 
 # Fish
 alias sf "source ~/.config/fish/config.fish"

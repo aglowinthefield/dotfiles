@@ -52,11 +52,13 @@ claude = [
 # plugins. prefix+d rather than a bare ctrl+alt chord, which Alacritty on macOS
 # swallows unless Option is mapped to Alt. reviewr's own settings live in
 # plugins/config/persiyanov.reviewr/config.toml.
+{{- if ne .chezmoi.os "windows" }}
 [[keys.command]]
 key = "prefix+d"
 type = "plugin_action"
 command = "persiyanov.reviewr.toggle"
 description = "toggle reviewr"
+{{- end }}
 
 # Kanagawa Paper — chrome colours derived from the colorscheme's own palette so
 # the sidebar matches the editor and the terminal exactly:

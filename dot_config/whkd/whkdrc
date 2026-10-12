@@ -76,4 +76,4 @@ alt + shift + oem_1     : komorebic cycle-layout previous  # oem_1 is ;
 alt + shift + oem_7     : komorebic cycle-layout next      # oem_7 is "
 
 # Launch terminal
-alt + return            : start "" "alacritty"
+alt + return            : start "" "wt.exe"

@@ -42,8 +42,23 @@ $scoopPackages = @(
 {{ range .packages.windows.scoop -}}
     '{{ . }}'
 {{ end -}}
+{{ if dig "windowsDesktop" false . -}}
+{{ range .packages.windows.desktop_scoop -}}
+    '{{ . }}'
+{{ end -}}
+{{ end -}}
+{{ if dig "windowsExtraApps" false . -}}
+{{ range .packages.windows.extra_scoop -}}
+    '{{ . }}'
+{{ end -}}
+{{ end -}}
+{{ range .packages.windows.essential_fonts -}}
+    '{{ . }}'
+{{ end -}}
+{{ if dig "windowsExtraFonts" false . -}}
 {{ range .packages.windows.scoop_fonts -}}
     '{{ . }}'
+{{ end -}}
 {{ end -}}
 )
 # One package per call gives failures a package name and supports safe retries.
@@ -54,6 +69,11 @@ foreach ($package in $scoopPackages) {
 $wingetPackages = @(
 {{ range .packages.windows.winget -}}
     '{{ . }}'
+{{ end -}}
+{{ if dig "windowsExtraApps" false . -}}
+{{ range .packages.windows.extra_winget -}}
+    '{{ . }}'
+{{ end -}}
 {{ end -}}
 )
 # Serial installs avoid competing MSI installers and unbounded background jobs.

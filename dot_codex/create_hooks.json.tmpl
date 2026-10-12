@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": {{ if eq .chezmoi.os "windows" }}{{ printf "python \"%s/.agents/hooks/dispatch-pr-body.py\"" .chezmoi.homeDir | toJson }}{{ else }}"python3 \"$HOME/.agents/hooks/dispatch-pr-body.py\""{{ end }},
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

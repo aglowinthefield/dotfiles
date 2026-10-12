@@ -1,6 +1,11 @@
 [data]
     # Set to true to enable vfox (version manager for Node, Bun, Java)
     vfox = {{ dig "vfox" false . }}
+    # Optional Windows desktop: komorebi, whkd, and yasb.
+    windowsDesktop = {{ dig "windowsDesktop" false . }}
+    # Extra applications and the full Nerd Font collection are opt-in.
+    windowsExtraApps = {{ dig "windowsExtraApps" false . }}
+    windowsExtraFonts = {{ dig "windowsExtraFonts" false . }}
 {{- if eq .chezmoi.os "windows" }}
 
 # chezmoi's built-in default for .ps1 is `pwsh -NoLogo -File`, which loads
@@ -12,6 +17,11 @@
 # no output, no error and no timeout. Verified with
 # `pwsh -NoLogo -File x.ps1` (hangs) vs `pwsh -NoLogo -NoProfile -File x.ps1`.
 [interpreters.ps1]
-    command = "pwsh"
+    command = "C:/Program Files/PowerShell/7/pwsh.exe"
     args = ["-NoLogo", "-NoProfile", "-File"]
+
+# Bootstrap cmd runs first and can install pwsh on a fresh machine.
+[interpreters.cmd]
+    command = "cmd.exe"
+    args = ["/d", "/c"]
 {{- end }}

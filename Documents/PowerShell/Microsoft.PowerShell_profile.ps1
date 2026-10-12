@@ -22,7 +22,7 @@ if (-not [Console]::IsInputRedirected -and -not [Console]::IsOutputRedirected) {
 
     # Modules
     Import-Module CompletionPredictor -ErrorAction SilentlyContinue
-    Import-Module PSFzf -ErrorAction SilentlyContinue
+    $hasPSFzf = [bool](Import-Module PSFzf -PassThru -ErrorAction SilentlyContinue)
 
     # PSReadLine — fish-like experience
     Set-PSReadLineOption -EditMode Vi
@@ -42,17 +42,21 @@ if (-not [Console]::IsInputRedirected -and -not [Console]::IsOutputRedirected) {
     Set-PSReadLineKeyHandler -Key Ctrl+u -Function BackwardDeleteLine
 
     # PSFzf — fuzzy history & file search
-    Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+    if ($hasPSFzf) {
+        Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+    }
 
-    # Prompt. Cache generated with:
-    #   starship init powershell --print-full-init > ~/.config/starship/init.ps1
-    # Regenerate after updating starship.
-    . "$HOME/.config/starship/init.ps1"
+    # Initialize the installed Starship version; no generated cache is needed.
+    if (Get-Command starship -ErrorAction SilentlyContinue) {
+        Invoke-Expression (& starship init powershell | Out-String)
+    }
 
     function Invoke-Starship-TransientFunction {
         "~ "
     }
-    Enable-TransientPrompt
+    if (Get-Command Enable-TransientPrompt -ErrorAction SilentlyContinue) {
+        Enable-TransientPrompt
+    }
 }
 
 # ---------------------------------------------------------------------------
@@ -78,4 +82,3 @@ function cc { claude --dangerously-skip-permissions @args }
 function gs { git status }
 function gd { git diff }
 function gdc { git diff --cached }
-if (-not (Get-Command poetry -ErrorAction Ignore)) { $env:Path += ";C:\Users\clearing\AppData\Roaming\Python\Scripts" }

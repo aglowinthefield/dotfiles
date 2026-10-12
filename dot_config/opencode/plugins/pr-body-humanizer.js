@@ -3,8 +3,9 @@ import { spawnSync } from 'node:child_process';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
-// Call the Python dispatcher directly: Windows has python3 (scoop) but no sh.
+// Call Python directly; Windows uses its standard executable name.
 const SCRIPT = join(homedir(), '.agents', 'hooks', 'dispatch-pr-body.py');
+const PYTHON = process.platform === 'win32' ? 'python' : 'python3';
 
 export const PrBodyHumanizer = async () => ({
   'tool.execute.before': async (input, output) => {
@@ -12,7 +13,7 @@ export const PrBodyHumanizer = async () => ({
     const command = output?.args?.command;
     if (typeof command !== 'string' || !command.includes('gh')) return;
 
-    const res = spawnSync('python3', [SCRIPT], {
+    const res = spawnSync(PYTHON, [SCRIPT], {
       input: JSON.stringify({
         cwd: output?.args?.workdir || process.cwd(),
         hook_event_name: 'pre_tool_call',

@@ -1,4 +1,4 @@
-{{- if eq .chezmoi.os "windows" -}}
+{{- if and (eq .chezmoi.os "windows") (dig "windowsDesktop" false .) -}}
 $ErrorActionPreference = 'Stop'
 $PSNativeCommandUseErrorActionPreference = $false
 {{ template "scoop-path.ps1" . }}

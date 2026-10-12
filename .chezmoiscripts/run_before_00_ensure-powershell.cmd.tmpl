@@ -1,0 +1,5 @@
+{{- if eq .chezmoi.os "windows" -}}
+@echo off
+powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "{{ .chezmoi.sourceDir }}/.chezmoitemplates/ensure-powershell.ps1"
+exit /b %errorlevel%
+{{- end -}}

@@ -1,0 +1,9 @@
+#!/bin/sh
+# darkman passes its appearance as the first argument.
+case "$1" in
+  dark) palette='Token Dark' ;;
+  light) palette='Token Light' ;;
+  *) exit 1 ;;
+esac
+command -v ghostty >/dev/null 2>&1 || exit 0
+exec "$HOME/.local/bin/ghostty-theme" set "$palette"

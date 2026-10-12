@@ -1,5 +1,4 @@
-{{- if ne .chezmoi.os "windows" -}}
-{{- else -}}
+{{- if and (eq .chezmoi.os "windows") (dig "windowsDesktop" false .) -}}
 # Enable long path support (required for komorebi)
 $longPathsEnabled = Get-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled' -ErrorAction SilentlyContinue
 if (-not $longPathsEnabled -or $longPathsEnabled.LongPathsEnabled -ne 1) {

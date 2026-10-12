@@ -14,11 +14,9 @@
 # given, and what kitty-palettes produces, so all three terminals name the same
 # palette the same way.
 #
-# Sources are the same trio alacritty-theme's theme_files() reads, deduplicated
-# by file name for the same reason: install.sh exposes the vendored palettes
-# through symlinks in colors/, so the two directories overlap. themes/themes is
-# a checkout of alacritty/alacritty-theme, which is where all but 17 of these
-# come from.
+# Sources are terminal-tools' curated palettes and the shared theme collection,
+# deduplicated by file name. The shared collection originated in the upstream
+# alacritty/alacritty-theme repository; TOML is its palette interchange format.
 #
 # Re-run after refreshing terminal-tools' share/colors or pulling the themes
 # checkout. Output files are overwritten; nothing else in the directory is
@@ -26,16 +24,14 @@
 set -eu
 
 SHARE="${ALACRITTY_TOOLS_SHARE:-$HOME/code/terminal-tools/share}"
-CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/alacritty"
+PALETTES="${XDG_DATA_HOME:-$HOME/.local/share}/terminal-palettes"
 DEST="${XDG_CONFIG_HOME:-$HOME/.config}/ghostty/themes"
 
 mkdir -p "$DEST"
 
-# Deduplicate the sorted paths by file name, exactly as alacritty-theme does:
-# colors/ is symlinks into share/colors, so every vendored palette appears twice.
+# Deduplicate paths by file name so curated palettes take precedence.
 palettes() {
-	ls "$SHARE"/colors/*.toml "$CONFIG_DIR"/colors/*.toml \
-		"$CONFIG_DIR"/themes/themes/*.toml 2>/dev/null |
+	ls "$SHARE"/colors/*.toml "$PALETTES"/*.toml 2>/dev/null |
 		awk '{ n = $0; sub(/.*\//, "", n); if (!seen[n]++) print }'
 }
 
