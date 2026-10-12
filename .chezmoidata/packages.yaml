@@ -179,6 +179,7 @@ packages:
     - 'netcoredbg'
     - 'ninja'
     - 'nodejs'
+    - 'openssh'
     - 'perl'
     - 'python'
     - 'ripgrep'

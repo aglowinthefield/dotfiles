@@ -91,7 +91,8 @@
   {{- if eq .chezmoi.os "windows" }}
   autocrlf = true
   whitespace = cr-at-eol
-  sshCommand = "C:/Windows/System32/OpenSSH/ssh.exe"
+  # Use Windows-native SSH so Git can reach 1Password's named-pipe agent.
+  sshCommand = "\"{{ .chezmoi.homeDir }}/scoop/apps/openssh/current/ssh.exe\""
   {{- end }}
 
 {{ if eq .chezmoi.os "darwin" -}}
