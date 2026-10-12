@@ -1,0 +1,15 @@
+{{- if eq .chezmoi.os "windows" -}}
+# Documents may be redirected to OneDrive; keep one managed profile source.
+$ErrorActionPreference = 'Stop'
+$managedProfile = Join-Path $env:USERPROFILE 'Documents\PowerShell\Microsoft.PowerShell_profile.ps1'
+$actualProfile = $PROFILE.CurrentUserCurrentHost
+if ($actualProfile -ne $managedProfile) {
+    if (Test-Path -LiteralPath $actualProfile) {
+        Write-Warning "Existing redirected profile preserved: $actualProfile. Load $managedProfile from it to use the managed setup."
+    } else {
+        New-Item -ItemType Directory -Path (Split-Path -Parent $actualProfile) -Force | Out-Null
+        Set-Content -LiteralPath $actualProfile -Encoding utf8 -Value '. "$env:USERPROFILE/Documents/PowerShell/Microsoft.PowerShell_profile.ps1"'
+        Write-Host "Created managed-profile loader at $actualProfile"
+    }
+}
+{{- end -}}
