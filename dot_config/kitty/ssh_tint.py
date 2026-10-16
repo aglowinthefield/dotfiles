@@ -1,8 +1,8 @@
 # Global kitty watcher (loaded by `watcher ssh_tint.py` in kitty.conf).
 #
-# Tints a window's background green while ssh (or mosh) is its foreground
+# Tints a window's background faintly blue while ssh (or mosh) is its foreground
 # program, so a remote shell is obvious at a glance, and drops the tint when
-# the session ends. Green matches mochi's accent in starship.toml.
+# the session ends. The blue comes from the Compline palette.
 #
 # Shell integration reports each command start/stop (OSC 133). A start whose
 # command line is ssh tints at once; a recheck shortly after catches wrappers
@@ -10,7 +10,7 @@
 # shells emit the same marks through the ssh session, so every decision checks
 # what is actually running in the local pty instead of trusting the last mark.
 #
-# The tint is a blend of the window's configured background toward green, so
+# The tint is a blend of the window's configured background toward Compline blue, so
 # it follows the dark/light auto themes; a macOS appearance switch re-derives
 # it from the new theme.
 
@@ -23,8 +23,8 @@ from typing import Any
 from kitty.fast_data_types import add_timer
 
 # Fraction of the way from the theme background toward TINT_TARGET.
-TINT_STRENGTH = 0.10
-TINT_TARGET = (0x3F, 0x8F, 0x4F)
+TINT_STRENGTH = 0.06
+TINT_TARGET = (0xB4, 0xBC, 0xC4)  # Compline blue: #b4bcc4
 REMOTE_PROGRAMS = {'ssh', 'mosh', 'mosh-client', 'autossh', 'et'}
 WRAPPER_WORDS = {'env', 'command', 'exec', 'builtin', 'nice', 'caffeinate'}
 
