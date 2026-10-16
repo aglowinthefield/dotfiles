@@ -41,7 +41,7 @@ alias gl "git log --oneline -15"
 # What is on this branch and not yet on the remote — the question asked before
 # every push, and the one `git log` alone answers badly.
 alias glo "git log --oneline origin/main..HEAD"
-alias gf "git fetch --prune"
+alias gf "git fetch --prune; and git status"
 # --ff-only rather than a plain pull: a surprise merge commit on a branch is
 # harder to notice than a refused fast-forward.
 alias gup "git pull --ff-only"

@@ -3,6 +3,10 @@ source ~/.config/fish/functions.fish
 if status is-interactive
     set -g fish_greeting
     fish_vi_key_bindings
+    # Clear mouse reporting left behind by a terminal app or disconnected SSH.
+    function clear_mouse_reporting --on-event fish_prompt
+        printf '\e[?1000l\e[?1002l\e[?1003l'
+    end
     if command -q starship
         starship init fish | source
     end
