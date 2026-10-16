@@ -32,7 +32,14 @@ return {
       completion = {
         -- Pre-highlight the first item so <CR> accepts it, like select = true did
         list = { selection = { preselect = true, auto_insert = false } },
-        menu = { border = 'rounded', scrollbar = true },
+        menu = {
+          border = 'rounded',
+          scrollbar = true,
+          -- Keep prose quiet; Ctrl-Space still opens completion when needed.
+          auto_show = function()
+            return not vim.tbl_contains({ 'markdown', 'text', '' }, vim.bo.filetype)
+          end,
+        },
         documentation = {
           auto_show = true,
           auto_show_delay_ms = 200,
