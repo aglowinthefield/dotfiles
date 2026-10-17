@@ -9,6 +9,7 @@ import os
 import re
 import shlex
 import sys
+import tempfile
 
 UNSLOP = "~/.agents/skills/unslop/SKILL.md"
 SEPARATOR = set(";&|()\n")
@@ -223,13 +224,22 @@ def unwrap(seg: list[str]) -> list[str]:
     return seg[i:]
 
 
+def native(path: str) -> str:
+    """Git Bash spells C:\\x as /c/x and %TEMP% as /tmp; open() on Windows needs the native form."""
+    path = os.path.expanduser(path)
+    if sys.platform == "win32":
+        path = re.sub(r"^/([A-Za-z])(?=/|$)", r"\1:", path)
+        path = re.sub(r"^/tmp(?=/|$)", lambda _: tempfile.gettempdir(), path)
+    return path
+
+
 class Context:
     def __init__(self, cmd: str, cwd: str):
         self.heredocs = heredoc_bodies(cmd)
         self.cwd = cwd
 
     def read_file(self, path: str) -> str:
-        path = os.path.join(self.cwd, os.path.expanduser(path))
+        path = os.path.join(self.cwd, native(path))
         try:
             with open(path, encoding="utf-8") as f:
                 return f.read()
@@ -354,7 +364,7 @@ def check(cmd: str, ctx: Context, depth: int = 0, select_only: bool = False) -> 
             continue
         exe, args = os.path.basename(argv[0]), argv[1:]
         if exe == "cd" and args:
-            ctx.cwd = os.path.join(ctx.cwd, os.path.expanduser(args[0]))
+            ctx.cwd = os.path.join(ctx.cwd, native(args[0]))
         elif exe in SHELLS:
             for j, a in enumerate(args[:-1]):
                 if re.fullmatch(r"-[a-z]*c[a-z]*", a):
