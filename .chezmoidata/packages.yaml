@@ -185,6 +185,8 @@ packages:
     - 'ripgrep'
     - 'ruby'
     - 'sed'
+    # sqlite3 CLI for Charm's kanban-review-routing hook.
+    - 'sqlite'
     - 'stylua'
     - 'tree-sitter'
     - 'unzip'
