@@ -25,6 +25,15 @@ vim.g.maplocalleader = "\\"
 -- Register startup hooks before lazy.nvim emits VeryLazy.
 require("config.auto-update").setup()
 
+-- lazy.nvim defaults GIT_SSH_COMMAND to a bare `ssh`, which overrides git's
+-- core.sshCommand. Git for Windows resolves that to its bundled ssh, which can't
+-- reach the agent's named pipe, so every clone fails with "Permission denied
+-- (publickey)". Point it at the Windows ssh on PATH instead; lazy keeps an
+-- existing value. Forward slashes because git runs the command through sh.
+if vim.fn.has("win32") == 1 and not vim.env.GIT_SSH_COMMAND then
+  vim.env.GIT_SSH_COMMAND = vim.fn.exepath("ssh"):gsub("\\", "/") .. " -oBatchMode=yes"
+end
+
 -- Setup lazy.nvim
 require("lazy").setup({
   spec = {
