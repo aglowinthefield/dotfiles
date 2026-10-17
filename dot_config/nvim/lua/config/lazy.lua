@@ -34,6 +34,14 @@ if vim.fn.has("win32") == 1 and not vim.env.GIT_SSH_COMMAND then
   vim.env.GIT_SSH_COMMAND = vim.fn.exepath("ssh"):gsub("\\", "/") .. " -oBatchMode=yes"
 end
 
+-- nvim-treesitter compiles parsers with `tree-sitter build`, which on Windows
+-- looks only for MSVC's cl.exe unless CC is set. Use scoop's gcc
+-- (packages.yaml). `zig cc` doesn't work: it rejects the
+-- x86_64-pc-windows-msvc target triple tree-sitter passes it.
+if vim.fn.has("win32") == 1 and not vim.env.CC then
+  vim.env.CC = "gcc"
+end
+
 -- Setup lazy.nvim
 require("lazy").setup({
   spec = {
