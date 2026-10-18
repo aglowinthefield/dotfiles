@@ -1,10 +1,10 @@
-// Validate PR descriptions only; shared dispatcher skips reads, comments and other commands.
+// Run ClearStack's pr-body-guard on gh commands that post a PR body or comment.
 import { spawnSync } from 'node:child_process';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
 // Call Python directly; Windows uses its standard executable name.
-const SCRIPT = join(homedir(), '.agents', 'hooks', 'dispatch-pr-body.py');
+const SCRIPT = join(homedir(), '.agents', 'skills', 'clear-voice', 'scripts', 'pr-body-guard');
 const PYTHON = process.platform === 'win32' ? 'python' : 'python3';
 
 export const PrBodyHumanizer = async () => ({
@@ -25,7 +25,7 @@ export const PrBodyHumanizer = async () => ({
     });
     if (res.status !== 2) return; // 0 = allow; anything else = fail open
 
-    let reason = 'Blocked by the PR body humanizer';
+    let reason = 'Blocked by pr-body-guard';
     try {
       reason = JSON.parse(res.stdout).reason || reason;
     } catch {

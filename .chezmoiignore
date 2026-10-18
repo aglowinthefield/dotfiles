@@ -33,7 +33,6 @@ bin
 .config/herdr/plugins
 # Shell wrappers and repo verification scripts are not runtime Windows hooks.
 .agents/hooks/*.sh
-.agents/hooks/test-pr-dispatch.py
 {{- if not (dig "windowsDesktop" false .) }}
 # Optional desktop bundle; enable with data.windowsDesktop in local config.
 .config/komorebi
