@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": {{ if eq .chezmoi.os "windows" }}{{ printf "python \"%s/.agents/hooks/dispatch-pr-body.py\"" .chezmoi.homeDir | toJson }}{{ else }}"python3 \"$HOME/.agents/hooks/dispatch-pr-body.py\""{{ end }},
+            "command": {{ if eq .chezmoi.os "windows" }}{{ printf "python \"%s/.agents/skills/clear-voice/scripts/pr-body-guard\"" .chezmoi.homeDir | toJson }}{{ else }}"python3 \"$HOME/.agents/skills/clear-voice/scripts/pr-body-guard\""{{ end }},
             "timeout": 10
           }
         ]
