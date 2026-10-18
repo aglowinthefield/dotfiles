@@ -49,6 +49,9 @@ if test -r ~/.config/secrets.env
     end
 end
 
+# Claude Code uses its saved login instead of a token inherited from a parent.
+set -e CLAUDE_CODE_OAUTH_TOKEN
+
 {{ if eq .chezmoi.os "linux" }}
 
 if status is-interactive
