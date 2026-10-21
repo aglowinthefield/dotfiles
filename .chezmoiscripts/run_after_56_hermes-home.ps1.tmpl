@@ -15,6 +15,7 @@ if ([Environment]::GetEnvironmentVariable('GIT_SSH_COMMAND', 'User') -ne $ssh) {
     [Environment]::SetEnvironmentVariable('GIT_SSH_COMMAND', $ssh, 'User')
     Write-Host "hermes-home: set GIT_SSH_COMMAND; restart Hermes to pick it up"
 }
+$env:GIT_SSH_COMMAND = $ssh
 
 # Hermes keeps its home in %LOCALAPPDATA%\hermes on Windows, but hermes-home's
 # config, hooks and board manifests say ~/.hermes, as every other host does.
@@ -35,6 +36,12 @@ if (-not $item) {
     # Someone's data or a different link; never replace it.
     Write-Warning "hermes-home: $link exists and is not a junction to $target; leaving it alone"
     exit 0
+}
+
+# Charm tracks main rather than a pack pin (see hermes-home's README), as 58 does.
+if (Test-Path -LiteralPath (Join-Path $target 'plugins\charm')) {
+    hermes plugins update charm *> $null
+    if ($LASTEXITCODE) { Write-Warning "hermes-home: could not update Charm; a pinned install needs reinstalling from main" }
 }
 
 # Same checkout as 57: init in place over the install, since the whitelist means
