@@ -33,7 +33,7 @@ git -C "$home" pull --ff-only --quiet ||
 # updater fast-forwards it and reapplies any local edits.
 if [ -d "$home/plugins/charm" ] && command -v hermes >/dev/null 2>&1; then
 	hermes plugins update charm >/dev/null 2>&1 ||
-		echo "hermes-home: could not update Charm; a pinned install needs reinstalling from main" >&2
+		echo "hermes-home: could not update Charm; a pinned install must be removed and reinstalled (hermes-home#12)" >&2
 fi
 exit 0
 {{- end }}

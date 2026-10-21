@@ -41,7 +41,7 @@ if (-not $item) {
 # Charm tracks main rather than a pack pin (see hermes-home's README), as 58 does.
 if (Test-Path -LiteralPath (Join-Path $target 'plugins\charm')) {
     hermes plugins update charm *> $null
-    if ($LASTEXITCODE) { Write-Warning "hermes-home: could not update Charm; a pinned install needs reinstalling from main" }
+    if ($LASTEXITCODE) { Write-Warning "hermes-home: could not update Charm; a pinned install must be removed and reinstalled (hermes-home#12)" }
 }
 
 # Same checkout as 57: init in place over the install, since the whitelist means
