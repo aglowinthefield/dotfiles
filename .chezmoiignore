@@ -44,8 +44,8 @@ bin
 .config/secrets.env
 # msmtp's passwordeval reads secrets.env, which Windows does not get.
 .config/msmtp
-# Hermes Agent does not run on the Windows box; its .env would only pull a
-# Discord token nothing reads. Full target path, per the note above.
+# Hermes on Windows keeps the .env its own setup wrote, which also spares a
+# 1Password CLI session here. Full target path, per the note above.
 .hermes/.env
 # herdr ssh-status daemon talks to a unix socket
 bin/herdr-ssh-status.py
@@ -63,7 +63,8 @@ bin/herdr-ssh-status.py
 .local/bin/kitty-palettes
 .local/bin/ghostty-palettes
 # .hermes/.env is ignored just above and .hermes/profiles is mochi-only, so
-# without this an empty ~/.hermes is all that would land here.
+# without this an empty ~/.hermes is all that would land here. The hermes-home
+# checkout comes from 56 instead.
 .hermes
 {{- end }}
 # kitty-palettes generates ~/.config/kitty/themes from terminal-tools'

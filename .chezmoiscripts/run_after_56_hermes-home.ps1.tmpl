@@ -1,0 +1,62 @@
+{{- if eq .chezmoi.os "windows" -}}
+# Windows twin of 57 + 58, which are #!/bin/sh. Runs every apply (so it shows as
+# `R` in `chezmoi status`) because Hermes may be installed after the first apply,
+# and it never fails the apply: the next one retries.
+$ErrorActionPreference = 'Stop'
+
+# Hermes runs its git children with core.sshCommand injected through GIT_CONFIG_*
+# env, which beats ~/.gitconfig's scoop ssh. Git for Windows then picks its
+# bundled ssh, which can't reach the 1Password agent pipe, so pinned plugin
+# installs from private repos fail with "Permission denied (publickey)". Only
+# GIT_SSH_COMMAND outranks the injection, and the gateway's scheduled task only
+# sees User-scope env. BatchMode keeps Hermes' guard against ssh stealing a tty.
+$ssh = '"' + (Join-Path $HOME 'scoop\apps\openssh\current\ssh.exe').Replace('\', '/') + '" -o BatchMode=yes'
+if ([Environment]::GetEnvironmentVariable('GIT_SSH_COMMAND', 'User') -ne $ssh) {
+    [Environment]::SetEnvironmentVariable('GIT_SSH_COMMAND', $ssh, 'User')
+    Write-Host "hermes-home: set GIT_SSH_COMMAND; restart Hermes to pick it up"
+}
+
+# Hermes keeps its home in %LOCALAPPDATA%\hermes on Windows, but hermes-home's
+# config, hooks and board manifests say ~/.hermes, as every other host does.
+# A junction makes both names one directory and, unlike a symlink, needs no
+# admin rights or Developer Mode.
+$link = Join-Path $HOME '.hermes'
+$target = Join-Path $env:LOCALAPPDATA 'hermes'
+
+if (-not (Test-Path -LiteralPath $target)) {
+    Write-Host "hermes-home: no Hermes install at $target yet; skipping ~/.hermes"
+    exit 0
+}
+$item = Get-Item -LiteralPath $link -Force -ErrorAction SilentlyContinue
+if (-not $item) {
+    New-Item -ItemType Junction -Path $link -Target $target | Out-Null
+    Write-Host "hermes-home: linked $link -> $target"
+} elseif ($item.LinkType -ne 'Junction' -or @($item.Target) -notcontains $target) {
+    # Someone's data or a different link; never replace it.
+    Write-Warning "hermes-home: $link exists and is not a junction to $target; leaving it alone"
+    exit 0
+}
+
+# Same checkout as 57: init in place over the install, since the whitelist means
+# git only touches files hermes-home owns, then fast-forward on later applies
+# as 58 does. No hermes-local-keys filter (a sh script) and no board.json
+# rewrite (the manifests no longer carry a Mac path) here.
+if (Test-Path -LiteralPath (Join-Path $target '.git')) {
+    git -C $target pull --ff-only --quiet
+    if ($LASTEXITCODE) { Write-Warning "hermes-home: could not fast-forward, leaving the checkout as-is" }
+    exit 0
+}
+git -C $target init --quiet -b main
+git -C $target remote add origin git@github.com:aglowinthefield/hermes-home.git
+git -C $target fetch --quiet origin main
+if ($LASTEXITCODE) {
+    Remove-Item -LiteralPath (Join-Path $target '.git') -Recurse -Force
+    Write-Warning "hermes-home: fetch failed; unlock SSH access and retry chezmoi apply"
+    exit 0
+}
+# Bundled skills seeded by the installer may already sit where the repo wants
+# its own files; take the repo's version.
+git -C $target checkout --quiet -f -B main origin/main
+git -C $target branch --quiet -u origin/main main
+Write-Host "hermes-home: checked out hermes-home into $target"
+{{- end }}
