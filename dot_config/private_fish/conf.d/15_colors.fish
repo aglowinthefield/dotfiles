@@ -2,7 +2,7 @@
 #
 # ANSI palette *names* and numbers, not the hex in token's own
 # contrib/fish/token.theme — the same reasoning as starship.toml. The terminal
-# redefines those sixteen slots per variant, so `alacritty-theme light` repaints
+# redefines those sixteen slots per variant, so a light terminal theme repaints
 # the prompt and the picker along with everything else. Hex would freeze this at
 # one variant, and token's dark hues sit at 2–3:1 on its #faf9f5 light
 # background.

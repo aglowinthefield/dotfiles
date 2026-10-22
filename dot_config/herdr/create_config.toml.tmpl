@@ -49,8 +49,8 @@ claude = [
 
 # reviewr (persiyanov/herdr-reviewr): a code-review pane for the agent's diff.
 # The qualified action id is required — `toggle` alone is not unique across
-# plugins. prefix+d rather than a bare ctrl+alt chord, which Alacritty on macOS
-# swallows unless Option is mapped to Alt. reviewr's own settings live in
+# plugins. prefix+d rather than a bare ctrl+alt chord, which macOS terminals
+# swallow unless Option is mapped to Alt. reviewr's own settings live in
 # plugins/config/persiyanov.reviewr/config.toml.
 {{- if ne .chezmoi.os "windows" }}
 [[keys.command]]
@@ -66,8 +66,8 @@ description = "toggle reviewr"
 # The values below are the ink theme (bg sumiInk3 #1f1f28); the canvas theme
 # (bg canvasWhite4 #e1e1de) is kept commented out at the end of the file.
 # Every value below is a literal palette entry, not a hand-mixed tint. Re-derive
-# from the plugin after updating it, alongside the Alacritty palettes in
-# ~/.config/alacritty/colors/kanagawa-paper-{ink,canvas}.toml. `name`/
+# from the plugin after updating it, alongside the vendored palettes in
+# ~/code/terminal-tools/share/colors/kanagawa-paper-{ink,canvas}.toml. `name`/
 # `auto_switch` above them are fair game — that is what the TUI writes, and why
 # this file is `create_`.
 #

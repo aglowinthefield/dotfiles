@@ -9,8 +9,7 @@
 # machine that means 1Password unlocked. Fail if cloning fails so chezmoi
 # retries on the next `chezmoi apply` once the key is available.
 #
-# Link only the tools and palettes still used here. The upstream install.sh
-# also provisions Alacritty, which this setup no longer uses.
+# Link only the tools and palettes used here.
 #
 # This only re-runs when the script below changes, so `git -C ~/code/terminal-tools
 # pull` is the way to take updates in between.
@@ -61,7 +60,7 @@ for variant in dark light; do
 	link_asset "$repo/share/tmux/dotbar-$variant.conf" "$HOME/.tmux/dotbar-$variant.conf"
 done
 
-# kitty reads a flat .conf where alacritty reads TOML, so the vendored palettes
+# The vendored palettes are TOML and kitty reads a flat .conf, so they
 # have to be converted before `kitten themes` can list them. kitty's own theme
 # repository has gruvbox, nord, kanagawa and the rest, but not token — that one
 # exists only here. Seeded from the same checkout install.sh just refreshed, so

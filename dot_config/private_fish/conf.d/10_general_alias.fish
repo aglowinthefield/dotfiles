@@ -58,7 +58,7 @@ alias tc "npm run typecheck"
 
 # Markdown. `md` is mdcat: no pager, so it composes in a pipeline and is fast
 # enough to not think about. `mdp` pages the same doc through glow, which has
-# richer colour and emits OSC-8 links that alacritty makes clickable;
+# richer colour and emits OSC-8 links that Ghostty and kitty make clickable;
 # `glow -t <dir>` browses a whole tree of docs.
 alias md mdcat
 alias mdp "glow -p"
