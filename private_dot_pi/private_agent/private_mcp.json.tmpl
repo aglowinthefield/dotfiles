@@ -1,0 +1,29 @@
+{{- /* The repo is public, so work servers (and anything else that should not be
+       published) live in ~/.pi/agent/mcp.local.json, which is never committed.
+       Pi reads only mcp.json and has no include, so the merge happens here; a
+       local entry replaces a shared one with the same name. Pi writes exposure
+       and enabled-state changes back into mcp.json, so make those in
+       mcp.local.json or this template, or the next apply reverts them. */ -}}
+{{- $servers := dict
+      "paprika" (dict "url" "http://127.0.0.1:8000/mcp")
+      "hermes-mcp" (dict
+        "command" (joinPath .chezmoi.homeDir ".hermes/hermes-agent/venv/bin/python")
+        "args" (list "-m" "agent.transports.hermes_tools_mcp_server")
+        "env" (dict "HERMES_QUIET" "1" "HERMES_REDACT_SECRETS" "1")) -}}
+{{- if eq .chezmoi.os "darwin" }}
+{{- /* Things is a macOS app, and icloud-calendar-mcp is installed by hand on the
+       laptops only; chezmoi does not ship it. The Things token is read from
+       ~/.claude.json at launch, so no secret lands here. */ -}}
+{{- $_ := set $servers "icloud-calendar" (dict "command" (joinPath .chezmoi.homeDir ".local/bin/icloud-calendar-mcp")) }}
+{{- $_ := set $servers "things" (dict
+      "command" "uvx"
+      "args" (list "things-mcp")
+      "env" (dict "THINGS_AUTH_TOKEN" "!python3 -c 'import json,os; print(json.load(open(os.path.expanduser(\"~/.claude.json\")))[\"mcpServers\"][\"things\"][\"env\"][\"THINGS_AUTH_TOKEN\"])'")) }}
+{{- end }}
+{{- $local := joinPath .chezmoi.homeDir ".pi/agent/mcp.local.json" }}
+{{- if stat $local }}
+{{-   range $name, $server := (include $local | fromJson).mcpServers }}
+{{-     $_ := set $servers $name $server }}
+{{-   end }}
+{{- end }}
+{{- dict "mcpServers" $servers | toPrettyJson }}
