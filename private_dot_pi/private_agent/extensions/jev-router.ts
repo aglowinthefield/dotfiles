@@ -28,8 +28,9 @@ const FALLBACK: readonly { provider: string; models: Record<Role, string> }[] = 
 		models: { complex: "claude-opus-5-5", standard: "claude-sonnet-5-5", implementation: "claude-sonnet-5-5" },
 	},
 	{
+		// GPT-6 has no Terra tier, so standard planning stays on Sol.
 		provider: "openai",
-		models: { complex: "gpt-5.6-sol", standard: "gpt-5.6-terra", implementation: "gpt-5.6-luna" },
+		models: { complex: "gpt-6.1-sol", standard: "gpt-6.1-sol", implementation: "gpt-6-luna" },
 	},
 ];
 
@@ -125,7 +126,7 @@ export default function (pi: ExtensionAPI) {
 		id: "auto",
 		name: "Auto (Jev)",
 		thinkingLevels: ["low", "medium", "high", "xhigh"],
-		// Claude limits; an OpenAI fallback has 272K, and Pi compacts before routing there if needed.
+		// Claude limits; the OpenAI fallback has 272K, and Pi compacts before routing there if needed.
 		contextWindow: 1_000_000,
 		maxTokens: 128_000,
 		async route(request, ctx) {
