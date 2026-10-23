@@ -34,6 +34,10 @@ set -gx ENABLE_LSP_TOOL 1
 {{ if eq .chezmoi.os "darwin" }}
 fish_add_path /opt/homebrew/opt/ruby/bin
 fish_add_path /opt/homebrew/lib/ruby/gems/4.0.0/bin
+# Kitty bundles completions for kitten that fish does not ship.
+if test -d /Applications/kitty.app/Contents/Resources/kitty/shell-integration/fish/vendor_completions.d
+    set --prepend fish_complete_path /Applications/kitty.app/Contents/Resources/kitty/shell-integration/fish/vendor_completions.d
+end
 {{ end }}
 
 fish_add_path ~/.local/bin
