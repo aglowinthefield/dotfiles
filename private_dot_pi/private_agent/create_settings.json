@@ -1,6 +1,10 @@
 {
   "defaultProvider": "anthropic",
   "defaultModel": "claude-opus-5-5",
+  "packages": [
+    "npm:@gotgenes/pi-anthropic-auth",
+    "npm:pi-multi-pass"
+  ],
   "defaultTools": [
     "+codemode"
   ]
