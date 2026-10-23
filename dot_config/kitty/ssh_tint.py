@@ -20,7 +20,9 @@ import os
 import shlex
 from typing import Any
 
-from kitty.fast_data_types import add_timer
+from kitty.colors import patch_colors
+from kitty.constants import is_macos
+from kitty.fast_data_types import add_timer, get_options
 
 # Fraction of the way from the theme background toward TINT_TARGET.
 TINT_STRENGTH = 0.06
@@ -29,6 +31,24 @@ REMOTE_PROGRAMS = {'ssh', 'mosh', 'mosh-client', 'autossh', 'et'}
 WRAPPER_WORDS = {'env', 'command', 'exec', 'builtin', 'nice', 'caffeinate'}
 
 _tinted: set[int] = set()
+_titlebar_pending = False
+
+
+def on_tab_bar_dirty(boss: Any, window: Any, data: dict[str, Any]) -> None:
+    # Theme reloads and appearance switches dirty the tab bar even when hidden.
+    # Kitty applies titlebar colors after notifying watchers, so wait for it.
+    global _titlebar_pending
+    if is_macos and not _titlebar_pending and get_options().macos_titlebar_color != 1:
+        _titlebar_pending = True
+        add_timer(_restore_titlebar, 0, False)
+
+
+def _restore_titlebar(timer_id: int | None = None) -> None:
+    global _titlebar_pending
+    try:
+        patch_colors({'macos_titlebar_color': 1}, configured=True)  # 1 = background
+    finally:
+        _titlebar_pending = False
 
 
 def _argv_is_remote(argv: list[str]) -> bool:
