@@ -31,6 +31,10 @@ end
 
 set -gx EDITOR nvim
 set -gx ENABLE_LSP_TOOL 1
+set -gx MEM0_CODE_USER_ID clearing
+if test -r ~/.codex/plugins/data/mem0-mem0-plugins/api-key
+    set -gx MEM0_API_KEY (string collect < ~/.codex/plugins/data/mem0-mem0-plugins/api-key)
+end
 {{ if eq .chezmoi.os "darwin" }}
 fish_add_path /opt/homebrew/opt/ruby/bin
 fish_add_path /opt/homebrew/lib/ruby/gems/4.0.0/bin

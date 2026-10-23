@@ -104,6 +104,8 @@ bin/herdr-ssh-status.py
 # Full target paths — a bare `darkman` would only match ~/darkman.
 .config/darkman
 .local/share/darkman
+# `mochi` lists the kura datasets, which only exist on mochi.
+.config/fish/functions/mochi.fish
 {{- end }}
 .config/nvim/lazy-lock.json
 # herdr writes these itself and stamps each with a HERDR_INTEGRATION_VERSION it
