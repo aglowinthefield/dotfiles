@@ -1,0 +1,52 @@
+{
+  "subscriptions": [
+    {
+      "provider": "anthropic",
+      "index": 2,
+      "label": "Gmail"
+    }
+  ],
+  "pools": [
+    {
+      "name": "claude",
+      "baseProvider": "anthropic",
+      "members": [
+        "anthropic",
+        "anthropic-2"
+      ],
+      "enabled": true,
+      "strategy": "quota-first"
+    },
+    {
+      "name": "openai",
+      "baseProvider": "openai",
+      "members": [
+        "openai"
+      ],
+      "enabled": true,
+      "strategy": "round-robin"
+    }
+  ],
+  "chains": [
+    {
+      "name": "default",
+      "entries": [
+        {
+          "pool": "claude",
+          "model": "claude-opus-5-5",
+          "enabled": true
+        },
+        {
+          "pool": "openai",
+          "model": "gpt-6.1-sol",
+          "enabled": true
+        }
+      ],
+      "enabled": true
+    }
+  ],
+  "presets": [],
+  "statusBar": true,
+  "interceptModel": false,
+  "tokenKeeper": false
+}
