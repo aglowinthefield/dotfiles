@@ -79,7 +79,8 @@ junction, without the `hermes-local-keys` filter. It also sets User-scope
 git children to Git for Windows' bundled ssh, which can't reach the 1Password agent.
 56 and 58 also run `hermes plugins update charm`, since Charm tracks `main` rather
 than a pack pin; a host still on a pinned install warns until Charm is removed and reinstalled (`--force` keeps the pin). Per-host state stays out of that repo: `cron/jobs.json` is untracked, and
-each host's UI picks for `display.pet` and `dashboard.theme` in the root and profile
+each host's UI picks for `display.pet`, `dashboard.theme`, `terminal.font_family` and
+`desktop.font_family` in the root and profile
 `config.yaml` files go through the `hermes-local-keys` git filter
 (`dot_local/bin/executable_hermes-local-keys`). The filter strips them on commit and
 restores the host's values on checkout. 58 registers it and stashes the values before

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Git filter that keeps per-host keys out of hermes-home's config.yaml files.
 
-Each host picks its own pet and dashboard theme in the Hermes UI, which writes
-them into the tracked config.yaml. Committed, one host's pick overwrites every
+Each host picks its own pet, dashboard theme and fonts in the Hermes UI, which
+writes them into the tracked config.yaml. Fonts are per host because each OS has
+its own installed set: a Windows pick like Segoe UI falls back on macOS. Committed, one host's pick overwrites every
 other host's on the next pull. Hermes has no per-host config layer (its managed
 overlay beats the user's own choice), so this filter does the job in git:
 
@@ -23,7 +24,12 @@ import sys
 from pathlib import Path
 
 # (top-level section, two-space child) pairs that belong to the host, not the repo.
-LOCAL = {("display", "pet"), ("dashboard", "theme")}
+LOCAL = {
+    ("display", "pet"),
+    ("dashboard", "theme"),
+    ("terminal", "font_family"),
+    ("desktop", "font_family"),
+}
 
 SECTION = re.compile(r"^([^\s#][^:]*):")
 CHILD = re.compile(r"^  ([^\s#][^:]*):")
