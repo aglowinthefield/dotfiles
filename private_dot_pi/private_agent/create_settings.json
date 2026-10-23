@@ -3,7 +3,8 @@
   "defaultModel": "claude-opus-5-5",
   "packages": [
     "npm:@gotgenes/pi-anthropic-auth",
-    "npm:pi-multi-pass"
+    "npm:pi-multi-pass",
+    "npm:billion-context"
   ],
   "defaultTools": [
     "+codemode"
