@@ -1,6 +1,6 @@
 {
-  "defaultProvider": "anthropic",
-  "defaultModel": "claude-opus-5-5",
+  "defaultProvider": "openai",
+  "defaultModel": "gpt-6-sol",
   "packages": [
     "npm:@gotgenes/pi-anthropic-auth",
     "npm:pi-multi-pass",
