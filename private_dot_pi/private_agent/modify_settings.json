@@ -1,0 +1,13 @@
+{{- /* chezmoi:modify-template */ -}}
+{{- /*
+  Merge, don't overwrite: pi writes machine-local state into this file
+  (deviceId, lastChangelogVersion), so only the keys below are enforced.
+  A missing file gets the full seed.
+*/ -}}
+{{- $s := dict
+      "packages" (list "npm:@gotgenes/pi-anthropic-auth" "npm:pi-multi-pass" "npm:billion-context")
+      "defaultTools" (list "+codemode") -}}
+{{- if .chezmoi.stdin | trim }}{{ $s = fromJson .chezmoi.stdin }}{{ end -}}
+{{- $s = setValueAtPath "defaultProvider" "anthropic" $s -}}
+{{- $s = setValueAtPath "defaultModel" "claude-opus-5-5" $s -}}
+{{ toPrettyJson $s }}
