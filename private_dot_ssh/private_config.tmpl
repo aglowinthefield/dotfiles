@@ -38,3 +38,15 @@ Host *
 # Linux has no 1Password desktop agent: the system ssh-agent holds
 # ~/.ssh/op_signing_key instead, wired up in config.fish.
 {{- end }}
+{{ if ne .chezmoi.os "windows" }}
+Host *
+    # Reuse one connection per host: after the first login, later ssh, scp,
+    # git and rsync runs skip the handshake and auth. Not on Windows, where
+    # Win32-OpenSSH has no multiplexing support.
+    ControlMaster auto
+    ControlPath ~/.ssh/cm-%C
+    ControlPersist 10m
+    # Detect dead links in ~90s instead of hanging.
+    ServerAliveInterval 30
+    ServerAliveCountMax 3
+{{- end }}
