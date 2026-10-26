@@ -1,0 +1,33 @@
+{
+  "mcpServers": {
+    "grafana": {
+      "url": "https://mcp.grafana.com/mcp",
+      "description": "Read Silk Grafana alerts, Prometheus metrics, and Loki logs",
+      "exposure": "hidden",
+      "toolExposure": {
+        "alerting_rules_read": "codemode",
+        "query_prometheus": "codemode",
+        "query_loki_logs": "codemode",
+        "list_datasources": "codemode",
+        "list_prometheus_metric_names": "codemode",
+        "list_prometheus_label_names": "codemode",
+        "list_prometheus_label_values": "codemode"
+      }
+    },
+    "linear": {
+      "url": "https://mcp.linear.app/mcp"
+    },
+    "sentry": {
+      "url": "https://mcp.sentry.dev/mcp"
+    },
+    "statsig": {
+      "url": "https://api.statsig.com/v1/mcp"
+    },
+    "Neon": {
+      "url": "https://mcp.neon.tech/mcp",
+      "headers": {
+        "Authorization": "!echo Bearer $(doppler secrets get NEON_API_KEY --project silk-ops --config dev_personal --plain)"
+      }
+    }
+  }
+}
