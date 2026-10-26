@@ -10,4 +10,9 @@
 {{- if .chezmoi.stdin | trim }}{{ $s = fromJson .chezmoi.stdin }}{{ end -}}
 {{- $s = setValueAtPath "defaultProvider" "anthropic" $s -}}
 {{- $s = setValueAtPath "defaultModel" "claude-opus-5-5" $s -}}
+{{- /* Seeded, not enforced: hide the startup splash and the per-session
+       Anthropic extra-usage warning, but leave values picked later in
+       /settings alone. */ -}}
+{{- if not (hasKey $s "quietStartup") }}{{ $s = setValueAtPath "quietStartup" true $s }}{{ end -}}
+{{- if not (hasKey (get $s "warnings" | default dict) "anthropicExtraUsage") }}{{ $s = setValueAtPath "warnings.anthropicExtraUsage" false $s }}{{ end -}}
 {{ toPrettyJson $s }}

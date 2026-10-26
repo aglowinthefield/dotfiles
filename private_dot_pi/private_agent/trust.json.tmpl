@@ -1,0 +1,10 @@
+{{- /* Trusted project roots are absolute paths, so they differ per OS:
+       the silk checkouts live under ~/silk on macOS and /home/redbean on Linux. */ -}}
+{
+{{- if eq .chezmoi.os "darwin" }}
+  "/Users/clearing/silk": true
+{{- else }}
+  "/home/redbean/silk": true,
+  "/home/redbean/var": true
+{{- end }}
+}
