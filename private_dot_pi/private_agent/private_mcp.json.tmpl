@@ -5,7 +5,7 @@
        and enabled-state changes back into mcp.json, so make those in
        mcp.local.json or this template, or the next apply reverts them. */ -}}
 {{- $servers := dict
-      "paprika" (dict "url" "http://127.0.0.1:8000/mcp")
+      "paprika" (dict "url" "http://127.0.0.1:8000/mcp" "enabled" false)
       "hermes-mcp" (dict
         "command" (joinPath .chezmoi.homeDir ".hermes/hermes-agent/venv/bin/python")
         "args" (list "-m" "agent.transports.hermes_tools_mcp_server")
