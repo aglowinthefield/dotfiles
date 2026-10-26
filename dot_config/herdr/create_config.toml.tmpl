@@ -4,6 +4,8 @@
 # file would have chezmoi apply revert that pick on the next run. Same bargain
 # as ~/.claude/settings.json and secrets.env. Edit here to move the baseline a
 # fresh machine starts from; delete the live file and re-apply to take it.
+# Existing installs: add the pi row below to ~/.config/herdr/config.toml manually
+# and run `herdr server reload-config`; do not replace a live theme choice.
 
 onboarding = false
 
@@ -44,6 +46,12 @@ rows = [
 claude = [
   ["state_icon", "workspace", "tab"],
   ["terminal_title_stripped"],
+  ["agent"],
+]
+# Pi reports a 2-5 word title through the herdr-summary extension.
+pi = [
+  ["state_icon", "workspace", "tab"],
+  ["$summary"],
   ["agent"],
 ]
 
