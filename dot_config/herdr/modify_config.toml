@@ -1,0 +1,25 @@
+{{/* chezmoi:modify-template */}}
+{{- $row := "pi = [[\"state_icon\", \"workspace\", \"tab\"], [\"$summary\"], [\"agent\"]]\n" -}}
+{{- $current := .chezmoi.stdin -}}
+{{- if not $current -}}
+{{ includeTemplate ".chezmoitemplates/herdr-config.toml.tmpl" . }}
+{{- else -}}
+{{- $parsed := fromToml $current -}}
+{{- $agents := dig "ui" "sidebar" "agents" (dict) $parsed -}}
+{{- $rows := dig "ui" "sidebar" "agents" "rows_by_agent" (dict) $parsed -}}
+{{- if hasKey $rows "pi" -}}
+{{- if not (contains "$summary" (toJson (index $rows "pi"))) -}}
+{{ fail "Herdr has a custom Pi sidebar row without $summary; update that row manually" }}
+{{- end -}}
+{{ $current }}
+{{- else if hasKey $agents "rows_by_agent" -}}
+{{- $header := `(?m)^(\s*\[ui\.sidebar\.agents\.rows_by_agent[ \t]*\][ \t]*(#[^\r\n]*)?)(\r?\n|$)` -}}
+{{- if not (regexMatch $header $current) -}}
+{{ fail "Herdr rows_by_agent uses an unsupported table syntax; add Pi's $summary row manually" }}
+{{- end -}}
+{{- $replacement := printf "${1}\n%s" (replace "$" "$$" $row) -}}
+{{ $current | replaceAllRegex $header $replacement }}
+{{- else -}}
+{{ printf "%s\n[ui.sidebar.agents.rows_by_agent]\n%s" $current $row }}
+{{- end -}}
+{{- end -}}

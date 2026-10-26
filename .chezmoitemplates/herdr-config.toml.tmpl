@@ -1,11 +1,6 @@
-# `create_` on purpose: chezmoi writes this file only when it is absent, so it
-# seeds a new machine and then never touches it again. herdr's TUI writes the
-# file back whenever the theme is changed from inside it, and a plain managed
-# file would have chezmoi apply revert that pick on the next run. Same bargain
-# as ~/.claude/settings.json and secrets.env. Edit here to move the baseline a
-# fresh machine starts from; delete the live file and re-apply to take it.
-# Existing installs: add the pi row below to ~/.config/herdr/config.toml manually
-# and run `herdr server reload-config`; do not replace a live theme choice.
+# New-install baseline. The modify_ target uses this only if no config exists.
+# On existing installs it adds Pi's sidebar row without rewriting the theme,
+# comments, or other settings that Herdr's TUI may have changed.
 
 onboarding = false
 
@@ -76,8 +71,8 @@ description = "toggle reviewr"
 # Every value below is a literal palette entry, not a hand-mixed tint. Re-derive
 # from the plugin after updating it, alongside the vendored palettes in
 # ~/code/terminal-tools/share/colors/kanagawa-paper-{ink,canvas}.toml. `name`/
-# `auto_switch` above them are fair game — that is what the TUI writes, and why
-# this file is `create_`.
+# `auto_switch` above them are fair game — that is what the TUI writes; the
+# modify_ target preserves these live values.
 #
 # Herdr's built-in `kanagawa` palette keeps the tab chrome contrast-safe.
 [theme]
