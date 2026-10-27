@@ -5,9 +5,14 @@
   A missing file gets the full seed.
 */ -}}
 {{- $s := dict
-      "packages" (list "npm:@gotgenes/pi-anthropic-auth" "npm:pi-multi-pass" "npm:billion-context")
+      "packages" (list "npm:@gotgenes/pi-anthropic-auth" "npm:pi-multi-pass" "npm:billion-context" "npm:@mem0/pi-agent-plugin")
       "defaultTools" (list "+codemode") -}}
 {{- if .chezmoi.stdin | trim }}{{ $s = fromJson .chezmoi.stdin }}{{ end -}}
+{{- /* Enforced on existing machines too: mem0 memory must load on every host
+       (pi installs a listed-but-missing package on next start). Appended, so
+       packages added locally are kept. */ -}}
+{{- $pkgs := get $s "packages" | default list -}}
+{{- if not (has "npm:@mem0/pi-agent-plugin" $pkgs) }}{{ $s = setValueAtPath "packages" (append $pkgs "npm:@mem0/pi-agent-plugin") $s }}{{ end -}}
 {{- $s = setValueAtPath "defaultProvider" "anthropic" $s -}}
 {{- $s = setValueAtPath "defaultModel" "claude-opus-5-5" $s -}}
 {{- /* Seeded, not enforced: hide the startup splash and the per-session

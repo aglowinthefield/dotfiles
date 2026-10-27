@@ -1,0 +1,7 @@
+{{- /* Config for @mem0/pi-agent-plugin. create_: written only when absent, so
+       local tweaks survive; delete the file and apply again to pull a rotated
+       key. The key lives in the 1Password item "dotfiles-secrets" (the repo is
+       public). Keyed by label, same reason as dot_config/create_private_secrets.env.tmpl. */ -}}
+{{- $f := dict -}}
+{{- range (onepassword "dotfiles-secrets" "Private").fields }}{{ $_ := set $f .label . }}{{ end -}}
+{{- dict "apiKey" (index $f "mem0 API Key").value "userId" "clearing" "autoCapture" true "defaultScope" "project" "searchThreshold" 0.3 | toPrettyJson }}
