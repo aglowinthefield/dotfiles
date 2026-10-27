@@ -1,0 +1,2 @@
+# Keep worktrees inside the repo under .worktrees/ (add it to each repo's .gitignore).
+worktree-path = "{{ repo_path }}/.worktrees/{{ branch | sanitize }}"
