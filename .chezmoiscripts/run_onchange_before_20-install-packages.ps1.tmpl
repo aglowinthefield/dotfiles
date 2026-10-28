@@ -95,6 +95,9 @@ foreach ($package in $wingetPackages) {
     ) -SuccessCodes @(0, -1978335189, -1978335135)
 }
 
+{{ range .packages.windows.npm -}}
+Invoke-PackageCommand -Command npm -Arguments @('install', '--global', '{{ . }}')
+{{ end }}
 if ($script:installFailures.Count) {
     Write-Warning ($script:installFailures -join "`n")
     # Do not record this run_onchange script as successful after partial failure.

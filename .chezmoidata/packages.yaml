@@ -195,6 +195,9 @@ packages:
     - 'wget'
     - 'starship'
     - 'fzf'
+    # Global npm CLIs, installed with scoop's nodejs above.
+    npm:
+    - '@earendil-works/pi-coding-agent'
     extra_scoop:
     - 'blender'
     - 'bulk-crap-uninstaller'
