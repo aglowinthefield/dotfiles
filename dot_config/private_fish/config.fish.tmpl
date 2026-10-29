@@ -28,6 +28,7 @@ else if not contains -- /usr/local/share (string split : -- $XDG_DATA_DIRS)
     set -gx XDG_DATA_DIRS /usr/local/share:$XDG_DATA_DIRS
 end
 
+set -gx CLEARSTACK_RECORD off
 
 set -gx EDITOR nvim
 set -gx ENABLE_LSP_TOOL 1
