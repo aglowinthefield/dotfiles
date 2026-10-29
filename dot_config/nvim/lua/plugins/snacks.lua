@@ -20,7 +20,15 @@ return {
 			timeout = 3000, -- Auto-dismiss after 3 seconds
 		},
 		-- Fuzzy finder / picker UI (replaces telescope, fzf-lua, etc.)
-		picker = { enabled = true },
+		picker = {
+			enabled = true,
+			-- Show dot-folders like .github (gitignored paths stay hidden)
+			sources = {
+				files = { hidden = true },
+				grep = { hidden = true },
+				explorer = { hidden = true },
+			},
+		},
 		-- Instantly opens files before plugins load (skips lazy-loading overhead for known filetypes)
 		quickfile = { enabled = true },
 		-- Detects and highlights the current scope/block you're in
