@@ -13,8 +13,10 @@
        packages added locally are kept. */ -}}
 {{- $pkgs := get $s "packages" | default list -}}
 {{- if not (has "npm:@mem0/pi-agent-plugin" $pkgs) }}{{ $s = setValueAtPath "packages" (append $pkgs "npm:@mem0/pi-agent-plugin") $s }}{{ end -}}
-{{- $s = setValueAtPath "defaultProvider" "anthropic" $s -}}
-{{- $s = setValueAtPath "defaultModel" "claude-opus-5-5" $s -}}
+{{- /* jev/auto is the virtual model from extensions/jev-router.ts: it plans on
+       Opus or Sonnet by Jev's read of the first prompt, then implements on Sonnet. */ -}}
+{{- $s = setValueAtPath "defaultProvider" "jev" $s -}}
+{{- $s = setValueAtPath "defaultModel" "auto" $s -}}
 {{- /* No install ping to pi.dev. */ -}}
 {{- $s = setValueAtPath "enableInstallTelemetry" false $s -}}
 {{- /* Seeded, not enforced: hide the startup splash and the per-session

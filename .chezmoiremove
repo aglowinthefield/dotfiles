@@ -16,6 +16,6 @@
 # the half of that migration it left behind, still loading at startup unused.
 .config/nvim/lua/plugins/token.lua
 
-# jev-router was moved to extensions-disabled; pi loads everything in
-# extensions/, so the copy left there on other machines would keep it enabled.
-.pi/agent/extensions/jev-router.ts
+# jev-router is back in extensions/; this removes the disabled copy that would
+# otherwise linger next to it.
+.pi/agent/extensions-disabled/jev-router.ts

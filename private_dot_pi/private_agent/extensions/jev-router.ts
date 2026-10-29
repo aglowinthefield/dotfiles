@@ -34,6 +34,12 @@ const FALLBACK: readonly { provider: string; models: Record<Role, string> }[] = 
 	},
 ];
 
+/**
+ * Probability of `complex` at which planning goes to Opus. Kept below 0.5 because at 0.5 Jev sent
+ * 37 of 38 sessions (Oct 28–29, 2026) to Sonnet.
+ */
+const COMPLEX_THRESHOLD = 0.35;
+
 /** Tools whose successful result means implementation has started. */
 const EDIT_TOOLS = new Set(["edit", "write"]);
 
@@ -108,8 +114,8 @@ async function choosePlanningRole(request: JevRequest, ctx: ExtensionContext): P
 					type: "choice",
 					instructions: "How demanding is the software engineering work requested in `prompt`?",
 					criteria: {
-						standard: "Ordinary features, fixes, reviews, or questions",
-						complex: "Subtle design, cross-cutting changes, or hard debugging",
+						standard: "Small, well-specified changes, quick fixes, or simple questions",
+						complex: "Work that needs a plan: multi-file features, design choices, refactors, or debugging an unclear cause",
 					},
 				},
 			},
@@ -117,7 +123,7 @@ async function choosePlanningRole(request: JevRequest, ctx: ExtensionContext): P
 		{ signal: request.signal },
 	);
 	const answer = result.stopReason === "stop" ? result.answers.complexity : undefined;
-	return answer?.type === "choice" && (answer.probabilities.complex ?? 0) >= 0.5 ? "complex" : "standard";
+	return answer?.type === "choice" && (answer.probabilities.complex ?? 0) >= COMPLEX_THRESHOLD ? "complex" : "standard";
 }
 
 export default function (pi: ExtensionAPI) {
