@@ -62,7 +62,10 @@ source-file -q ~/.tmux/theme.conf
 set -g @tmux-dotbar-status-right-text " %H:%M "
 
 set -g set-clipboard on
+set -g allow-passthrough on
+
 
 # --- Init (keep last) --------------------------------------------------------
 run '~/.tmux/plugins/tpm/tpm'
+run-shell '~/.tmux/ssh-host-patch.sh'  # after tpm: rewrites dotbar's formats
 {{- end }}
