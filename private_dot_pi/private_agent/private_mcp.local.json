@@ -1,5 +1,11 @@
 {
   "mcpServers": {
+    "silk": {
+      "url": "https://api.silk.cx/api/mcp",
+      "oauth": {
+        "clientRegistration": "cimd"
+      }
+    },
     "grafana": {
       "url": "https://mcp.grafana.com/mcp",
       "description": "Read Silk Grafana alerts, Prometheus metrics, and Loki logs",
