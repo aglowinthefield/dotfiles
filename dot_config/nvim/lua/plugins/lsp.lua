@@ -56,6 +56,13 @@ return {
         },
       })
 
+      -- lspconfig only roots postgres_lsp at a postgres-language-server.jsonc,
+      -- and silk-remix has none; fall back to .git rather than adding a
+      -- config file to a repo that doesn't use one.
+      vim.lsp.config('postgres_lsp', {
+        root_markers = { 'postgres-language-server.jsonc', '.git' },
+      })
+
       -- SchemaStore catalog: package.json, tsconfig, .eslintrc, eas.json,
       -- GitHub workflows, compose files, ... validated and completed by name
       vim.lsp.config('jsonls', {
@@ -120,6 +127,10 @@ return {
         'tailwindcss',
         'jsonls',
         'yamlls',
+        -- Postgres-only (Supabase). Syntax errors and completion in .sql files
+        -- such as silk-remix's apps/web/drizzle migrations; no DB connection
+        -- is configured, so it checks syntax, not schema.
+        'postgres_lsp',
       },
       -- ts_ls got installed at some point and was being auto-enabled alongside
       -- vtsls, doubling tsserver memory and every diagnostic/completion

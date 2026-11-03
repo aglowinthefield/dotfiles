@@ -15,6 +15,9 @@
 - Emit short `text()` summaries or filtered excerpts, not raw nested tool results or large `console.log()` dumps. Preserve error messages and paths needed to act.
 - For long logs, keep the full output in a file and read only the relevant lines.
 
+## Waiting
+- Never wait with a fixed `sleep N`, in bash or through codemode (which has no timers). Wait on the real condition: a blocking command (`gh run watch`, `gh pr checks --watch`, `flyctl ... --wait`, `acp_delegate_wait`) or one bounded poll loop, `timeout 300 sh -c 'until <check>; do sleep 2; done'`. The `no-sleep` extension blocks bare sleeps.
+
 ## ClearStack
 - Apply the `clear-mode` skill to every non-trivial engineering task. Repo instructions still win where they are stricter.
 
