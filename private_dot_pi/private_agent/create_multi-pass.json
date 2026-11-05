@@ -18,6 +18,15 @@
       "strategy": "quota-first"
     },
     {
+      "name": "kimi",
+      "baseProvider": "moonshotai",
+      "members": [
+        "moonshotai"
+      ],
+      "enabled": true,
+      "strategy": "quota-first"
+    },
+    {
       "name": "openai",
       "baseProvider": "openai",
       "members": [
@@ -39,6 +48,11 @@
         {
           "pool": "openai",
           "model": "gpt-6.1-sol",
+          "enabled": true
+        },
+        {
+          "pool": "kimi",
+          "model": "kimi-k3.1-pro",
           "enabled": true
         }
       ],

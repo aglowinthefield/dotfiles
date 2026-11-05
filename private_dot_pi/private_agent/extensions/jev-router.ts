@@ -6,8 +6,8 @@
  *   A session that planned on Sonnet never switches, so it never pays the cache miss.
  *
  * Fallback: when a request fails on a rate or usage limit, the session moves to the next account in
- * FALLBACK (anthropic, then the second Anthropic login, then OpenAI) and stays there. multi-pass has
- * no pools or chains configured and does not see virtual models, so the router does this itself.
+ * FALLBACK (anthropic, then the second Anthropic login, then OpenAI, then Kimi) and stays there.
+ * multi-pass does not see virtual models, so its chains never apply here and the router does this itself.
  *
  * Adapted from Pi's examples/extensions/jev-router.ts, which routes between OpenAI Codex models.
  */
@@ -31,6 +31,11 @@ const FALLBACK: readonly { provider: string; models: Record<Role, string> }[] = 
 		// GPT-6 has no Terra tier, so standard planning stays on Sol.
 		provider: "openai",
 		models: { complex: "gpt-6.1-sol", standard: "gpt-6.1-sol", implementation: "gpt-6-luna" },
+	},
+	{
+		// Kimi platform API key (platform.kimi.ai, `/login moonshotai`). Skipped until a key exists.
+		provider: "moonshotai",
+		models: { complex: "kimi-k3.1-pro", standard: "kimi-k3.1-pro", implementation: "kimi-k2.7-code" },
 	},
 ];
 
