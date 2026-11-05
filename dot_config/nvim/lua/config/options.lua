@@ -1,6 +1,5 @@
 local o = vim.opt
 
-o.background = "dark"
 o.number = true
 
 o.tabstop = 2

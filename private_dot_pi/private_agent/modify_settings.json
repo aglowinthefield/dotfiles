@@ -5,14 +5,13 @@
   A missing file gets the full seed.
 */ -}}
 {{- $s := dict
-      "packages" (list "npm:@gotgenes/pi-anthropic-auth" "npm:pi-multi-pass" "npm:billion-context" "npm:@mem0/pi-agent-plugin")
+      "packages" (list "npm:@gotgenes/pi-anthropic-auth" "npm:pi-multi-pass" "npm:billion-context")
       "defaultTools" (list "+codemode") -}}
 {{- if .chezmoi.stdin | trim }}{{ $s = fromJson .chezmoi.stdin }}{{ end -}}
-{{- /* Enforced on existing machines too: mem0 memory must load on every host
-       (pi installs a listed-but-missing package on next start). Appended, so
-       packages added locally are kept. */ -}}
+{{- /* mem0 was dropped in favour of Impression: strip it from existing machines. */ -}}
 {{- $pkgs := get $s "packages" | default list -}}
-{{- if not (has "npm:@mem0/pi-agent-plugin" $pkgs) }}{{ $s = setValueAtPath "packages" (append $pkgs "npm:@mem0/pi-agent-plugin") $s }}{{ end -}}
+{{- $keep := list -}}{{- range $pkgs }}{{ if ne . "npm:@mem0/pi-agent-plugin" }}{{ $keep = append $keep . }}{{ end }}{{ end -}}
+{{- $s = setValueAtPath "packages" $keep $s -}}
 {{- /* jev/auto is the virtual model from extensions/jev-router.ts: it plans on
        Opus or Sonnet by Jev's read of the first prompt, then implements on Sonnet. */ -}}
 {{- $s = setValueAtPath "defaultProvider" "jev" $s -}}
