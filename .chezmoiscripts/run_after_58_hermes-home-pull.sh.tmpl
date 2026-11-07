@@ -1,4 +1,4 @@
-{{- if ne .chezmoi.os "windows" -}}
+{{- if eq .chezmoi.hostname "mochi" -}}
 #!/bin/sh
 # Keep ~/.hermes current with hermes-home on every apply. 57 only re-runs when its
 # own text changes, so without this each host drifts behind until someone pulls

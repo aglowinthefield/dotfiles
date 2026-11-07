@@ -1,4 +1,4 @@
-{{- if ne .chezmoi.os "windows" -}}
+{{- if eq .chezmoi.hostname "mochi" -}}
 #!/bin/sh
 {{ template "homebrew-path.sh" . }}
 # Lay the portable half of ~/.hermes over a Hermes install.

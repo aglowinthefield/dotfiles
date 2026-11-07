@@ -125,3 +125,8 @@ tests
 tests/**
 docs
 docs/**
+{{- if ne .chezmoi.hostname "mochi" }}
+# Hermes is retired everywhere but mochi, which still runs its gateway.
+.hermes
+.local/bin/hermes-local-keys
+{{- end }}
