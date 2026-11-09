@@ -111,8 +111,6 @@ function routeTo(request: JevRequest, ctx: ExtensionContext, state: JevState, sa
 	const model = ctx.modelRegistry.find(provider, models[state.role]);
 	if (!model) throw new Error(`Model ${provider}/${models[state.role]} is not in the catalog`);
 	const thinkingLevel = thinkingFor(provider, state.role, request.thinkingLevel);
-	// Show the choice before the response arrives; pi-multi-pass's footer only prints the virtual id "auto".
-	ctx.ui.setStatus("jev", `→ ${provider}/${model.id} • ${thinkingLevel}`);
 	return { model, thinkingLevel, state: save ? state : undefined };
 }
 
@@ -190,8 +188,7 @@ async function choosePlanningRole(
 }
 
 export default function (pi: ExtensionAPI) {
-	// The footer's own "auto → model" suffix gets truncated on narrow terminals, so also show the routed
-	// model as a status. Clear pi-multi-pass's static "chain:default | starts ..." status, which is noise here.
+	// Clear pi-multi-pass's static "chain:default | starts ..." status, which is noise here.
 	const clearChainStatus = (ctx: ExtensionContext) => ctx.ui.setStatus("multi-pass", undefined);
 	pi.on("session_start", (_event, ctx) => {
 		clearChainStatus(ctx);
@@ -200,12 +197,6 @@ export default function (pi: ExtensionAPI) {
 	});
 	pi.on("before_agent_start", (_event, ctx) => clearChainStatus(ctx));
 	pi.on("turn_start", (_event, ctx) => clearChainStatus(ctx));
-	pi.on("message_end", (event, ctx) => {
-		const message = event.message;
-		if (message.role !== "assistant" || ctx.model?.provider !== "jev") return;
-		const level = message.thinkingLevel ? ` • ${message.thinkingLevel}` : "";
-		ctx.ui.setStatus("jev", `→ ${message.provider}/${message.model}${level}`);
-	});
 
 	pi.registerVirtualModel<JevState>({
 		provider: "jev",
