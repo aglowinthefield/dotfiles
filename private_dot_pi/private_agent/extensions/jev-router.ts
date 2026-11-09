@@ -114,10 +114,26 @@ function routeTo(request: JevRequest, ctx: ExtensionContext, state: JevState, sa
 	return { model, thinkingLevel, state: save ? state : undefined };
 }
 
-function lastUserText(messages: readonly Message[]): string {
-	const content = messages.filter((message) => message.role === "user").at(-1)?.content ?? "";
+function textOf(message: Message): string {
+	const content = message.role === "user" ? message.content : "";
 	if (typeof content === "string") return content;
 	return content.flatMap((block) => (block.type === "text" ? [block.text] : [])).join("\n");
+}
+
+/**
+ * Impression injects memory as a hidden custom message, which Pi sends to the router as a plain user
+ * message after the real prompt. Without this, the router classified the memory block, not the prompt.
+ */
+const INJECTED_PREFIX = /^\s*(How this user likes to work|Memories from Impression|Saved memories|Memories that)/;
+
+/** User messages the person actually typed, in order. */
+function typedUserMessages(messages: readonly Message[]): Message[] {
+	return messages.filter((message) => message.role === "user" && !INJECTED_PREFIX.test(textOf(message)));
+}
+
+function lastUserText(messages: readonly Message[]): string {
+	const typed = typedUserMessages(messages);
+	return textOf(typed.at(-1) ?? messages.findLast((message) => message.role === "user") ?? ({ role: "user", content: "", timestamp: 0 } as Message));
 }
 
 /** Whether a tool call since the last user message edited a file successfully. */
@@ -238,7 +254,7 @@ export default function (pi: ExtensionAPI) {
 			// A standard session that keeps going is harder than it looked: move it to Opus once.
 			if (state.role === "standard" && !state.escalated) {
 				const assistantTurns = request.messages.filter((message) => message.role === "assistant").length;
-				const userMessages = request.messages.filter((message) => message.role === "user").length;
+				const userMessages = typedUserMessages(request.messages).length;
 				if (assistantTurns >= ESCALATE_ASSISTANT_TURNS || userMessages >= ESCALATE_USER_MESSAGES) {
 					state = { phase: "planning", role: "complex", account: 0, escalated: true };
 					changed = true;
