@@ -304,10 +304,12 @@ for repo in "${repos[@]}"; do
   $APPLY && git -C "$repo" worktree prune
 done
 
-# Turbo's shared cache (TURBO_CACHE_DIR, set in fish conf.d/06_turbo.fish) has no
-# eviction of its own; drop entries not written in 14 days.
-if $APPLY && [ -n "${TURBO_CACHE_DIR:-}" ] && [ -d "$TURBO_CACHE_DIR" ]; then
-  find "$TURBO_CACHE_DIR" -type f -mtime +14 -delete 2>/dev/null || true
+# Turbo's shared cache (silk-remix scripts/turbo.sh puts it in <repo>/.git/turbo-cache)
+# has no eviction of its own; drop entries not written in 14 days.
+if $APPLY; then
+  for repo in "${repos[@]}"; do
+    [ -d "$repo/.git/turbo-cache" ] && find "$repo/.git/turbo-cache" -type f -mtime +14 -delete 2>/dev/null
+  done
 fi
 
 echo "$removed $($APPLY && echo removed || echo to remove), $kept kept. Branches are kept."
