@@ -13,6 +13,7 @@ return {
       { "<leader>t", group = "Test" },
       { "<leader>u", group = "UI/Toggle" },
       { "<leader>x", group = "Diagnostics" },
+      { "<leader>y", group = "Yank" },
 
       -- Top Pickers & Explorer
       { "<leader><space>", function() Snacks.picker.smart() end, desc = "Smart Find Files" },

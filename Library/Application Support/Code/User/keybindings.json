@@ -1,0 +1,12 @@
+// Mirrors ~/.config/nvim: completion.lua and snacks.nvim's <c-/> terminal.
+[
+  // blink.cmp <C-k>: signature help while typing arguments
+  { "key": "ctrl+k", "command": "editor.action.triggerParameterHints", "when": "editorTextFocus && vim.mode == 'Insert'" },
+  // blink.cmp <C-space> shows completion; <C-e> hides it
+  { "key": "ctrl+e", "command": "hideSuggestWidget", "when": "suggestWidgetVisible && textInputFocus" },
+  // blink.cmp <C-n> / <C-p> move through the menu
+  { "key": "ctrl+n", "command": "selectNextSuggestion", "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus" },
+  { "key": "ctrl+p", "command": "selectPrevSuggestion", "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus" },
+  // snacks.terminal <c-/>
+  { "key": "ctrl+/", "command": "workbench.action.terminal.toggleTerminal" }
+]

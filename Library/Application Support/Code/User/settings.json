@@ -1,0 +1,379 @@
+{
+  // Mirrors ~/.config/nvim. Where a setting copies an nvim choice, the
+  // reason lives in the matching nvim file; comments here only cover what
+  // VS Code needs on top of that.
+
+  // ── Theme (plugins/compline.lua) ────────────────────────────────────────
+  // nvim follows the OS appearance through 'background': Compline when dark,
+  // Lauds (its light sibling) when light. The rivethorn.compline extension
+  // ships both.
+  "window.autoDetectColorScheme": true,
+  "workbench.preferredDarkColorTheme": "Compline",
+  "workbench.preferredLightColorTheme": "Lauds",
+  "workbench.colorTheme": "Compline",
+  // Same SQL contrast fix as compline.lua: keywords and strings have nearly
+  // the same luminance, so sql`...` templates read as one colour. The
+  // sql-tagged-template extension embeds source.sql inside TS strings.
+  "editor.tokenColorCustomizations": {
+    "[Compline]": {
+      "textMateRules": [
+        { "scope": "source.sql keyword", "settings": { "foreground": "#8fb0d6", "fontStyle": "bold" } },
+        { "scope": "source.sql storage.type", "settings": { "foreground": "#d6a77a" } },
+        { "scope": "source.sql support.function", "settings": { "foreground": "#c79fd0" } }
+      ]
+    },
+    "[Lauds]": {
+      "textMateRules": [
+        { "scope": "source.sql keyword", "settings": { "foreground": "#2f5f9a", "fontStyle": "bold" } },
+        { "scope": "source.sql storage.type", "settings": { "foreground": "#8a5a22" } },
+        { "scope": "source.sql support.function", "settings": { "foreground": "#7a3f8a" } }
+      ]
+    }
+  },
+
+  // ── Minimal chrome ──────────────────────────────────────────────────────
+  // nvim has no tab bar, activity bar or breadcrumbs; the leader menu and
+  // quick open replace them. Cmd+Shift+E / Cmd+B still bring the sidebar back.
+  "workbench.activityBar.location": "hidden",
+  "workbench.editor.showTabs": "none",
+  "workbench.editor.editorActionsLocation": "hidden",
+  "workbench.layoutControl.enabled": false,
+  "workbench.statusBar.visible": true,
+  "workbench.sideBar.location": "left",
+  "workbench.startupEditor": "none",
+  "workbench.tips.enabled": false,
+  "workbench.tree.indent": 12,
+  "window.menuBarVisibility": "toggle",
+  "window.commandCenter": false,
+  "window.titleBarStyle": "custom",
+  "window.title": "${activeEditorShort}",
+  "breadcrumbs.enabled": false,
+  "editor.stickyScroll.enabled": false,
+  "editor.minimap.enabled": false,
+  "editor.scrollbar.vertical": "hidden",
+  "editor.scrollbar.horizontal": "hidden",
+  "editor.scrollbar.verticalScrollbarSize": 6,
+  "editor.overviewRulerBorder": false,
+  "editor.hideCursorInOverviewRuler": true,
+  "editor.folding": false,
+  "editor.foldingHighlight": false,
+  "editor.lineNumbers": "on",
+  "editor.renderWhitespace": "none",
+  "editor.lightbulb.enabled": "off",
+  "editor.codeLens": false,
+  "editor.padding.top": 8,
+  "explorer.compactFolders": false,
+  "explorer.openEditors.visible": 0,
+  "problems.decorations.enabled": false,
+  "git.decorations.enabled": false,
+  "scm.diffDecorationsGutterWidth": 2,
+  "terminal.integrated.tabs.enabled": false,
+  "terminal.integrated.showExitAlert": false,
+  "chat.commandCenter.enabled": false,
+  "chat.agent.enabled": false,
+  "extensions.ignoreRecommendations": true,
+  "telemetry.telemetryLevel": "off",
+  "update.showReleaseNotes": false,
+  "security.workspace.trust.banner": "never",
+
+  // ── Font: the terminal nvim runs in (ghostty/config) ────────────────────
+  "editor.fontFamily": "'IosevkaTerm Nerd Font Mono', 'RecMonoLinear Nerd Font Mono', monospace",
+  "editor.fontSize": 14,
+  "terminal.integrated.fontFamily": "'IosevkaTerm Nerd Font Mono', 'RecMonoLinear Nerd Font Mono', monospace",
+  "terminal.integrated.fontSize": 14,
+
+  // ── Options (config/options.lua) ────────────────────────────────────────
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.renderLineHighlight": "line",
+  "editor.glyphMargin": true,
+  "[csharp]": { "editor.tabSize": 4, "editor.defaultFormatter": "csharpier.csharpier-vscode" },
+  "[swift]": { "editor.tabSize": 4 },
+
+  // snacks.nvim: smooth scroll, scope-aware indent guides, word highlights
+  "editor.smoothScrolling": true,
+  "workbench.list.smoothScrolling": true,
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.guides.indentation": true,
+  "editor.guides.highlightActiveIndentation": true,
+  "editor.guides.bracketPairs": "active",
+  "editor.occurrencesHighlight": "singleFile",
+  // picker sources show dot-folders (hidden = true) but not gitignored paths
+  "search.useIgnoreFiles": true,
+  "explorer.excludeGitIgnore": false,
+
+  // ── Vim (VSCodeVim) ─────────────────────────────────────────────────────
+  "vim.leader": ",",
+  "vim.useSystemClipboard": true,
+  "vim.ignorecase": true,
+  "vim.smartcase": true,
+  "vim.incsearch": true,
+  "vim.hlsearch": false,
+  "vim.surround": true,
+  "vim.useCtrlKeys": true,
+  "vim.handleKeys": {
+    // <C-k> is signature help in insert mode (completion.lua), bound in
+    // keybindings.json; <C-/> is the terminal toggle
+    "<C-k>": false,
+    "<C-/>": false
+  },
+  "vim.normalModeKeyBindingsNonRecursive": [
+    // which-key.nvim: the leader opens the menu defined in whichkey.bindings
+    { "before": ["<leader>"], "commands": ["whichkey.show"] },
+    // LSP (Neovim 0.11 / LazyVim conventions)
+    { "before": ["g", "d"], "commands": ["editor.action.revealDefinition"] },
+    { "before": ["g", "D"], "commands": ["editor.action.revealDeclaration"] },
+    { "before": ["g", "r"], "commands": ["editor.action.goToReferences"] },
+    { "before": ["g", "I"], "commands": ["editor.action.goToImplementation"] },
+    { "before": ["g", "y"], "commands": ["editor.action.goToTypeDefinition"] },
+    { "before": ["K"], "commands": ["editor.action.showHover"] },
+    // snacks.words
+    { "before": ["]", "]"], "commands": ["editor.action.wordHighlight.next"] },
+    { "before": ["[", "["], "commands": ["editor.action.wordHighlight.prev"] },
+    // gitsigns hunks
+    { "before": ["]", "h"], "commands": ["workbench.action.editor.nextChange"] },
+    { "before": ["[", "h"], "commands": ["workbench.action.editor.previousChange"] },
+    // neotest failed tests
+    { "before": ["]", "t"], "commands": ["testing.goToNextMessage"] },
+    { "before": ["[", "t"], "commands": ["testing.goToPreviousMessage"] },
+    // diagnostics, as nvim 0.11's ]d / [d
+    { "before": ["]", "d"], "commands": ["editor.action.marker.next"] },
+    { "before": ["[", "d"], "commands": ["editor.action.marker.prev"] }
+  ],
+  "vim.visualModeKeyBindingsNonRecursive": [
+    { "before": ["<leader>"], "commands": ["whichkey.show"] }
+  ],
+
+  // ── Leader menu (which-key.lua, plus conform/trouble/dap/neotest/gitsigns
+  // /tsc keys). Same letters as nvim; entries with no VS Code equivalent are
+  // left out rather than pointed somewhere approximate.
+  "whichkey.sortOrder": "alphabetically",
+  "whichkey.bindings": [
+    { "key": " ", "name": "Smart Find Files", "type": "command", "command": "workbench.action.quickOpen" },
+    { "key": ",", "name": "Buffers", "type": "command", "command": "workbench.action.showAllEditorsByMostRecentlyUsed" },
+    { "key": "/", "name": "Grep", "type": "command", "command": "workbench.action.quickTextSearch" },
+    { "key": ":", "name": "Command Palette", "type": "command", "command": "workbench.action.showCommands" },
+    { "key": "n", "name": "Notification History", "type": "command", "command": "notifications.showList" },
+    { "key": "e", "name": "File Explorer", "type": "command", "command": "workbench.view.explorer" },
+    { "key": "w", "name": "Save file", "type": "command", "command": "workbench.action.files.save" },
+    { "key": "q", "name": "Quit window", "type": "command", "command": "workbench.action.closeActiveEditor" },
+    { "key": "z", "name": "Toggle Zen Mode", "type": "command", "command": "workbench.action.toggleZenMode" },
+    { "key": "Z", "name": "Toggle Zoom", "type": "command", "command": "workbench.action.toggleMaximizeEditorGroup" },
+    { "key": ".", "name": "Scratch Buffer", "type": "command", "command": "workbench.action.files.newUntitledFile" },
+    {
+      "key": "b", "name": "+Buffer", "type": "bindings",
+      "bindings": [
+        { "key": "d", "name": "Delete Buffer", "type": "command", "command": "workbench.action.closeActiveEditor" }
+      ]
+    },
+    {
+      "key": "c", "name": "+Code", "type": "bindings",
+      "bindings": [
+        { "key": "a", "name": "Code Action", "type": "command", "command": "editor.action.quickFix" },
+        { "key": "f", "name": "Format Buffer", "type": "command", "command": "editor.action.formatDocument" },
+        { "key": "i", "name": "Incoming Calls", "type": "command", "command": "editor.showIncomingCalls" },
+        { "key": "o", "name": "Outgoing Calls", "type": "command", "command": "editor.showOutgoingCalls" },
+        { "key": "l", "name": "References (panel)", "type": "command", "command": "references-view.findReferences" },
+        { "key": "r", "name": "Rename Symbol", "type": "command", "command": "editor.action.rename" },
+        { "key": "R", "name": "Rename File", "type": "commands", "commands": ["workbench.files.action.showActiveFileInExplorer", "renameFile"] },
+        { "key": "s", "name": "Symbols (outline)", "type": "command", "command": "outline.focus" },
+        { "key": "t", "name": "Type-check Project (tsc)", "type": "command", "command": "workbench.action.tasks.runTask", "args": "tsc: type-check workspaces" }
+      ]
+    },
+    {
+      "key": "d", "name": "+Debug", "type": "bindings",
+      "bindings": [
+        { "key": "b", "name": "Toggle Breakpoint", "type": "command", "command": "editor.debug.action.toggleBreakpoint" },
+        { "key": "B", "name": "Conditional Breakpoint", "type": "command", "command": "editor.debug.action.conditionalBreakpoint" },
+        { "key": "c", "name": "Continue / Start", "type": "command", "command": "workbench.action.debug.start" },
+        { "key": "C", "name": "Run to Cursor", "type": "command", "command": "editor.debug.action.runToCursor" },
+        { "key": "i", "name": "Step Into", "type": "command", "command": "workbench.action.debug.stepInto" },
+        { "key": "o", "name": "Step Over", "type": "command", "command": "workbench.action.debug.stepOver" },
+        { "key": "O", "name": "Step Out", "type": "command", "command": "workbench.action.debug.stepOut" },
+        { "key": "r", "name": "Toggle REPL", "type": "command", "command": "workbench.debug.action.toggleRepl" },
+        { "key": "l", "name": "Run Last", "type": "command", "command": "workbench.action.debug.restart" },
+        { "key": "t", "name": "Terminate", "type": "command", "command": "workbench.action.debug.stop" },
+        { "key": "u", "name": "Toggle Debug UI", "type": "command", "command": "workbench.view.debug" },
+        { "key": "e", "name": "Eval", "type": "command", "command": "editor.debug.action.selectionToRepl" }
+      ]
+    },
+    {
+      "key": "f", "name": "+Find", "type": "bindings",
+      "bindings": [
+        { "key": "b", "name": "Buffers", "type": "command", "command": "workbench.action.showAllEditorsByMostRecentlyUsed" },
+        { "key": "c", "name": "Find Config File", "type": "command", "command": "workbench.action.openSettingsJson" },
+        { "key": "f", "name": "Find Files", "type": "command", "command": "workbench.action.quickOpen" },
+        { "key": "g", "name": "Find Git Files", "type": "command", "command": "workbench.action.quickOpen" },
+        { "key": "p", "name": "Projects", "type": "command", "command": "workbench.action.openRecent" },
+        { "key": "r", "name": "Recent", "type": "command", "command": "workbench.action.openRecent" }
+      ]
+    },
+    {
+      "key": "g", "name": "+Git", "type": "bindings",
+      "bindings": [
+        { "key": "b", "name": "Git Branches", "type": "command", "command": "git.checkout" },
+        { "key": "l", "name": "Git Log", "type": "command", "command": "workbench.scm.history.focus" },
+        { "key": "f", "name": "Git Log File", "type": "command", "command": "timeline.focus" },
+        { "key": "s", "name": "Git Status", "type": "command", "command": "workbench.view.scm" },
+        { "key": "S", "name": "Git Stash", "type": "command", "command": "git.stashView" },
+        { "key": "d", "name": "Git Diff", "type": "command", "command": "git.openChange" },
+        { "key": "B", "name": "Git Browse", "type": "command", "command": "issue.openGithubPermalink" },
+        { "key": "i", "name": "GitHub Issues", "type": "command", "command": "issues:github.focus" },
+        { "key": "p", "name": "GitHub Pull Requests", "type": "command", "command": "pr:github.focus" },
+        {
+          "key": "g", "name": "Lazygit", "type": "commands",
+          "commands": ["workbench.action.createTerminalEditor", "workbench.action.terminal.sendSequence"],
+          "args": [null, { "text": "lazygit && exit\r" }]
+        }
+      ]
+    },
+    {
+      "key": "h", "name": "+Hunk", "type": "bindings",
+      "bindings": [
+        { "key": "s", "name": "Stage hunk", "type": "command", "command": "git.stageSelectedRanges" },
+        { "key": "r", "name": "Reset hunk", "type": "command", "command": "git.revertSelectedRanges" },
+        { "key": "p", "name": "Preview hunk", "type": "command", "command": "editor.action.dirtydiff.next" },
+        { "key": "b", "name": "Blame", "type": "command", "command": "git.blame.toggleEditorDecoration" },
+        { "key": "d", "name": "Diff this", "type": "command", "command": "git.openChange" }
+      ]
+    },
+    {
+      "key": "s", "name": "+Search", "type": "bindings",
+      "bindings": [
+        { "key": "b", "name": "Buffer Lines", "type": "command", "command": "actions.find" },
+        { "key": "B", "name": "Grep Open Buffers", "type": "command", "command": "workbench.action.findInFiles", "args": { "onlyOpenEditors": true } },
+        { "key": "g", "name": "Grep", "type": "command", "command": "workbench.action.findInFiles" },
+        { "key": "w", "name": "Grep word / selection", "type": "command", "command": "workbench.action.findInFiles" },
+        { "key": "c", "name": "Command History", "type": "command", "command": "workbench.action.showCommands" },
+        { "key": "C", "name": "Commands", "type": "command", "command": "workbench.action.showCommands" },
+        { "key": "d", "name": "Diagnostics", "type": "command", "command": "workbench.actions.view.problems" },
+        { "key": "k", "name": "Keymaps", "type": "command", "command": "workbench.action.openGlobalKeybindings" },
+        { "key": "s", "name": "LSP Symbols", "type": "command", "command": "workbench.action.gotoSymbol" },
+        { "key": "S", "name": "LSP Workspace Symbols", "type": "command", "command": "workbench.action.showAllSymbols" },
+        { "key": "q", "name": "Quickfix List", "type": "command", "command": "workbench.actions.view.problems" },
+        { "key": "u", "name": "Undo History (local)", "type": "command", "command": "timeline.focus" }
+      ]
+    },
+    {
+      "key": "t", "name": "+Test", "type": "bindings",
+      "bindings": [
+        { "key": "t", "name": "Run Nearest Test", "type": "command", "command": "testing.runAtCursor" },
+        { "key": "f", "name": "Run File Tests", "type": "command", "command": "testing.runCurrentFile" },
+        { "key": "T", "name": "Run All Tests", "type": "command", "command": "testing.runAll" },
+        { "key": "l", "name": "Run Last Test", "type": "command", "command": "testing.reRunLastRun" },
+        { "key": "s", "name": "Toggle Summary", "type": "command", "command": "workbench.view.testing" },
+        { "key": "o", "name": "Show Output", "type": "command", "command": "testing.showMostRecentOutput" },
+        { "key": "S", "name": "Stop", "type": "command", "command": "testing.cancelRun" },
+        { "key": "d", "name": "Debug Nearest Test", "type": "command", "command": "testing.debugAtCursor" }
+      ]
+    },
+    {
+      "key": "u", "name": "+UI/Toggle", "type": "bindings",
+      "bindings": [
+        { "key": "w", "name": "Wrap", "type": "command", "command": "editor.action.toggleWordWrap" },
+        { "key": "d", "name": "Diagnostics (inline)", "type": "command", "command": "errorLens.toggle" },
+        { "key": "b", "name": "Dark Background", "type": "command", "command": "workbench.action.toggleLightDarkThemes" },
+        { "key": "C", "name": "Colorschemes", "type": "command", "command": "workbench.action.selectTheme" },
+        { "key": "n", "name": "Dismiss All Notifications", "type": "command", "command": "notifications.clearAll" }
+      ]
+    },
+    {
+      // nvim also binds bare <leader>x to save-and-quit; here x is only the
+      // group, since which-key menus can't wait on a timeout
+      "key": "x", "name": "+Diagnostics", "type": "bindings",
+      "bindings": [
+        { "key": "x", "name": "Diagnostics (Trouble)", "type": "command", "command": "workbench.actions.view.problems" },
+        { "key": "X", "name": "Buffer Diagnostics", "type": "command", "command": "workbench.actions.view.problems" }
+      ]
+    }
+  ],
+
+  // ── Completion (completion.lua) ─────────────────────────────────────────
+  // Tab and Enter accept, first item preselected, docs after 200ms, no
+  // auto-popup in prose.
+  "editor.acceptSuggestionOnEnter": "on",
+  "editor.suggestSelection": "first",
+  "editor.suggest.preview": false,
+  "editor.quickSuggestionsDelay": 10,
+  "editor.hover.delay": 200,
+  "editor.parameterHints.enabled": true,
+  "[markdown]": { "editor.quickSuggestions": { "other": "off", "comments": "off", "strings": "off" } },
+  "[plaintext]": { "editor.quickSuggestions": { "other": "off", "comments": "off", "strings": "off" } },
+
+  // ── Diagnostics (lsp.lua vim.diagnostic.config) ─────────────────────────
+  // Error Lens is the inline virtual text; severity sorted, source shown
+  "errorLens.enabledDiagnosticLevels": ["error", "warning", "info"],
+  "errorLens.messageTemplate": "$message ($source)",
+  "errorLens.messageMaxChars": 120,
+  "errorLens.delay": 200,
+
+  // ── Formatting (conform.lua) ────────────────────────────────────────────
+  // prettier, then ESLint fix-all, on save; prettier only where the project
+  // has a config, from the project's node_modules.
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": { "source.fixAll.eslint": "explicit" },
+  "prettier.requireConfig": true,
+  "prettier.resolveGlobalModules": false,
+  "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[javascriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescriptreact]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[yaml]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[css]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[html]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[lua]": { "editor.defaultFormatter": "JohnnyMorganz.stylua" },
+
+  // ── Language servers (lsp.lua, roslyn.lua) ──────────────────────────────
+  "Lua.diagnostics.globals": ["vim", "Snacks"],
+  // JSX/HTML tag auto-close and paired rename (nvim-ts-autotag)
+  "editor.linkedEditing": true,
+  "javascript.autoClosingTags": true,
+  "typescript.autoClosingTags": true,
+  "editor.inlayHints.enabled": "onUnlessPressed",
+  // silk-remix's .worktrees holds dozens of full checkouts; keep watchers,
+  // search and the tailwind server out of them (see the tailwindcss note in
+  // lsp.lua)
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/node_modules/**": true,
+    "**/.worktrees/**": true
+  },
+  "search.exclude": { "**/.worktrees/**": true },
+  "tailwindCSS.files.exclude": ["**/.git/**", "**/node_modules/**", "**/.hg/**", "**/.svn/**", "**/.worktrees/**"],
+  "yaml.schemaStore.enable": true,
+  "files.associations": {
+    "docker-compose.yaml": "dockercompose",
+    "compose.yaml": "dockercompose",
+    "*.alloy": "alloy"
+  },
+  "dotnet.backgroundAnalysis.analyzerDiagnosticsScope": "fullSolution",
+  "dotnet.backgroundAnalysis.compilerDiagnosticsScope": "fullSolution",
+  "csharp.inlayHints.enableInlayHintsForImplicitObjectCreation": true,
+  "csharp.inlayHints.enableInlayHintsForImplicitVariableTypes": true,
+  "csharp.inlayHints.enableInlayHintsForLambdaParameterTypes": true,
+  "csharp.inlayHints.enableInlayHintsForTypes": true,
+  "dotnet.inlayHints.enableInlayHintsForIndexerParameters": true,
+  "dotnet.inlayHints.enableInlayHintsForLiteralParameters": true,
+  "dotnet.inlayHints.enableInlayHintsForObjectCreationParameters": true,
+  "dotnet.inlayHints.enableInlayHintsForOtherParameters": true,
+  "dotnet.inlayHints.enableInlayHintsForParameters": true,
+  "dotnet.inlayHints.suppressInlayHintsForParametersThatDifferOnlyBySuffix": true,
+  "dotnet.inlayHints.suppressInlayHintsForParametersThatMatchArgumentName": true,
+  "dotnet.inlayHints.suppressInlayHintsForParametersThatMatchMethodIntent": true,
+  "dotnet.codeLens.enableReferencesCodeLens": true,
+  "dotnet.completion.showCompletionItemsFromUnimportedNamespaces": true,
+  "dotnet.completion.showNameCompletionSuggestions": true,
+
+  // ── Tests (neotest.lua) ─────────────────────────────────────────────────
+  // Jest only on demand: the extension's default watch mode would run every
+  // suite in a monorepo on open. node:test files go to nodejs-testing.
+  "jest.runMode": "on-demand",
+  "nodejs-testing.exclude": ["**/node_modules/**", "**/.worktrees/**", "**/dist/**", "**/build/**"],
+
+  // ── Git (gitsigns.lua) ──────────────────────────────────────────────────
+  "scm.diffDecorations": "gutter",
+  "git.blame.editorDecoration.enabled": false
+}

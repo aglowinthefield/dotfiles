@@ -1,0 +1,13 @@
+{
+  // plugins/tsc.lua: type errors across the repo, not just open files
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "tsc: type-check workspaces",
+      "type": "shell",
+      "command": "npm run type-check",
+      "problemMatcher": "$tsc",
+      "group": "build"
+    }
+  ]
+}

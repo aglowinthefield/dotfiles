@@ -105,6 +105,7 @@ packages:
     - 'font-ubuntu-sans-nerd-font'
     - 'font-victor-mono-nerd-font'
     - 'font-zed-mono-nerd-font'
+    - 'visual-studio-code'
     - 'vlc'
 
   arch:
