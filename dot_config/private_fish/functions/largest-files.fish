@@ -1,4 +1,4 @@
-function largest-files --description 'List the files with the most lines, skipping gitignored files and node_modules'
+function largest-files --description 'List the source files with the most lines, skipping gitignored, binary, lock, and generated files'
     set -l count 20
     test (count $argv) -gt 0; and set count $argv[1]
 
@@ -14,13 +14,22 @@ function largest-files --description 'List the files with the most lines, skippi
         end
     end
 
+    set -l files
     if set -q git[1]
-        $git ls-files -z --cached --others --exclude-standard -- . ':!:**/node_modules/**' |
-            xargs -0 wc -l 2>/dev/null
+        set files ($git ls-files -z --cached --others --exclude-standard -- . ':!:**/node_modules/**' | string split0)
     else
-        find . -type d \( -name .git -o -name node_modules -o -name .worktrees \) -prune \
-            -o -type f -exec wc -l {} +
-    end |
+        set files (find . -type d \( -name .git -o -name node_modules -o -name .worktrees \) -prune \
+            -o -type f -print0 | string split0)
+    end
+
+    # Lockfiles and tool output are long but nobody edits them by hand.
+    set -l generated '(^|/)(package-lock\.json|npm-shrinkwrap\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb?|Cargo\.lock|Gemfile\.lock|poetry\.lock|uv\.lock|composer\.lock|Podfile\.lock|flake\.lock|go\.sum)$|_snapshot\.json$|baseline-prof\.txt$|\.min\.(js|css)$|\.(map|snap)$'
+    set files (string match -rv -- $generated $files)
+
+    # grep -I drops binary files such as fonts and images.
+    printf '%s\0' $files |
+        xargs -0 grep -IlZ -- '' 2>/dev/null |
+        xargs -0 wc -l 2>/dev/null |
         string match -rv ' total$' |
         sort -nr |
         head -$count
