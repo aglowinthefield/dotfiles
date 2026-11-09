@@ -144,19 +144,24 @@ function editedThisTurn(messages: readonly Message[]): boolean {
 		.some((message) => message.role === "toolResult" && EDIT_TOOLS.has(message.toolName) && !message.isError);
 }
 
+interface Failure {
+	/** `limit`: the account is out of quota, so the session leaves it. `outage`: a network or provider failure, so only this request does. */
+	kind: "limit" | "outage";
+	message: string;
+}
+
 /**
- * The limit error that ended the last attempt, if any: a retry's failed message, or, when Pi gave up
- * and the user sent a new message, the last assistant message before it.
+ * The failure that ended the last attempt, if any: a retry's failed message, or, when Pi gave up
+ * and the user sent a new message, the last assistant message before it (limits only).
  */
-function limitError(request: JevRequest): string | undefined {
-	const failed = request.failed?.message;
-	if (failed?.errorMessage && (LIMIT_ERROR.test(failed.errorMessage) || OUTAGE_ERROR.test(failed.errorMessage))) {
-		return failed.errorMessage;
-	}
+function lastFailure(request: JevRequest): Failure | undefined {
+	const failed = request.failed?.message.errorMessage;
+	if (failed && LIMIT_ERROR.test(failed)) return { kind: "limit", message: failed };
+	if (failed && OUTAGE_ERROR.test(failed)) return { kind: "outage", message: failed };
 	if (request.reason !== "user") return undefined;
 	const last = request.messages.findLast((message) => message.role === "assistant");
 	if (last?.role === "assistant" && last.stopReason === "error" && LIMIT_ERROR.test(last.errorMessage ?? "")) {
-		return last.errorMessage;
+		return { kind: "limit", message: last.errorMessage ?? "" };
 	}
 	return undefined;
 }
@@ -262,13 +267,28 @@ export default function (pi: ExtensionAPI) {
 				}
 			}
 
-			// Out of quota on this account: move to the next one for the rest of the session.
-			if (limitError(request)) {
-				const next = nextAccount(ctx, state.account, state.role);
+			// Out of quota: move to the next account for the rest of the session. A network or provider
+			// outage only moves this retry, so the next message tries the first account again.
+			const failure = lastFailure(request);
+			if (failure) {
+				const failedProvider = request.failed?.model.provider;
+				const failedAt = CHAINS[state.role].findIndex((index) => FALLBACK[index].provider === failedProvider);
+				const from = failure.kind === "outage" && failedAt >= 0 ? failedAt : state.account;
+				const next = nextAccount(ctx, from, state.role);
 				if (next !== undefined) {
-					logDecision(ctx, "fallback", { error: limitError(request)?.slice(0, 200), from: FALLBACK[CHAINS[state.role][state.account]].provider, to: FALLBACK[CHAINS[state.role][next]].provider });
-					state = { ...state, account: next };
-					changed = true;
+					logDecision(ctx, "fallback", {
+						kind: failure.kind,
+						error: failure.message.slice(0, 200),
+						from: FALLBACK[CHAINS[state.role][from]].provider,
+						to: FALLBACK[CHAINS[state.role][next]].provider,
+					});
+					if (failure.kind === "limit") {
+						state = { ...state, account: next };
+						changed = true;
+					} else {
+						const detour = routeTo(request, ctx, { ...state, account: next }, false);
+						return { ...detour, state: changed ? state : undefined };
+					}
 				}
 			}
 
