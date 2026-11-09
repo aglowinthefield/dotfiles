@@ -1,6 +1,7 @@
 {
   "mcpServers": {
     "silk": {
+      "enabled": false,
       "url": "https://api.silk.cx/api/mcp",
       "oauth": {
         "clientRegistration": "cimd"
