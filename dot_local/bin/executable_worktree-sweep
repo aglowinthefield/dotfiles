@@ -1,0 +1,307 @@
+#!/usr/bin/env bash
+# Removes finished linked worktrees under <repo>/.worktrees/, across every repo.
+#
+#   worktree-sweep                    dry run over all discovered repos
+#   worktree-sweep --apply            remove
+#   worktree-sweep [opts] <repo>...   only these repos (primary checkout paths)
+#   worktree-sweep --idle-days N      idle threshold for branches with no PR (default 7)
+#   worktree-sweep --install-agent    run `--apply` daily at 04:00 via launchd (macOS)
+#
+# Repos: each child of the directories in $WORKTREE_SWEEP_ROOTS (colon separated,
+# default ~/code:~/silk) that has a .worktrees/ directory. Worktrunk's
+# `worktree-path` puts worktrees there for every repo.
+#
+# A worktree is removed only when all of these hold:
+#   - it is not locked (`git worktree lock`);
+#   - no process has its working directory inside it (a live agent or shell);
+#   - `git status` is empty;
+#   - its ignored files are all regenerable: node_modules, build caches and
+#     similar, plus any extended regex lines in <repo>/.config/worktree-sweep.regex.
+#     Anything else (logs, artifacts, local config) keeps it;
+#   - its branch's PR is merged or closed and the worktree has been quiet for an
+#     hour; or it has no PR and has been idle for --idle-days. A detached HEAD
+#     also needs its commit reachable from some branch.
+#
+# Removal goes through `wt remove --yes --no-delete-branch` when worktrunk is
+# installed, so the repo's pre-remove hook runs (silk-remix uses it to stop the
+# worktree's Neon Local container). Otherwise `git worktree remove`. Branches
+# are always kept; `git worktree add .worktrees/<name> <branch>` restores one.
+#
+# A repo is skipped, not guessed at, when `gh` cannot list its PRs. Nothing is
+# removed anywhere when the process list cannot be read.
+
+set -euo pipefail
+
+APPLY=false
+IDLE_DAYS=7
+GRACE_SECONDS=3600
+AGENT_LABEL="cx.worktree-sweep"
+ROOTS="${WORKTREE_SWEEP_ROOTS:-$HOME/code:$HOME/silk}"
+
+# Ignored paths that rebuild from source or a lockfile (grep -E, matched against
+# `git ls-files --others --ignored --directory` output).
+REGENERABLE='(^|/)(node_modules|\.turbo|dist|build|\.next|\.expo|\.react-router|\.cache|coverage|__pycache__|\.venv|\.build|target)(/|$)|\.tsbuildinfo$|(^|/)\.DS_Store$|(^|/)\.eslintcache$|(^|/)xcuserdata/|^\.husky/_/'
+
+usage() { sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'; }
+
+install_agent=false
+repos_arg=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --apply) APPLY=true ;;
+    --idle-days)
+      IDLE_DAYS="${2:?--idle-days needs a number}"
+      shift
+      ;;
+    --install-agent) install_agent=true ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    -*)
+      usage >&2
+      exit 2
+      ;;
+    *) repos_arg+=("$1") ;;
+  esac
+  shift
+done
+case "$IDLE_DAYS" in '' | *[!0-9]*)
+  echo "worktree-sweep: --idle-days must be a whole number" >&2
+  exit 2
+  ;;
+esac
+
+if $install_agent; then
+  [ "$(uname)" = Darwin ] || {
+    echo "worktree-sweep: --install-agent is macOS only; use cron elsewhere." >&2
+    exit 1
+  }
+  self="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)/$(basename "${BASH_SOURCE[0]}")"
+  plist="$HOME/Library/LaunchAgents/$AGENT_LABEL.plist"
+  log="$HOME/Library/Logs/worktree-sweep.log"
+  mkdir -p "$(dirname "$plist")" "$(dirname "$log")"
+  cat >"$plist" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>$AGENT_LABEL</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>$self</string>
+    <string>--apply</string>
+    <string>--idle-days</string>
+    <string>$IDLE_DAYS</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key><string>$PATH</string>
+    <key>WORKTREE_SWEEP_ROOTS</key><string>$ROOTS</string>
+  </dict>
+  <key>StartCalendarInterval</key>
+  <dict><key>Hour</key><integer>4</integer><key>Minute</key><integer>0</integer></dict>
+  <key>StandardOutPath</key><string>$log</string>
+  <key>StandardErrorPath</key><string>$log</string>
+</dict>
+</plist>
+PLIST
+  launchctl bootout "gui/$(id -u)/$AGENT_LABEL" 2>/dev/null || true
+  launchctl bootstrap "gui/$(id -u)" "$plist"
+  echo "Installed $plist: daily at 04:00, logging to $log."
+  echo "Remove with: launchctl bootout gui/$(id -u)/$AGENT_LABEL && rm $plist"
+  exit 0
+fi
+
+# Discover repos.
+repos=()
+if [ ${#repos_arg[@]} -gt 0 ]; then
+  for r in "${repos_arg[@]}"; do repos+=("$(cd "$r" && pwd -P)"); done
+else
+  IFS=: read -ra root_list <<<"$ROOTS"
+  for root in "${root_list[@]}"; do
+    for d in "$root"/*/; do
+      [ -d "${d}.git" ] && [ -d "${d}.worktrees" ] && repos+=("$(cd "$d" && pwd -P)")
+    done
+  done
+fi
+if [ ${#repos[@]} -eq 0 ]; then
+  echo "worktree-sweep: no repos with a .worktrees/ directory under $ROOTS."
+  exit 0
+fi
+
+TMP="$(mktemp -d)"
+LOCKDIR="${XDG_STATE_HOME:-$HOME/.local/state}"
+mkdir -p "$LOCKDIR"
+LOCK="$LOCKDIR/worktree-sweep.lock"
+# One sweep at a time; a second would race the first's removals.
+if ! mkdir "$LOCK" 2>/dev/null; then
+  holder="$(cat "$LOCK/pid" 2>/dev/null || true)"
+  if [ -n "$holder" ] && kill -0 "$holder" 2>/dev/null; then
+    echo "worktree-sweep: sweep pid $holder holds $LOCK; exiting." >&2
+    exit 1
+  fi
+  echo "worktree-sweep: clearing stale lock (holder ${holder:-unknown} is gone)." >&2
+  rm -rf "$LOCK"
+  mkdir "$LOCK"
+fi
+echo $$ >"$LOCK/pid"
+trap 'rm -rf "$LOCK" "$TMP"' EXIT
+
+echo "worktree-sweep $(date '+%Y-%m-%d %H:%M:%S') $($APPLY && echo apply || echo dry-run), idle-days=$IDLE_DAYS, ${#repos[@]} repos"
+
+# Working directories of every running process. Fail closed.
+if ! lsof -nP -a -d cwd -Fpn >"$TMP/lsof" 2>/dev/null && [ ! -s "$TMP/lsof" ]; then
+  echo "worktree-sweep: could not list process working directories with lsof; removing nothing." >&2
+  exit 1
+fi
+awk '/^p/{pid=substr($0,2)} /^n/{print pid "\t" substr($0,2)}' "$TMP/lsof" >"$TMP/cwds"
+
+now="$(date +%s)"
+mtime() { stat -f %m "$1" 2>/dev/null || stat -c %Y "$1" 2>/dev/null || echo 0; }
+
+# Seconds since the worktree's HEAD commit or its reflog (checkout, commit,
+# reset) last changed. The index is ignored: `git status` rewrites it.
+idle_seconds() {
+  local wt="$1" gitdir last t
+  gitdir="$(git -C "$wt" rev-parse --path-format=absolute --git-dir)"
+  last="$(git -C "$wt" log -1 --format=%ct HEAD 2>/dev/null || echo 0)"
+  if [ -e "$gitdir/logs/HEAD" ]; then
+    t="$(mtime "$gitdir/logs/HEAD")"
+    [ "$t" -gt "$last" ] && last="$t"
+  fi
+  echo $((now - last))
+}
+
+# OPEN if any PR on the branch is open, else "<STATE>#<n>" of the newest, else NONE.
+pr_state() {
+  awk -F'\t' -v b="$1" '
+    $1 == b { if ($2 == "OPEN") open = 1; if ($3 + 0 > n) { n = $3 + 0; s = $2 "#" $3 } }
+    END { if (open) print "OPEN"; else if (n) print s; else print "NONE" }' "$TMP/prs"
+}
+
+# "pid command" of the first process whose cwd is inside the worktree.
+user_of() {
+  local pid
+  pid="$(awk -F'\t' -v p="$1" '$2 == p || index($2, p "/") == 1 { print $1; exit }' "$TMP/cwds")"
+  [ -n "$pid" ] || return 1
+  echo "$pid $(ps -o comm= -p "$pid" 2>/dev/null | xargs basename 2>/dev/null)"
+}
+
+removed=0
+kept=0
+keep() {
+  echo "  keep          $2  $label/$(basename "$1")"
+  kept=$((kept + 1))
+}
+remove() {
+  local wt="$1" why="$2"
+  if ! $APPLY; then
+    echo "  would remove  $why  $label/$(basename "$wt")"
+    removed=$((removed + 1))
+    return
+  fi
+  local ok=false
+  if command -v wt >/dev/null 2>&1; then
+    wt -C "$repo" remove --yes --foreground --no-delete-branch "$wt" 2>"$TMP/err" && ok=true
+  else
+    git -C "$repo" worktree remove "$wt" 2>"$TMP/err" && ok=true
+  fi
+  if $ok; then
+    echo "  removed       $why  $label/$(basename "$wt")"
+    removed=$((removed + 1))
+  else
+    echo "  keep          removal failed: $(head -1 "$TMP/err")  $label/$(basename "$wt")"
+    kept=$((kept + 1))
+  fi
+}
+
+for repo in "${repos[@]}"; do
+  label="$(basename "$repo")"
+  wts="$repo/.worktrees"
+  # Skip repos with no GitHub remote or an unreadable PR list; guessing "no PR"
+  # would make every branch look abandoned.
+  if ! (cd "$repo" && gh pr list --state all --limit 1000 \
+    --json headRefName,state,number \
+    --jq '.[] | [.headRefName, .state, (.number|tostring)] | @tsv') >"$TMP/prs" 2>"$TMP/err"; then
+    echo "  skip repo     $label: gh pr list failed: $(head -1 "$TMP/err")"
+    continue
+  fi
+  extra=""
+  if [ -f "$repo/.config/worktree-sweep.regex" ]; then
+    extra="$(grep -Ev '^\s*(#|$)' "$repo/.config/worktree-sweep.regex" | paste -sd'|' - || true)"
+  fi
+  regen="$REGENERABLE${extra:+|$extra}"
+
+  : >"$TMP/worktrees"
+  wt_path="" branch="" locked=false
+  while IFS= read -r line || [ -n "$line" ]; do
+    case "$line" in
+      "worktree "*) wt_path="${line#worktree }" ;;
+      "branch refs/heads/"*) branch="${line#branch refs/heads/}" ;;
+      locked*) locked=true ;;
+      "")
+        [ -n "$wt_path" ] && printf '%s\t%s\t%s\n' "$wt_path" "$branch" "$locked" >>"$TMP/worktrees"
+        wt_path="" branch="" locked=false
+        ;;
+    esac
+  done < <(git -C "$repo" worktree list --porcelain; echo)
+
+  while IFS=$'\t' read -r wt branch locked; do
+    case "$wt" in "$wts"/*) ;; *) continue ;; esac
+    [ -d "$wt" ] || continue # missing dir: `git worktree prune` below handles it
+    if [ "$locked" = true ]; then
+      keep "$wt" "locked"
+      continue
+    fi
+    if user="$(user_of "$wt")"; then
+      keep "$wt" "in use by pid $user"
+      continue
+    fi
+    if [ -n "$(git -C "$wt" --no-optional-locks status --porcelain 2>/dev/null | head -1)" ]; then
+      keep "$wt" "uncommitted changes"
+      continue
+    fi
+    artifacts="$(git -C "$wt" --no-optional-locks ls-files --others --ignored --exclude-standard --directory 2>/dev/null |
+      grep -Ev "$regen" | head -3 | tr '\n' ' ' || true)"
+    if [ -n "$artifacts" ]; then
+      keep "$wt" "ignored files that may matter: ${artifacts% }"
+      continue
+    fi
+    idle="$(idle_seconds "$wt")"
+    idle_days=$((idle / 86400))
+    if [ -z "$branch" ]; then
+      if [ -z "$(git -C "$wt" for-each-ref --contains HEAD --count=1 refs/heads refs/remotes 2>/dev/null)" ]; then
+        keep "$wt" "detached HEAD not on any branch"
+      elif [ "$idle" -lt $((IDLE_DAYS * 86400)) ]; then
+        keep "$wt" "detached, idle ${idle_days}d"
+      else
+        remove "$wt" "detached, idle ${idle_days}d"
+      fi
+      continue
+    fi
+    state="$(pr_state "$branch")"
+    case "$state" in
+      OPEN) keep "$wt" "PR open" ;;
+      MERGED* | CLOSED*)
+        if [ "$idle" -lt "$GRACE_SECONDS" ]; then
+          keep "$wt" "PR ${state%%#*} but touched in the last hour"
+        else
+          remove "$wt" "PR ${state#*#} $(echo "${state%%#*}" | tr '[:upper:]' '[:lower:]')"
+        fi
+        ;;
+      *)
+        if [ "$idle" -lt $((IDLE_DAYS * 86400)) ]; then
+          keep "$wt" "no PR, idle ${idle_days}d"
+        else
+          remove "$wt" "no PR, idle ${idle_days}d"
+        fi
+        ;;
+    esac
+  done <"$TMP/worktrees"
+
+  $APPLY && git -C "$repo" worktree prune
+done
+
+echo "$removed $($APPLY && echo removed || echo to remove), $kept kept. Branches are kept."
