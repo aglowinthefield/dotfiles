@@ -1,0 +1,8 @@
+{
+  "extractor": {
+    "base-directory": "./",
+    "twitter": {
+      "directory": ["{author[name]}"]
+    }
+  }
+}
