@@ -76,7 +76,12 @@ const COMPLEX_THRESHOLD = 0.35;
 const EDIT_TOOLS = new Set(["edit", "write"]);
 
 /** Error text that means the account is out of quota rather than broken. */
-const LIMIT_ERROR = /rate.?limit|usage.?limit|quota|429|too many requests|overloaded|529/i;
+const LIMIT_ERROR =
+	/rate.?limit|usage.?limit|limit.?reached|hit your .*limit|insufficient.?quota|exceeded|quota|429|too many requests|overloaded|529/i;
+
+/** Error text that means the provider is unreachable or failing. Only acted on after Pi's own retries ran out. */
+const OUTAGE_ERROR =
+	/\b50[0-4]\b|ETIMEDOUT|ENOTFOUND|ECONNRESET|connect-timeout|upstream|stream ended before|timed out|OAuth refresh failed|fetch failed/i;
 
 /** One JSON line per routing decision (not per turn), for judging the router later. */
 const LOG_FILE = join(homedir(), ".pi", "agent", "jev-router.log.jsonl");
@@ -128,7 +133,9 @@ function editedThisTurn(messages: readonly Message[]): boolean {
  */
 function limitError(request: JevRequest): string | undefined {
 	const failed = request.failed?.message;
-	if (failed?.errorMessage && LIMIT_ERROR.test(failed.errorMessage)) return failed.errorMessage;
+	if (failed?.errorMessage && (LIMIT_ERROR.test(failed.errorMessage) || OUTAGE_ERROR.test(failed.errorMessage))) {
+		return failed.errorMessage;
+	}
 	if (request.reason !== "user") return undefined;
 	const last = request.messages.findLast((message) => message.role === "assistant");
 	if (last?.role === "assistant" && last.stopReason === "error" && LIMIT_ERROR.test(last.errorMessage ?? "")) {
@@ -232,7 +239,7 @@ export default function (pi: ExtensionAPI) {
 			if (limitError(request)) {
 				const next = nextAccount(ctx, state.account, state.role);
 				if (next !== undefined) {
-					logDecision(ctx, "fallback", { from: FALLBACK[CHAINS[state.role][state.account]].provider, to: FALLBACK[CHAINS[state.role][next]].provider });
+					logDecision(ctx, "fallback", { error: limitError(request)?.slice(0, 200), from: FALLBACK[CHAINS[state.role][state.account]].provider, to: FALLBACK[CHAINS[state.role][next]].provider });
 					state = { ...state, account: next };
 					changed = true;
 				}
