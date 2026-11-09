@@ -12,6 +12,9 @@
  * Adapted from Pi's examples/extensions/jev-router.ts, which routes between OpenAI Codex models.
  */
 
+import { appendFileSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import type { Message } from "@earendil-works/pi-ai";
 import type { ExtensionAPI, ExtensionContext, ModelRoute, ModelRouteRequest } from "@earendil-works/pi-coding-agent";
 
@@ -50,6 +53,18 @@ const EDIT_TOOLS = new Set(["edit", "write"]);
 
 /** Error text that means the account is out of quota rather than broken. */
 const LIMIT_ERROR = /rate.?limit|usage.?limit|quota|429|too many requests|overloaded|529/i;
+
+/** One JSON line per routing decision (not per turn), for judging the router later. */
+const LOG_FILE = join(homedir(), ".pi", "agent", "jev-router.log.jsonl");
+
+function logDecision(ctx: ExtensionContext, event: string, fields: Record<string, unknown>): void {
+	try {
+		const line = { ts: new Date().toISOString(), session: ctx.sessionManager?.getSessionId?.(), event, ...fields };
+		appendFileSync(LOG_FILE, `${JSON.stringify(line)}\n`);
+	} catch {
+		// Logging must never break routing.
+	}
+}
 
 interface JevState {
 	phase: "planning" | "implementation";
@@ -107,9 +122,12 @@ function nextAccount(ctx: ExtensionContext, from: number, role: Role): number | 
 }
 
 /** Planning role for a new session: complex for hard work, standard otherwise or when Jev is unavailable. */
-async function choosePlanningRole(request: JevRequest, ctx: ExtensionContext): Promise<Role> {
+async function choosePlanningRole(
+	request: JevRequest,
+	ctx: ExtensionContext,
+): Promise<{ role: Role; probability?: number }> {
 	const jev = ctx.modelRegistry.findOfType("classifier", "typesafe", "jev-latest");
-	if (!jev) return "standard";
+	if (!jev) return { role: "standard" };
 	const result = await ctx.modelRegistry.classify(
 		jev,
 		{
@@ -128,7 +146,8 @@ async function choosePlanningRole(request: JevRequest, ctx: ExtensionContext): P
 		{ signal: request.signal },
 	);
 	const answer = result.stopReason === "stop" ? result.answers.complexity : undefined;
-	return answer?.type === "choice" && (answer.probabilities.complex ?? 0) >= COMPLEX_THRESHOLD ? "complex" : "standard";
+	const probability = answer?.type === "choice" ? (answer.probabilities.complex ?? 0) : undefined;
+	return { role: probability !== undefined && probability >= COMPLEX_THRESHOLD ? "complex" : "standard", probability };
 }
 
 export default function (pi: ExtensionAPI) {
@@ -149,20 +168,30 @@ export default function (pi: ExtensionAPI) {
 			let state = request.state;
 			let changed = false;
 			if (!state) {
-				state = { phase: "planning", role: await choosePlanningRole(request, ctx), account: 0 };
+				const { role, probability } = await choosePlanningRole(request, ctx);
+				state = { phase: "planning", role, account: 0 };
 				changed = true;
+				logDecision(ctx, "plan", {
+					role,
+					pComplex: probability,
+					threshold: COMPLEX_THRESHOLD,
+					promptChars: lastUserText(request.messages).length,
+					prompt: lastUserText(request.messages).slice(0, 300),
+				});
 			}
 
 			// The planning model made the first edit: hand the rest of the work to the implementation model.
 			if (state.phase === "planning" && editedThisTurn(request.messages)) {
 				state = { ...state, phase: "implementation", role: "implementation" };
 				changed = true;
+				logDecision(ctx, "implement", { from: request.state?.role ?? state.role });
 			}
 
 			// Out of quota on this account: move to the next one for the rest of the session.
 			if (limitError(request)) {
 				const next = nextAccount(ctx, state.account, state.role);
 				if (next !== undefined) {
+					logDecision(ctx, "fallback", { from: FALLBACK[state.account].provider, to: FALLBACK[next].provider });
 					state = { ...state, account: next };
 					changed = true;
 				}
