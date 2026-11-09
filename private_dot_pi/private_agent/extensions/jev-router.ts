@@ -1,13 +1,17 @@
 /**
  * Jev router: `jev/auto`, a virtual model that plans on a strong model and implements on a cheaper one.
  *
- * - Planning: Opus for complex work, Sonnet otherwise. Jev rates the first user message of the session.
- * - Implementation: after the first successful `edit` or `write`, the session moves to Sonnet for good.
- *   A session that planned on Sonnet never switches, so it never pays the cache miss.
+ * - Planning: Opus for complex work, GPT-6.1 Sol on low thinking otherwise. Jev rates the first user
+ *   message of the session. Prompts with almost no text (a bare URL, a few words) skip Jev and go standard,
+ *   because Jev over-rated them as complex.
+ * - Implementation: after the first successful `edit` or `write`, a session that planned on Opus moves to
+ *   Sonnet for good. A standard session never switches, so it never pays the cache miss.
+ * - Escalation: a standard session that runs past ESCALATE_ASSISTANT_TURNS assistant turns or
+ *   ESCALATE_USER_MESSAGES user messages moves to Opus once.
  *
- * Fallback: when a request fails on a rate or usage limit, the session moves to the next account in
- * FALLBACK (anthropic, then the second Anthropic login, then OpenAI, then Kimi) and stays there.
- * multi-pass does not see virtual models, so its chains never apply here and the router does this itself.
+ * Fallback: when a request fails on a rate or usage limit, the session moves to the next account in the
+ * role's chain (CHAINS) and stays there. multi-pass does not see virtual models, so its chains never
+ * apply here and the router does this itself.
  *
  * Adapted from Pi's examples/extensions/jev-router.ts, which routes between OpenAI Codex models.
  */
@@ -16,6 +20,7 @@ import { appendFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import type { Message } from "@earendil-works/pi-ai";
+import type { ThinkingLevel } from "@earendil-works/pi-ai";
 import type { ExtensionAPI, ExtensionContext, ModelRoute, ModelRouteRequest } from "@earendil-works/pi-coding-agent";
 
 type Role = "complex" | "standard" | "implementation";
@@ -41,6 +46,25 @@ const FALLBACK: readonly { provider: string; models: Record<Role, string> }[] = 
 		models: { complex: "kimi-k3.1-pro", standard: "kimi-k3.1-pro", implementation: "kimi-k2.7-code" },
 	},
 ];
+
+/** Account order per role, as indexes into FALLBACK. Standard work prefers OpenAI, complex work Anthropic. */
+const CHAINS: Record<Role, readonly number[]> = {
+	complex: [0, 1, 2, 3],
+	standard: [2, 0, 1, 3],
+	implementation: [0, 1, 2, 3],
+};
+
+/** Thinking level forced for the account and role, when Pi's selected level should not apply. */
+function thinkingFor(provider: string, role: Role, requested: ThinkingLevel): ThinkingLevel {
+	return provider === "openai" && role === "standard" ? "low" : requested;
+}
+
+/** Prompts with fewer characters than this, after removing URLs, skip Jev and plan as standard. */
+const LOW_INFO_CHARS = 40;
+
+/** A standard session past either of these moves to Opus once. */
+const ESCALATE_ASSISTANT_TURNS = 60;
+const ESCALATE_USER_MESSAGES = 10;
 
 /**
  * Probability of `complex` at which planning goes to Opus. Kept below 0.5 because at 0.5 Jev sent
@@ -69,17 +93,19 @@ function logDecision(ctx: ExtensionContext, event: string, fields: Record<string
 interface JevState {
 	phase: "planning" | "implementation";
 	role: Role;
-	/** Index into FALLBACK. */
+	/** Position in CHAINS[role]. */
 	account: number;
+	/** Set once the session has escalated, so it only happens once. */
+	escalated?: boolean;
 }
 
 type JevRequest = ModelRouteRequest<JevState>;
 
 function routeTo(request: JevRequest, ctx: ExtensionContext, state: JevState, save: boolean): ModelRoute<JevState> {
-	const { provider, models } = FALLBACK[state.account];
+	const { provider, models } = FALLBACK[CHAINS[state.role][state.account]];
 	const model = ctx.modelRegistry.find(provider, models[state.role]);
 	if (!model) throw new Error(`Model ${provider}/${models[state.role]} is not in the catalog`);
-	return { model, thinkingLevel: request.thinkingLevel, state: save ? state : undefined };
+	return { model, thinkingLevel: thinkingFor(provider, state.role, request.thinkingLevel), state: save ? state : undefined };
 }
 
 function lastUserText(messages: readonly Message[]): string {
@@ -111,10 +137,11 @@ function limitError(request: JevRequest): string | undefined {
 	return undefined;
 }
 
-/** Next account after `from` that has credentials and the model for `role`. */
+/** Next chain position after `from` that has credentials and the model for `role`. */
 function nextAccount(ctx: ExtensionContext, from: number, role: Role): number | undefined {
-	for (let i = from + 1; i < FALLBACK.length; i++) {
-		const { provider, models } = FALLBACK[i];
+	const chain = CHAINS[role];
+	for (let i = from + 1; i < chain.length; i++) {
+		const { provider, models } = FALLBACK[chain[i]];
 		const model = ctx.modelRegistry.find(provider, models[role]);
 		if (model && ctx.modelRegistry.hasConfiguredAuth(model)) return i;
 	}
@@ -125,7 +152,9 @@ function nextAccount(ctx: ExtensionContext, from: number, role: Role): number | 
 async function choosePlanningRole(
 	request: JevRequest,
 	ctx: ExtensionContext,
-): Promise<{ role: Role; probability?: number }> {
+): Promise<{ role: Role; probability?: number; lowInfo?: boolean }> {
+	const prompt = lastUserText(request.messages);
+	if (prompt.replace(/https?:\/\/\S+/g, "").trim().length < LOW_INFO_CHARS) return { role: "standard", lowInfo: true };
 	const jev = ctx.modelRegistry.findOfType("classifier", "typesafe", "jev-latest");
 	if (!jev) return { role: "standard" };
 	const result = await ctx.modelRegistry.classify(
@@ -168,12 +197,13 @@ export default function (pi: ExtensionAPI) {
 			let state = request.state;
 			let changed = false;
 			if (!state) {
-				const { role, probability } = await choosePlanningRole(request, ctx);
+				const { role, probability, lowInfo } = await choosePlanningRole(request, ctx);
 				state = { phase: "planning", role, account: 0 };
 				changed = true;
 				logDecision(ctx, "plan", {
 					role,
 					pComplex: probability,
+					lowInfo,
 					threshold: COMPLEX_THRESHOLD,
 					promptChars: lastUserText(request.messages).length,
 					prompt: lastUserText(request.messages).slice(0, 300),
@@ -181,17 +211,28 @@ export default function (pi: ExtensionAPI) {
 			}
 
 			// The planning model made the first edit: hand the rest of the work to the implementation model.
-			if (state.phase === "planning" && editedThisTurn(request.messages)) {
+			if (state.phase === "planning" && state.role === "complex" && editedThisTurn(request.messages)) {
 				state = { ...state, phase: "implementation", role: "implementation" };
 				changed = true;
 				logDecision(ctx, "implement", { from: request.state?.role ?? state.role });
+			}
+
+			// A standard session that keeps going is harder than it looked: move it to Opus once.
+			if (state.role === "standard" && !state.escalated) {
+				const assistantTurns = request.messages.filter((message) => message.role === "assistant").length;
+				const userMessages = request.messages.filter((message) => message.role === "user").length;
+				if (assistantTurns >= ESCALATE_ASSISTANT_TURNS || userMessages >= ESCALATE_USER_MESSAGES) {
+					state = { phase: "planning", role: "complex", account: 0, escalated: true };
+					changed = true;
+					logDecision(ctx, "escalate", { assistantTurns, userMessages });
+				}
 			}
 
 			// Out of quota on this account: move to the next one for the rest of the session.
 			if (limitError(request)) {
 				const next = nextAccount(ctx, state.account, state.role);
 				if (next !== undefined) {
-					logDecision(ctx, "fallback", { from: FALLBACK[state.account].provider, to: FALLBACK[next].provider });
+					logDecision(ctx, "fallback", { from: FALLBACK[CHAINS[state.role][state.account]].provider, to: FALLBACK[CHAINS[state.role][next]].provider });
 					state = { ...state, account: next };
 					changed = true;
 				}
