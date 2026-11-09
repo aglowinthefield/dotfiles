@@ -26,9 +26,10 @@ function largest-files --description 'List the source files with the most lines,
     set -l generated '(^|/)(package-lock\.json|npm-shrinkwrap\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb?|Cargo\.lock|Gemfile\.lock|poetry\.lock|uv\.lock|composer\.lock|Podfile\.lock|flake\.lock|go\.sum)$|_snapshot\.json$|baseline-prof\.txt$|\.min\.(js|css)$|\.(map|snap)$'
     set files (string match -rv -- $generated $files)
 
-    # grep -I drops binary files such as fonts and images.
+    # grep -I drops binary files such as fonts and images. BSD grep reads -Z as
+    # "decompress", so spell out --null.
     printf '%s\0' $files |
-        xargs -0 grep -IlZ -- '' 2>/dev/null |
+        xargs -0 grep -Il --null -- '' 2>/dev/null |
         xargs -0 wc -l 2>/dev/null |
         string match -rv ' total$' |
         sort -nr |
