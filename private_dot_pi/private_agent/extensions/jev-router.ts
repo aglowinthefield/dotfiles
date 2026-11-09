@@ -110,7 +110,10 @@ function routeTo(request: JevRequest, ctx: ExtensionContext, state: JevState, sa
 	const { provider, models } = FALLBACK[CHAINS[state.role][state.account]];
 	const model = ctx.modelRegistry.find(provider, models[state.role]);
 	if (!model) throw new Error(`Model ${provider}/${models[state.role]} is not in the catalog`);
-	return { model, thinkingLevel: thinkingFor(provider, state.role, request.thinkingLevel), state: save ? state : undefined };
+	const thinkingLevel = thinkingFor(provider, state.role, request.thinkingLevel);
+	// Show the choice before the response arrives; pi-multi-pass's footer only prints the virtual id "auto".
+	ctx.ui.setStatus("jev", `→ ${provider}/${model.id} • ${thinkingLevel}`);
+	return { model, thinkingLevel, state: save ? state : undefined };
 }
 
 function lastUserText(messages: readonly Message[]): string {
@@ -190,7 +193,12 @@ export default function (pi: ExtensionAPI) {
 	// The footer's own "auto → model" suffix gets truncated on narrow terminals, so also show the routed
 	// model as a status. Clear pi-multi-pass's static "chain:default | starts ..." status, which is noise here.
 	const clearChainStatus = (ctx: ExtensionContext) => ctx.ui.setStatus("multi-pass", undefined);
-	pi.on("session_start", (_event, ctx) => clearChainStatus(ctx));
+	pi.on("session_start", (_event, ctx) => {
+		clearChainStatus(ctx);
+		// pi-multi-pass may set its status after this handler runs.
+		setTimeout(() => clearChainStatus(ctx), 500);
+	});
+	pi.on("before_agent_start", (_event, ctx) => clearChainStatus(ctx));
 	pi.on("turn_start", (_event, ctx) => clearChainStatus(ctx));
 	pi.on("message_end", (event, ctx) => {
 		const message = event.message;
