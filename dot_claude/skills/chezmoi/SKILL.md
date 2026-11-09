@@ -67,26 +67,6 @@ credential file paths — **the repo is public**. Let the tools regenerate both 
 
 `~/.claude/settings.local.json` is machine-local by design and stays unmanaged.
 
-## Hermes home
-
-`~/.hermes` is a checkout of the private `aglowinthefield/hermes-home`, set up by
-`57_hermes-home` and fast-forwarded on every apply by `58_hermes-home-pull`. A dirty or
-diverged checkout makes 58 skip the pull without failing, so look there when a host
-falls behind. On Windows both are skipped (they're `#!/bin/sh`) and
-`56_hermes-home.ps1` does the same job behind a `~/.hermes` → `%LOCALAPPDATA%\hermes`
-junction, without the `hermes-local-keys` filter. It also sets User-scope
-`GIT_SSH_COMMAND`, since Hermes' injected `core.sshCommand` otherwise sends its
-git children to Git for Windows' bundled ssh, which can't reach the 1Password agent.
-56 and 58 also run `hermes plugins update charm`, since Charm tracks `main` rather
-than a pack pin; a host still on a pinned install warns until Charm is removed and reinstalled (`--force` keeps the pin). Per-host state stays out of that repo: `cron/jobs.json` is untracked, and
-each host's UI picks for `display.pet`, `dashboard.theme`, `terminal.font_family` and
-`desktop.font_family` in the root and profile
-`config.yaml` files go through the `hermes-local-keys` git filter
-(`dot_local/bin/executable_hermes-local-keys`). The filter strips them on commit and
-restores the host's values on checkout. 58 registers it and stashes the values before
-each pull. To make another key per-host, add it to `LOCAL` in that script, not to
-`.gitignore`.
-
 ## `.chezmoiignore`
 
 Patterns match the **target path relative to `$HOME`**, not the source name and not a

@@ -25,10 +25,9 @@ Library
 # Windows uses herdr rather than tmux/psmux.
 .tmux
 .tmux.conf
-# Unix shells, executable shims, and Hermes helpers are not used on Windows.
+# Unix shells and executable shims are not used on Windows.
 .config/fish
 .local/bin/env.fish
-.local/bin/hermes-local-keys
 .local/share/node-shims
 bin
 # reviewr is currently provisioned only on macOS/Linux.
@@ -46,9 +45,6 @@ bin
 .config/secrets.env
 # msmtp's passwordeval reads secrets.env, which Windows does not get.
 .config/msmtp
-# Hermes on Windows keeps the .env its own setup wrote, which also spares a
-# 1Password CLI session here. Full target path, per the note above.
-.hermes/.env
 # herdr ssh-status daemon talks to a unix socket
 bin/herdr-ssh-status.py
 # Shared palettes feed the Unix terminal converters, not Windows Terminal.
@@ -64,10 +60,6 @@ bin/herdr-ssh-status.py
 .config/ghostty
 .local/bin/kitty-palettes
 .local/bin/ghostty-palettes
-# .hermes/.env is ignored just above and .hermes/profiles is mochi-only, so
-# without this an empty ~/.hermes is all that would land here. The hermes-home
-# checkout comes from 56 instead.
-.hermes
 {{- end }}
 # kitty-palettes generates ~/.config/kitty/themes from terminal-tools'
 # share/colors on every apply, and `kitten themes` writes downloaded themes into
@@ -95,12 +87,6 @@ bin/herdr-ssh-status.py
 .ssh/config.local
 .ssh/config.backup-*
 {{- if ne .chezmoi.hostname "mochi" }}
-# Hermes profiles read the root ~/.hermes/.env through these symlinks, since
-# Hermes loads only a profile's own .env. mochi is the Hermes host; elsewhere
-# the profiles keep their own files.
-.hermes/profiles
-{{- end }}
-{{- if ne .chezmoi.hostname "mochi" }}
 # darkman is mochi's light/dark oracle: it has the i3 session worth theming,
 # the laptops already have dark-notify, and tomauty has no desktop at all.
 # Full target paths — a bare `darkman` would only match ~/darkman.
@@ -127,8 +113,3 @@ tests
 tests/**
 docs
 docs/**
-{{- if ne .chezmoi.hostname "mochi" }}
-# Hermes is retired everywhere but mochi, which still runs its gateway.
-.hermes
-.local/bin/hermes-local-keys
-{{- end }}

@@ -48,7 +48,7 @@ uses the upgraded stable version rather than Windows PowerShell 5.1 or a preview
 Updates occur when applying, not each time a terminal tab opens. Open a new tab
 after updating; an already-running shell keeps its existing version.
 
-Windows excludes Fish, Unix Node shims, Hermes helpers, shell hook wrappers,
+Windows excludes Fish, Unix Node shims, shell hook wrappers,
 and the currently Unix-only reviewr plugin configuration/keybinding. Agent
 hooks invoke Python directly with a machine-specific absolute script path.
 Claude and Codex hook settings are seeded only when absent (`create_` files),
