@@ -51,6 +51,13 @@ ordinary editing.
 Horizon Dark remains the default; both Kanagawa variants remain available. File
 and project navigation stays with Snacks rather than another finder or tree.
 
+## Statusline
+
+Lualine displays one shared statusline across splits, with Powerline separators
+and colors derived from the active theme. It shows the mode, Git branch and diff,
+diagnostics, relative file path, filetype, and cursor position. Use a Nerd Font
+in your terminal for the separators and file icons.
+
 ## Formatting
 
 JavaScript/TypeScript formatting uses the project's Prettier binary and config,
