@@ -19,13 +19,15 @@ return {
       set(0, "@function.call.sql", { fg = light and "#7a3f8a" or "#c79fd0" })
     end
 
-    -- The plugin ships a dark palette only. The light one is the kitty
-    -- "Compline Soft Light" palette (dot_config/kitty/create_light-theme.auto.conf).
+    -- The plugin ships a dark palette only. Light is Lauds, Compline's light
+    -- sibling from github.com/joshuablais/compline (nvim/lauds/theme.lua,
+    -- ghostty/lauds, alacritty/lauds.toml), mapped onto the plugin's base16
+    -- slots so diff, git and plugin highlights still apply.
     local light_palette = {
-      base00 = "#e8e6e0", base01 = "#dedcd5", base02 = "#c3cdd4", base03 = "#6b7178",
-      base04 = "#575d65", base05 = "#3a3f46", base06 = "#3a3f46", base07 = "#f0eee9",
-      base08 = "#8a4646", base09 = "#a05a5a", base0A = "#7a5a28", base0B = "#466352",
-      base0C = "#3b6e6c", base0D = "#47596b", base0E = "#615878", base0F = "#4d8280",
+      base00 = "#f0efeb", base01 = "#e5e3e0", base02 = "#d8d6d3", base03 = "#7d7a75",
+      base04 = "#4a4d51", base05 = "#1a1d21", base06 = "#2d2a27", base07 = "#f5f4f2",
+      base08 = "#8b6666", base09 = "#7a6d5a", base0A = "#8b7e52", base0B = "#5a6b5a",
+      base0C = "#64757d", base0D = "#5a6b7a", base0E = "#546470", base0F = "#4d6b6b",
     }
 
     -- colors/compline.vim always loads the dark palette. Changing 'background'
