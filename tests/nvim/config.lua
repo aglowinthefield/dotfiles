@@ -4,7 +4,8 @@ package.path = root .. "/lua/?.lua;" .. root .. "/lua/?/init.lua;" .. package.pa
 
 dofile(root .. "/lua/config/options.lua")
 assert(vim.o.background == "dark")
-assert(vim.o.number and vim.o.expandtab and vim.o.undofile)
+assert(not vim.o.number and not vim.o.relativenumber, "line numbers disabled")
+assert(vim.o.expandtab and vim.o.undofile)
 assert(vim.o.tabstop == 2 and vim.o.shiftwidth == 2)
 assert(vim.o.clipboard == "unnamedplus")
 assert(vim.o.wrap and vim.o.linebreak and vim.o.breakindent, "word wrapping defaults")

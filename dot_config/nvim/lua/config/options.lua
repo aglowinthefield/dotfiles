@@ -1,6 +1,7 @@
 local o = vim.opt
 
-o.number = true
+o.number = false
+o.relativenumber = false
 
 o.wrap = true
 o.linebreak = true
