@@ -47,13 +47,18 @@ end, { desc = "Copy path:start-end" })
 -- One notes file per repo, kept out of the repo itself. Lives in the Obsidian
 -- vault when it exists (so notes show up beside the rest of the work notes),
 -- otherwise under nvim's data dir. Override with vim.g.annotations_dir.
-local function notes_file(root)
+-- Outside a git repo (a vault note, say) the file is named for the annotated
+-- file instead, so notes on one plan don't share a scratch file with everything
+-- else. The `annotations` agent skill reads these files back.
+local function notes_file(root, file)
   local vault = vim.fn.expand("~/Documents/Obsidian Vault/Work/Annotations")
   local dir = vim.g.annotations_dir
     or (vim.uv.fs_stat(vim.fn.fnamemodify(vault, ":h")) and vault)
     or (vim.fn.stdpath("data") .. "/annotations")
   vim.fn.mkdir(dir, "p")
-  local name = root and vim.fs.basename(root) or "scratch"
+  local name = root and vim.fs.basename(root)
+    or (file and file ~= "" and vim.fn.fnamemodify(file, ":t:r"))
+    or "scratch"
   return dir .. "/" .. name .. ".md"
 end
 
@@ -64,6 +69,7 @@ local function annotate(range)
   -- Capture now: the prompt can move the cursor or change the buffer
   local lines = vim.api.nvim_buf_get_lines(0, a - 1, b, false)
   local ft = vim.bo.filetype
+  local bufname = vim.api.nvim_buf_get_name(0)
   vim.ui.input({ prompt = "Note on " .. ref .. ": " }, function(note)
     if not note or note == "" then return end
     local branch = root and vim.trim(vim.fn.system({ "git", "-C", root, "branch", "--show-current" })) or ""
@@ -74,7 +80,7 @@ local function annotate(range)
       for _, l in ipairs(lines) do table.insert(out, "  " .. l) end
       table.insert(out, "  ```")
     end
-    local file = notes_file(root)
+    local file = notes_file(root, bufname)
     vim.fn.writefile(out, file, "a")
     vim.notify("Noted in " .. vim.fn.fnamemodify(file, ":~"))
   end)
@@ -84,5 +90,5 @@ vim.keymap.set("n", "<leader>ya", function() annotate(false) end, { desc = "Anno
 vim.keymap.set("x", "<leader>ya", function() annotate(true) end, { desc = "Annotate selection" })
 vim.keymap.set("n", "<leader>yn", function()
   local _, root = current_ref(false)
-  vim.cmd.edit(vim.fn.fnameescape(notes_file(root)))
+  vim.cmd.edit(vim.fn.fnameescape(notes_file(root, vim.api.nvim_buf_get_name(0))))
 end, { desc = "Open notes for this repo" })
