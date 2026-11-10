@@ -16,6 +16,8 @@
        Opus or Sonnet by Jev's read of the first prompt, then implements on Sonnet. */ -}}
 {{- $s = setValueAtPath "defaultProvider" "jev" $s -}}
 {{- $s = setValueAtPath "defaultModel" "auto" $s -}}
+{{- /* Restore the shell on exit instead of printing the fullscreen UI. */ -}}
+{{- $s = setValueAtPath "fullscreenExitOutput" "resume-hint" $s -}}
 {{- /* No install ping to pi.dev. */ -}}
 {{- $s = setValueAtPath "enableInstallTelemetry" false $s -}}
 {{- /* Seeded, not enforced: hide the startup splash and the per-session
