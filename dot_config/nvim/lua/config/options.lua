@@ -2,6 +2,10 @@ local o = vim.opt
 
 o.number = true
 
+o.wrap = true
+o.linebreak = true
+o.breakindent = true
+
 o.tabstop = 2
 o.softtabstop = 2
 o.shiftwidth = 2

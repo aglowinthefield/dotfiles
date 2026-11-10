@@ -51,6 +51,11 @@ ordinary editing.
 Horizon Dark remains the default; both Kanagawa variants remain available. File
 and project navigation stays with Snacks rather than another finder or tree.
 
+## Line wrapping
+
+Long lines wrap at word boundaries with continuation indentation. This changes
+only the display, not file contents. Use `:set nowrap` to disable it in a window.
+
 ## Statusline
 
 Lualine displays one shared statusline across splits, with Powerline separators
