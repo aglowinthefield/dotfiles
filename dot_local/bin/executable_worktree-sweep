@@ -5,7 +5,7 @@
 #   worktree-sweep --apply            remove
 #   worktree-sweep [opts] <repo>...   only these repos (primary checkout paths)
 #   worktree-sweep --idle-days N      idle threshold for branches with no PR (default 7)
-#   worktree-sweep --install-agent    run `--apply` daily at 04:00 via launchd (macOS)
+#   worktree-sweep --install-agent    run `--apply` every 2 hours via launchd (macOS)
 #
 # Repos: each child of the directories in $WORKTREE_SWEEP_ROOTS (colon separated,
 # default ~/code:~/silk) that has a .worktrees/ directory. Worktrunk's
@@ -100,8 +100,7 @@ if $install_agent; then
     <key>PATH</key><string>$PATH</string>
     <key>WORKTREE_SWEEP_ROOTS</key><string>$ROOTS</string>
   </dict>
-  <key>StartCalendarInterval</key>
-  <dict><key>Hour</key><integer>4</integer><key>Minute</key><integer>0</integer></dict>
+  <key>StartInterval</key><integer>7200</integer>
   <key>StandardOutPath</key><string>$log</string>
   <key>StandardErrorPath</key><string>$log</string>
 </dict>
@@ -109,7 +108,7 @@ if $install_agent; then
 PLIST
   launchctl bootout "gui/$(id -u)/$AGENT_LABEL" 2>/dev/null || true
   launchctl bootstrap "gui/$(id -u)" "$plist"
-  echo "Installed $plist: daily at 04:00, logging to $log."
+  echo "Installed $plist: every 2 hours, logging to $log."
   echo "Remove with: launchctl bootout gui/$(id -u)/$AGENT_LABEL && rm $plist"
   exit 0
 fi
