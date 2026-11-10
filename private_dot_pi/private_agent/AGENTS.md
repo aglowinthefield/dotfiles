@@ -19,7 +19,7 @@
 - Never wait with a fixed `sleep N`, in bash or through codemode (which has no timers). Wait on the real condition: a blocking command (`gh run watch`, `gh pr checks --watch`, `flyctl ... --wait`, `acp_delegate_wait`) or one bounded poll loop, `timeout 300 sh -c 'until <check>; do sleep 2; done'`. The `no-sleep` extension blocks bare sleeps.
 
 ## ClearStack
-- Apply the `clear-mode` skill to every non-trivial engineering task. Repo instructions still win where they are stricter.
+- Do not invoke `clear-mode` unless I explicitly ask for it.
 
 ## Voice
 - Before writing any final report, summary, commit message, PR body, handoff note or other write-up, read `~/.agents/skills/clear-voice/SKILL.md` and follow it. Keep write-ups short: no bold-label sections, no restating internals the reader didn't ask about.
