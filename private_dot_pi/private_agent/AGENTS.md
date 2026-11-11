@@ -28,7 +28,7 @@
 - Use `$DEV_VAULT` for the dev vault; when unset, use `~/Documents/Dev`. Resolve it before accessing notes. Keep agent reports and annotations in this vault.
 
 ## Written reports
-- Reports, audits, investigations and plans that run past a short reply go in the Obsidian vault as Markdown, never `/tmp`. Silk work goes under `~/silk/notes/<topic>/` (a symlink to `$DEV_VAULT/Work/`); other work goes under `$DEV_VAULT/`. Name the file for its content (`CI scripts audit.md`), tell the user the path, and wait for their review before acting on it. Scratch data (query output, logs) may stay in `/tmp`.
+- Reports, audits, investigations and plans that run past a short reply go in the Obsidian vault as Markdown, never `/tmp`. Silk work goes under `$DEV_VAULT/Work/<topic>/`; other work goes under `$DEV_VAULT/`. Name the file for its content (`CI scripts audit.md`), tell the user the path, and wait for their review before acting on it. Scratch data (query output, logs) may stay in `/tmp`.
 - Delegates writing a report get the vault path in their task, not `/tmp`.
 
 ## Systems
