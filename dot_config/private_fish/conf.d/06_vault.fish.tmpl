@@ -1,0 +1,8 @@
+if not set -q DEV_VAULT
+{{- if eq .chezmoi.hostname "mochi" }}
+    # mochi has no desktop Obsidian; headless Sync keeps vaults on the kura/ichigo dataset.
+    set -gx DEV_VAULT /media/ichigo/obsidian/dev
+{{- else }}
+    set -gx DEV_VAULT "$HOME/Documents/Dev"
+{{- end }}
+end
