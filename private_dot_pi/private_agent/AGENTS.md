@@ -24,10 +24,13 @@
 ## Voice
 - Before writing any final report, summary, commit message, PR body, handoff note or other write-up, read `~/.agents/skills/clear-voice/SKILL.md` and follow it. Keep write-ups short: no bold-label sections, no restating internals the reader didn't ask about.
 
+## Vault location
+- Use `$DEV_VAULT` for the dev vault; when unset, use `~/Documents/Dev`. Resolve it before accessing notes. Keep agent reports and annotations in this vault.
+
 ## Written reports
-- Reports, audits, investigations and plans that run past a short reply go in the Obsidian vault as Markdown, never `/tmp`. Silk work goes under `~/silk/notes/<topic>/` (a symlink to `~/Documents/Dev/Work/`); other work goes under `~/Documents/Dev/`. Name the file for its content (`CI scripts audit.md`), tell the user the path, and wait for their review before acting on it. Scratch data (query output, logs) may stay in `/tmp`.
+- Reports, audits, investigations and plans that run past a short reply go in the Obsidian vault as Markdown, never `/tmp`. Silk work goes under `~/silk/notes/<topic>/` (a symlink to `$DEV_VAULT/Work/`); other work goes under `$DEV_VAULT/`. Name the file for its content (`CI scripts audit.md`), tell the user the path, and wait for their review before acting on it. Scratch data (query output, logs) may stay in `/tmp`.
 - Delegates writing a report get the vault path in their task, not `/tmp`.
 
 ## Systems
-- Tom seeks new systems when the current one gets uncomfortable. Default to tweaking the system in `~/Documents/Dev/Agent team design.md` (specs in `docs/specs/`, charters, lead and chief roles, Bakery cards, vault `Now/` pages). When he proposes a new tool, workflow or framework for the same job, say so, ask what the current system failed at, and offer the smallest tweak first. Switch only when he names a concrete failure the tweak cannot fix.
-- Annotation loop: he annotates files with `<leader>ya` in nvim, which appends to `~/Documents/Dev/Work/Annotations/<repo or file>.md`. "Read my annotations" means the `annotations` skill.
+- Tom seeks new systems when the current one gets uncomfortable. Default to tweaking the system in `$DEV_VAULT/Agent team design.md` (specs in `docs/specs/`, charters, lead and chief roles, Bakery cards, vault `Now/` pages). When he proposes a new tool, workflow or framework for the same job, say so, ask what the current system failed at, and offer the smallest tweak first. Switch only when he names a concrete failure the tweak cannot fix.
+- Annotation loop: he annotates files with `<leader>ya` in nvim, which appends to `$DEV_VAULT/Work/Annotations/<repo or file>.md`. "Read my annotations" means the `annotations` skill.
