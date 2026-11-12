@@ -30,5 +30,5 @@
 - Delegates writing a report get the vault path in their task, not `/tmp`.
 
 ## Systems
-- Tom seeks new systems when the current one gets uncomfortable. Default to tweaking the current system (Bakery cards, skills, charters, vault `Now/` pages). When he proposes a new tool, workflow or framework for the same job, say so, ask what the current system failed at, and offer the smallest tweak first. Switch only when he names a concrete failure the tweak cannot fix.
+- Tom seeks new systems when the current one gets uncomfortable. Default to tweaking the current system (Bakery cards, skills, charters, vault `🌀 Now/` pages). When he proposes a new tool, workflow or framework for the same job, say so, ask what the current system failed at, and offer the smallest tweak first. Switch only when he names a concrete failure the tweak cannot fix.
 - Annotation loop: he annotates files with `<leader>ya` in nvim, which appends to `$DEV_VAULT/Annotations/<repo or file>.md`. "Read my annotations" means the `annotations` skill.
