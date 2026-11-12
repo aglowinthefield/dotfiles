@@ -166,3 +166,11 @@ test("/retitle names a session from its last user message without a new turn", a
   assert.equal(h.session.name, "Pi Conversation Summaries Configuration");
   assert.match(readFileSync(h.log, "utf8"), /summary=Pi Conversation Summaries Configuration\n/);
 });
+
+test("a chatty preamble is dropped in favour of the title line", async () => {
+  const h = harness("model");
+  h.ctx.modelRegistry.complete = async () => ({ stopReason: "stop", content: [{ type: "text", text: "Based on the conversation context, here is a title:\n\n**Spec Pruning Strategy**" }] });
+  await h.handlers.get("before_agent_start")({ messageType: "user", prompt: "Give me short Pi conversation summaries" }, h.ctx);
+  await h.handlers.get("agent_settled")({ aborted: false }, h.ctx);
+  assert.equal(h.session.name, "Spec Pruning Strategy");
+});

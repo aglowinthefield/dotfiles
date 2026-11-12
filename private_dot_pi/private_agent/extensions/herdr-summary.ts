@@ -11,7 +11,7 @@ const run = promisify(execFile);
 const source = "pi-summary";
 const defaultModel = "anthropic/claude-haiku-4-5";
 const promptMode = new Set(["model", "prompt", "off"]);
-const systemPrompt = "Name the current coding conversation for a narrow sidebar. Return only a specific 2-5 word title. No punctuation, quotes, or generic words like conversation or configuration unless they are the topic. Use the latest user request and assistant result to track topic changes. Never include credentials.";
+const systemPrompt = "Name the current coding conversation for a narrow sidebar. Return only a specific 2-5 word title. No punctuation, quotes, or generic words like conversation or configuration unless they are the topic. Use the latest user request and assistant result to track topic changes. Never include credentials. Reply with the title alone on one line, with no preamble.";
 
 function label(text: string): string {
   // Never expose a prompt fragment or model output that looks like a credential.
@@ -19,6 +19,12 @@ function label(text: string): string {
   const words = text.replace(/[\x00-\x1f\x7f-\x9f]/g, " ").replace(/["'`]/g, "").trim().split(/\s+/).slice(0, 5);
   if (words.some((word) => /[a-z0-9_-]{16,}/i.test(word))) return "Private request";
   return words.join(" ").slice(0, 40).trim();
+}
+
+// Models sometimes lead with "Based on the conversation, here's a title:"; the title is the last line.
+function lastLine(text: string): string {
+  const line = text.split("\n").map((part) => part.trim()).filter(Boolean).at(-1) ?? "";
+  return line.replace(/^(title|suggested title)\s*:\s*/i, "").replace(/[*#]/g, "");
 }
 
 function currentPane(ctx: ExtensionContext): string | undefined {
@@ -112,7 +118,7 @@ export default function (pi: ExtensionAPI) {
             systemPrompt,
             messages: [{ role: "user", content: [{ type: "text", text: `Previous title: ${fresh ? "" : prior}\nUser: ${currentPrompt}\nAssistant: ${latestAnswer(ctx)}` }], timestamp: Date.now() }],
           }, { maxTokens: 48 });
-          if (response.stopReason === "stop") title = label(response.content.filter((part) => part.type === "text").map((part) => part.text).join(" ")) || title;
+          if (response.stopReason === "stop") title = label(lastLine(response.content.filter((part) => part.type === "text").map((part) => part.text).join("\n"))) || title;
         } catch (error) {
           console.error(`pi-herdr-summary: model call failed: ${String(error)}`);
         }
