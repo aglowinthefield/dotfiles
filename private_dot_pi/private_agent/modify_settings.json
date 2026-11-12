@@ -12,10 +12,8 @@
 {{- $pkgs := get $s "packages" | default list -}}
 {{- $keep := list -}}{{- range $pkgs }}{{ if ne . "npm:@mem0/pi-agent-plugin" }}{{ $keep = append $keep . }}{{ end }}{{ end -}}
 {{- $s = setValueAtPath "packages" $keep $s -}}
-{{- /* jev/auto is the virtual model from extensions/jev-router.ts: it plans on
-       Opus or Sonnet by Jev's read of the first prompt, then implements on Sonnet. */ -}}
-{{- $s = setValueAtPath "defaultProvider" "jev" $s -}}
-{{- $s = setValueAtPath "defaultModel" "auto" $s -}}
+{{- $s = setValueAtPath "defaultProvider" "anthropic" $s -}}
+{{- $s = setValueAtPath "defaultModel" "claude-opus-5-5" $s -}}
 {{- /* Restore the shell on exit instead of printing the fullscreen UI. */ -}}
 {{- $s = setValueAtPath "fullscreenExitOutput" "resume-hint" $s -}}
 {{- /* No install ping to pi.dev. */ -}}
