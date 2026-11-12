@@ -1,5 +1,7 @@
 // PI_HERDR_SUMMARY_MODE=model (default), prompt (no API call), or off.
-// PI_HERDR_SUMMARY_MODEL overrides openrouter/openai/gpt-4o-mini.
+// PI_HERDR_SUMMARY_MODEL picks the model as provider/id; the default is anthropic/claude-haiku-4-5.
+// The title also becomes the pi session name, which pi puts in the terminal title, so
+// herdr-bar names the tab from it. A name set with /name is never overwritten.
 // The model sees at most 600 characters each of the prompt and assistant reply.
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
@@ -7,6 +9,7 @@ import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-a
 
 const run = promisify(execFile);
 const source = "pi-summary";
+const defaultModel = "anthropic/claude-haiku-4-5";
 const promptMode = new Set(["model", "prompt", "off"]);
 const systemPrompt = "Name the current coding conversation for a narrow sidebar. Return only a specific 2-5 word title. No punctuation, quotes, or generic words like conversation or configuration unless they are the topic. Use the latest user request and assistant result to track topic changes. Never include credentials.";
 
@@ -47,12 +50,20 @@ export default function (pi: ExtensionAPI) {
   let prompt = "";
   let prior = "";
 
+  // Only claim the session name while it is empty or still the one this extension wrote.
+  function rename(title: string, previous: string): void {
+    const current = pi.getSessionName();
+    if (!current || current === previous) pi.setSessionName(title);
+  }
+
   pi.on("session_start", async (_event, ctx) => {
     prompt = "";
     const saved = ctx.sessionManager.getBranch().toReversed().find((entry) => entry.type === "custom" && entry.customType === source);
     prior = saved?.type === "custom" && typeof (saved.data as { title?: unknown } | undefined)?.title === "string"
       ? label((saved.data as { title: string }).title) : "";
-    await publish(ctx, process.env.PI_HERDR_SUMMARY_MODE === "off" ? undefined : prior); // Do not inherit another session's label.
+    const off = process.env.PI_HERDR_SUMMARY_MODE === "off";
+    if (prior && !off && currentPane(ctx)) rename(prior, prior);
+    await publish(ctx, off ? undefined : prior); // Do not inherit another session's label.
   });
 
   pi.on("before_agent_start", (event, ctx) => {
@@ -68,7 +79,7 @@ export default function (pi: ExtensionAPI) {
     prompt = "";
     let title = mode === "prompt" ? prior || label(currentPrompt) : prior;
     if (mode === "model") {
-      const modelName = process.env.PI_HERDR_SUMMARY_MODEL || "openrouter/openai/gpt-4o-mini";
+      const modelName = process.env.PI_HERDR_SUMMARY_MODEL || defaultModel;
       const slash = modelName.indexOf("/");
       const model = ctx.modelRegistry.find(modelName.slice(0, slash), modelName.slice(slash + 1));
       if (model && ctx.modelRegistry.hasConfiguredAuth(model)) {
@@ -86,6 +97,7 @@ export default function (pi: ExtensionAPI) {
       }
     }
     if (!title) return;
+    rename(title, prior);
     prior = title;
     pi.appendEntry(source, { title });
     await publish(ctx, title);

@@ -22,7 +22,13 @@ function harness(mode) {
   process.env.HERDR_TEST_LOG = log;
   process.env.PI_HERDR_SUMMARY_MODE = mode;
   const branch = [{ type: "message", message: { role: "assistant", stopReason: "stop", content: [{ type: "text", text: "The user wants short sidebar labels, with paid titles as the default." }] } }];
-  const pi = { on: (event, handler) => handlers.set(event, handler), appendEntry: (customType, data) => branch.push({ type: "custom", customType, data }) };
+  const session = { name: undefined };
+  const pi = {
+    on: (event, handler) => handlers.set(event, handler),
+    appendEntry: (customType, data) => branch.push({ type: "custom", customType, data }),
+    getSessionName: () => session.name,
+    setSessionName: (name) => { session.name = name; },
+  };
   summaryExtension(pi);
   const ctx = {
     mode: "tui",
@@ -38,7 +44,7 @@ function harness(mode) {
       },
     },
   };
-  return { handlers, ctx, log, branch, get calls() { return calls; } };
+  return { handlers, ctx, log, branch, session, get calls() { return calls; } };
 }
 
 test("paid mode is the default and publishes a short model label", async () => {
@@ -108,4 +114,45 @@ test("off mode clears any existing title and makes no paid call", async () => {
   await h.handlers.get("before_agent_start")({ messageType: "user", prompt: "Give me short Pi conversation summaries" }, h.ctx);
   await h.handlers.get("agent_settled")({ aborted: false }, h.ctx);
   assert.equal(readFileSync(h.log, "utf8"), "");
+});
+
+test("the default model is Claude Haiku", async () => {
+  const h = harness("model");
+  delete process.env.PI_HERDR_SUMMARY_MODEL;
+  let asked;
+  h.ctx.modelRegistry.find = (provider, id) => { asked = `${provider}/${id}`; return { id }; };
+  await h.handlers.get("before_agent_start")({ messageType: "user", prompt: "Give me short Pi conversation summaries" }, h.ctx);
+  await h.handlers.get("agent_settled")({ aborted: false }, h.ctx);
+  assert.equal(asked, "anthropic/claude-haiku-4-5");
+  process.env.PI_HERDR_SUMMARY_MODEL = "openai/gpt-4o-mini";
+  await h.handlers.get("before_agent_start")({ messageType: "user", prompt: "Give me short Pi conversation summaries" }, h.ctx);
+  await h.handlers.get("agent_settled")({ aborted: false }, h.ctx);
+  assert.equal(asked, "openai/gpt-4o-mini");
+  delete process.env.PI_HERDR_SUMMARY_MODEL;
+});
+
+test("the title names the session so herdr-bar can name the tab", async () => {
+  const h = harness("model");
+  await h.handlers.get("before_agent_start")({ messageType: "user", prompt: "Give me short Pi conversation summaries" }, h.ctx);
+  await h.handlers.get("agent_settled")({ aborted: false }, h.ctx);
+  assert.equal(h.session.name, "Pi Conversation Summaries Configuration");
+  h.ctx.modelRegistry.complete = async () => ({ stopReason: "stop", content: [{ type: "text", text: "Herdr tab naming" }] });
+  await h.handlers.get("before_agent_start")({ messageType: "user", prompt: "now rename tabs" }, h.ctx);
+  await h.handlers.get("agent_settled")({ aborted: false }, h.ctx);
+  assert.equal(h.session.name, "Herdr tab naming");
+});
+
+test("a name set with /name is never overwritten", async () => {
+  const h = harness("model");
+  h.session.name = "my own name";
+  await h.handlers.get("before_agent_start")({ messageType: "user", prompt: "Give me short Pi conversation summaries" }, h.ctx);
+  await h.handlers.get("agent_settled")({ aborted: false }, h.ctx);
+  assert.equal(h.session.name, "my own name");
+});
+
+test("resuming names an unnamed session from its saved title", async () => {
+  const h = harness("model");
+  h.branch.push({ type: "custom", customType: "pi-summary", data: { title: "Existing Pi sidebar work" } });
+  await h.handlers.get("session_start")({}, h.ctx);
+  assert.equal(h.session.name, "Existing Pi sidebar work");
 });
