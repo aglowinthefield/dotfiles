@@ -26,7 +26,7 @@
 
 ## Written reports
 - Vault notes take their title from the filename. Never start a note with an H1; begin with frontmatter, then the first paragraph or an H2. Frontmatter values must be valid YAML: lists as `- item` lines, and a wikilink as the whole value of its own property (`superseded-by: "[[Note]]"`), never mixed into prose.
-- Reports, audits, investigations and plans that run past a short reply go in the Obsidian vault as Markdown, never `/tmp`. Each project has a top-level folder: Silk work goes under `$DEV_VAULT/Silk/<topic>/`, other projects under `$DEV_VAULT/<project>/`. Name the file for its content (`CI scripts audit.md`), tell the user the path, and wait for their review before acting on it. Scratch data (query output, logs) may stay in `/tmp`.
+- Reports, audits, investigations and plans that run past a short reply go in the Obsidian vault as Markdown, never `/tmp`. Each project has a top-level folder: Silk work goes under `$DEV_VAULT/Silk/<topic>/`, other projects under `$DEV_VAULT/<project>/`. Name the file for its content (`CI scripts audit.md`), Set `status: needs-review` in its frontmatter, tell the user the path, and wait for their review before acting on it. Scratch data (query output, logs) may stay in `/tmp`.
 - Delegates writing a report get the vault path in their task, not `/tmp`.
 
 ## Systems
