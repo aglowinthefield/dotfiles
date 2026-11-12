@@ -51,7 +51,7 @@ end, { desc = "Copy path:start-end" })
 -- file instead, so notes on one plan don't share a scratch file with everything
 -- else. The `annotations` agent skill reads these files back.
 local function notes_file(root, file)
-  local vault = (vim.env.DEV_VAULT or vim.fn.expand("~/Documents/Dev")) .. "/Work/Annotations"
+  local vault = (vim.env.DEV_VAULT or vim.fn.expand("~/Documents/Dev")) .. "/Annotations"
   local dir = vim.g.annotations_dir
     or (vim.uv.fs_stat(vim.fn.fnamemodify(vault, ":h")) and vault)
     or (vim.fn.stdpath("data") .. "/annotations")
