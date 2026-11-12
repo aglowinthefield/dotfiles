@@ -24,6 +24,7 @@ function harness(mode) {
   const branch = [{ type: "message", message: { role: "assistant", stopReason: "stop", content: [{ type: "text", text: "The user wants short sidebar labels, with paid titles as the default." }] } }];
   const session = { name: undefined };
   const pi = {
+    registerCommand: (name, command) => handlers.set(`/${name}`, command.handler),
     on: (event, handler) => handlers.set(event, handler),
     appendEntry: (customType, data) => branch.push({ type: "custom", customType, data }),
     getSessionName: () => session.name,
@@ -155,4 +156,13 @@ test("resuming names an unnamed session from its saved title", async () => {
   h.branch.push({ type: "custom", customType: "pi-summary", data: { title: "Existing Pi sidebar work" } });
   await h.handlers.get("session_start")({}, h.ctx);
   assert.equal(h.session.name, "Existing Pi sidebar work");
+});
+
+test("/retitle names a session from its last user message without a new turn", async () => {
+  const h = harness("model");
+  h.branch.unshift({ type: "message", message: { role: "user", content: [{ type: "text", text: "Give me short Pi conversation summaries" }] } });
+  await h.handlers.get("/retitle")("", h.ctx);
+  assert.equal(h.calls, 1);
+  assert.equal(h.session.name, "Pi Conversation Summaries Configuration");
+  assert.match(readFileSync(h.log, "utf8"), /summary=Pi Conversation Summaries Configuration\n/);
 });

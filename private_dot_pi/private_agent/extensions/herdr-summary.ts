@@ -46,6 +46,16 @@ function latestAnswer(ctx: ExtensionContext): string {
   return "";
 }
 
+function latestPrompt(ctx: ExtensionContext): string {
+  for (const entry of ctx.sessionManager.getBranch().toReversed()) {
+    if (entry.type !== "message" || entry.message.role !== "user") continue;
+    const content = entry.message.content;
+    const text = typeof content === "string" ? content : content.filter((part) => part.type === "text").map((part) => part.text).join(" ");
+    if (text.trim()) return text.slice(0, 600);
+  }
+  return "";
+}
+
 export default function (pi: ExtensionAPI) {
   let prompt = "";
   let prior = "";
@@ -77,7 +87,21 @@ export default function (pi: ExtensionAPI) {
     if (!promptMode.has(mode) || mode === "off") return;
     const currentPrompt = prompt;
     prompt = "";
-    let title = mode === "prompt" ? prior || label(currentPrompt) : prior;
+    await retitle(ctx, mode, currentPrompt);
+  });
+
+  pi.registerCommand("retitle", {
+    description: "Regenerate this session's herdr title from the conversation so far",
+    handler: async (_args, ctx) => {
+      const mode = process.env.PI_HERDR_SUMMARY_MODE || "model";
+      const currentPrompt = latestPrompt(ctx);
+      if (mode === "off" || !promptMode.has(mode) || !currentPrompt) return;
+      await retitle(ctx, mode, currentPrompt, true);
+    },
+  });
+
+  async function retitle(ctx: ExtensionContext, mode: string, currentPrompt: string, fresh = false): Promise<void> {
+    let title = mode === "prompt" ? (fresh ? "" : prior) || label(currentPrompt) : prior;
     if (mode === "model") {
       const modelName = process.env.PI_HERDR_SUMMARY_MODEL || defaultModel;
       const slash = modelName.indexOf("/");
@@ -86,7 +110,7 @@ export default function (pi: ExtensionAPI) {
         try {
           const response = await ctx.modelRegistry.complete(model, {
             systemPrompt,
-            messages: [{ role: "user", content: [{ type: "text", text: `Previous title: ${prior}\nUser: ${currentPrompt}\nAssistant: ${latestAnswer(ctx)}` }], timestamp: Date.now() }],
+            messages: [{ role: "user", content: [{ type: "text", text: `Previous title: ${fresh ? "" : prior}\nUser: ${currentPrompt}\nAssistant: ${latestAnswer(ctx)}` }], timestamp: Date.now() }],
           }, { maxTokens: 48 });
           if (response.stopReason === "stop") title = label(response.content.filter((part) => part.type === "text").map((part) => part.text).join(" ")) || title;
         } catch (error) {
@@ -101,5 +125,5 @@ export default function (pi: ExtensionAPI) {
     prior = title;
     pi.appendEntry(source, { title });
     await publish(ctx, title);
-  });
+  }
 }
