@@ -1,5 +1,6 @@
 {{- /* The repo is public, so work servers (and anything else that should not be
-       published) live in ~/.pi/agent/mcp.local.json, which is never committed.
+       published) live in ~/.pi/agent/mcp.local.json, or in mcp.private.json when
+       even the server's name shouldn't be public; that one is never committed.
        Pi reads only mcp.json and has no include, so the merge happens here; a
        local entry replaces a shared one with the same name. Pi writes exposure
        and enabled-state changes back into mcp.json, so make those in
@@ -16,10 +17,14 @@
       "args" (list "things-mcp")
       "env" (dict "THINGS_AUTH_TOKEN" "!python3 -c 'import json,os; print(json.load(open(os.path.expanduser(\"~/.claude.json\")))[\"mcpServers\"][\"things\"][\"env\"][\"THINGS_AUTH_TOKEN\"])'")) }}
 {{- end }}
-{{- $local := joinPath .chezmoi.homeDir ".pi/agent/mcp.local.json" }}
-{{- if stat $local }}
-{{-   range $name, $server := (include $local | fromJson).mcpServers }}
-{{-     $_ := set $servers $name $server }}
+{{- /* mcp.local.json is tracked; mcp.private.json is not, for servers whose
+       existence shouldn't be in a public repo. Later files win. */ -}}
+{{- range $f := list "mcp.local.json" "mcp.private.json" }}
+{{-   $local := joinPath $.chezmoi.homeDir ".pi/agent" $f }}
+{{-   if stat $local }}
+{{-     range $name, $server := (include $local | fromJson).mcpServers }}
+{{-       $_ := set $servers $name $server }}
+{{-     end }}
 {{-   end }}
 {{- end }}
 {{- dict "mcpServers" $servers | toPrettyJson }}
