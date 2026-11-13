@@ -35,6 +35,12 @@
       "headers": {
         "Authorization": "!echo Bearer $(doppler secrets get NEON_API_KEY --project silk-ops --config dev_personal --plain)"
       }
+    },
+    "Neon-impression": {
+      "url": "https://mcp.neon.tech/mcp",
+      "headers": {
+        "Authorization": "!echo Bearer $(security find-generic-password -s neon-impression-api-key -w)"
+      }
     }
   }
 }
