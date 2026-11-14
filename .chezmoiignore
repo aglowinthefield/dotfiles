@@ -52,14 +52,12 @@ bin/herdr-ssh-status.py
 # bat is not in the scoop/winget lists, so the config and its two token themes
 # would sit unread — and `bat cache --build` is not there to compile them.
 .config/bat
-# Neither kitty nor ghostty runs on Windows, and the two palette generators
-# that feed them are #!/bin/sh. All four would sit unread; the themes/ dirs
+# kitty does not run on Windows, and its palette generator is #!/bin/sh. Both
+# would sit unread; the themes/ dirs
 # below are already ignored for a different reason. Full target paths, per the
 # note above — a bare `kitty` would only match ~/kitty.
 .config/kitty
-.config/ghostty
 .local/bin/kitty-palettes
-.local/bin/ghostty-palettes
 {{- end }}
 # kitty-palettes generates ~/.config/kitty/themes from terminal-tools'
 # share/colors on every apply, and `kitten themes` writes downloaded themes into
@@ -69,13 +67,6 @@ bin/herdr-ssh-status.py
 # `kitten themes` writes current-theme.conf whenever a theme is picked without
 # --config-file-name. Nothing seeds it, so it is ignored rather than managed.
 .config/kitty/current-theme.conf
-
-# ghostty-palettes generates ~/.config/ghostty/themes from terminal-tools'
-# share/colors, the same bargain as .config/kitty/themes above: Ghostty resolves
-# `theme = Token Dark` by file name out of this directory, and the converter
-# rewrites every file in it. Full target path — a bare `themes` would only match
-# ~/themes.
-.config/ghostty/themes
 
 # ── Deliberately unmanaged: this repo is public ──────────────────────────────
 # 1Password's agent.toml has to name SSH items literally, which would publish

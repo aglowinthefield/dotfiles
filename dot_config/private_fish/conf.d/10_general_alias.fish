@@ -17,9 +17,6 @@ alias cl "claude --dangerously-skip-permissions"
 # sessions.
 alias cs "doppler run --no-fallback --project silk-ops --config dev_personal -- claude --dangerously-skip-permissions"
 
-# Ghostty appearance tools from terminal-tools.
-alias theme ghostty-theme
-alias font ghostty-font
 
 # Fish
 alias sf "source ~/.config/fish/config.fish"
