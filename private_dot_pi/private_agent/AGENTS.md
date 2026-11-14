@@ -28,6 +28,7 @@
 - Vault notes take their title from the filename. Never start a note with an H1; begin with frontmatter, then the first paragraph or an H2. Frontmatter values must be valid YAML: lists as `- item` lines, and a wikilink as the whole value of its own property (`superseded-by: "[[Note]]"`), never mixed into prose.
 - Reports, audits, investigations and plans that run past a short reply go in the Obsidian vault as Markdown, never `/tmp`. Each project has a top-level folder: Silk work goes under `$DEV_VAULT/Silk/<topic>/`, other projects under `$DEV_VAULT/<project>/`. Name the file for its content (`CI scripts audit.md`). Set `status: needs-review` in its frontmatter, tell the user the path, and wait for their review before acting on it. Scratch data (query output, logs) may stay in `/tmp`.
 - Delegates writing a report get the vault path in their task, not `/tmp`.
+- A report a skill builds as HTML (Tailwind + Mermaid, like improve-codebase-architecture's) goes to the vault too: save it with the `vault-report` skill, which keeps its layout and the vault theme.
 
 ## Systems
 - Tom seeks new systems when the current one gets uncomfortable. Default to tweaking the current system (Bakery cards, skills, charters, vault `🌀 Now/` pages). When he proposes a new tool, workflow or framework for the same job, say so, ask what the current system failed at, and offer the smallest tweak first. Switch only when he names a concrete failure the tweak cannot fix.
