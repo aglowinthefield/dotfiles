@@ -33,6 +33,15 @@ return {
         vim.lsp.enable('sourcekit')
       end
 
+      -- TypeScript 7's native server (formerly tsgo) finds references across
+      -- silk-remix's packages that vtsls misses: from packages/shared, it
+      -- returned the 9 uses in apps where vtsls returned none. lspconfig's `tsc` prefers a project-local TS 7+
+      -- and otherwise uses the one on PATH. vtsls stays installed as the
+      -- fallback; mason-lspconfig below enables whichever one this is not.
+      if require('config.runtime').typescript_native() then
+        vim.lsp.enable('tsc')
+      end
+
       -- tailwindcss registers `**/` file watchers from the workspace root, and
       -- in silk-remix that root holds ~1.2M directories (node_modules plus
       -- .worktrees' 60-odd checkouts). Without inotifywait, nvim walked the
@@ -107,35 +116,41 @@ return {
   },
   {
     'mason-org/mason-lspconfig.nvim',
-    opts = {
-      ensure_installed = {
-        'lua_ls',
-        'pyright',
-        'neocmake',
-        'clangd',
-        'docker_language_server',
-        'fish_lsp',
-        'gopls',
-        -- vtsls rather than ts_ls: it drives the same tsserver but handles a
-        -- large multi-project workspace better, which is what silk-remix is —
-        -- 6 apps and 6 packages, ~3.6k TS files, with packages/shared imported
-        -- as source rather than as a built package.
-        'vtsls',
-        -- Surfaces lint errors in-editor instead of only in CI
-        'eslint',
-        -- className completion/hover (see the tailwindcss config above)
-        'tailwindcss',
-        'jsonls',
-        'yamlls',
-        -- Postgres-only (Supabase). Syntax errors and completion in .sql files
-        -- such as silk-remix's apps/web/drizzle migrations; no DB connection
-        -- is configured, so it checks syntax, not schema.
-        'postgres_lsp',
-      },
-      -- ts_ls got installed at some point and was being auto-enabled alongside
-      -- vtsls, doubling tsserver memory and every diagnostic/completion
-      automatic_enable = { exclude = { 'ts_ls' } },
-    },
+    opts = function()
+      local exclude = { 'ts_ls' }
+      if require('config.runtime').typescript_native() then
+        exclude[#exclude + 1] = 'vtsls'
+      end
+      return {
+        ensure_installed = {
+          'lua_ls',
+          'pyright',
+          'neocmake',
+          'clangd',
+          'docker_language_server',
+          'fish_lsp',
+          'gopls',
+          -- vtsls rather than ts_ls: it drives the same tsserver but handles a
+          -- large multi-project workspace better, which is what silk-remix is —
+          -- 6 apps and 6 packages, ~3.6k TS files, with packages/shared imported
+          -- as source rather than as a built package.
+          'vtsls',
+          -- Surfaces lint errors in-editor instead of only in CI
+          'eslint',
+          -- className completion/hover (see the tailwindcss config above)
+          'tailwindcss',
+          'jsonls',
+          'yamlls',
+          -- Postgres-only (Supabase). Syntax errors and completion in .sql files
+          -- such as silk-remix's apps/web/drizzle migrations; no DB connection
+          -- is configured, so it checks syntax, not schema.
+          'postgres_lsp',
+        },
+        -- ts_ls got installed at some point and was being auto-enabled alongside
+        -- vtsls, doubling tsserver memory and every diagnostic/completion
+        automatic_enable = { exclude = exclude },
+      }
+    end,
     lazy = false,
     dependencies = {
       { "mason-org/mason.nvim", opts = {} },

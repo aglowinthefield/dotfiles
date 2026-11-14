@@ -9,6 +9,21 @@ function M.is_windows()
   return vim.fn.has('win32') == 1 or vim.fn.has('win64') == 1
 end
 
+-- TypeScript 7's native compiler (the project formerly called tsgo) serves
+-- LSP as `tsc --lsp`; the Node-based tsc of 5.x and 6.x does not.
+-- Startup asks twice (lsp.lua and mason-lspconfig), so spawn tsc only once.
+local typescript_native
+function M.typescript_native()
+  if typescript_native == nil then
+    typescript_native = false
+    if M.has('tsc') then
+      local version = vim.version.parse(vim.fn.system({ 'tsc', '--version' }))
+      typescript_native = vim.v.shell_error == 0 and version ~= nil and version.major >= 7
+    end
+  end
+  return typescript_native
+end
+
 function M.supported()
   return vim.fn.has('nvim-0.12') == 1
 end
@@ -57,6 +72,7 @@ function M.tools()
     { name = 'netcoredbg', commands = { 'netcoredbg' }, required = false, detail = '.NET debugging; install on PATH before starting DAP' },
     { name = 'dotnet-csharpier', commands = { 'dotnet-csharpier' }, required = false, detail = 'C# formatting' },
     { name = 'stylua', commands = { 'stylua' }, required = false, detail = 'Lua formatting' },
+    { name = 'typescript', commands = { 'tsc' }, required = false, detail = 'TypeScript 7+ replaces vtsls as the TS language server' },
     { name = 'lazygit', commands = { 'lazygit' }, required = false, detail = '<leader>gg Git UI' },
   }
   if M.is_windows() then
