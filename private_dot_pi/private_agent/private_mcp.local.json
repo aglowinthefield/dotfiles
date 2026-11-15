@@ -31,6 +31,12 @@
       "headers": {
         "Authorization": "!echo Bearer $(security find-generic-password -s neon-impression-api-key -w)"
       }
+    },
+    "silk": {
+      "url": "https://api.silk.cx/api/mcp",
+      "oauth": {
+        "clientRegistration": "cimd"
+      }
     }
   }
 }
