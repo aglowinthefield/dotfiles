@@ -1,7 +1,7 @@
 # Set every time, not only when unset: a long-lived parent (herdr, pi) otherwise hands an old path to every new shell.
 {{- if eq .chezmoi.hostname "mochi" }}
-# mochi has no desktop Obsidian; headless Sync keeps vaults on the kura/ichigo dataset.
-set -gx DEV_VAULT /media/ichigo/obsidian/dev
+# mochi has no desktop Obsidian; obsidian-sync@somewhere.garden (headless Sync) keeps the vault on the kura/ichigo dataset.
+set -gx DEV_VAULT /media/ichigo/obsidian/somewhere.garden
 {{- else }}
 set -gx DEV_VAULT "$HOME/Documents/somewhere.garden"
 {{- end }}
