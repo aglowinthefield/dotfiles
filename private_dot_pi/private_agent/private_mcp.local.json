@@ -14,9 +14,6 @@
         "list_prometheus_label_values": "codemode"
       }
     },
-    "linear": {
-      "url": "https://mcp.linear.app/mcp"
-    },
     "sentry": {
       "url": "https://mcp.sentry.dev/mcp"
     },

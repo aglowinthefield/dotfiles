@@ -34,12 +34,12 @@ The last thing you print is this tally, in a fenced code block so the columns ho
 
 ```
 ╭─ ✦ wrapped up ✦ ──────────────────────────╮
-│  📋 Linear    2   SIL-468, SIL-469          │
+│  🐙 Issues    2   #468, #469                │
 │  🧠 Memory    1   pr-body-hook-file-order   │
 │  📄 Repo docs 0                             │
 │  🔀 PRs       0                             │
 ├─────────────────────────────────────────────┤
-│  ⏳ Still open 5 → Linear ×4, PR #2604 ×1   │
+│  ⏳ Still open 5 → Issues ×4, PR #2604 ×1   │
 │  🗑  Dropped   5                             │
 ╰─────────────────────────────────────────────╯
    nothing left only in this chat. bye! 👋
