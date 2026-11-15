@@ -22,7 +22,7 @@
 - Before writing any final report, summary, commit message, PR body, handoff note or other write-up, read `~/.agents/skills/clear-voice/SKILL.md` and follow it. Keep write-ups short: no bold-label sections, no restating internals the reader didn't ask about.
 
 ## Vault location
-- Use `$DEV_VAULT` for the dev vault; when unset, use `~/Documents/Dev`. Resolve it before accessing notes. Keep agent reports and annotations in this vault.
+- Use `$DEV_VAULT` for the dev vault; when unset, use `~/Documents/somewhere.garden`. Resolve it before accessing notes. Keep agent reports and annotations in this vault.
 
 ## Written reports
 - Vault notes take their title from the filename. Never start a note with an H1; begin with frontmatter, then the first paragraph or an H2. Frontmatter values must be valid YAML: lists as `- item` lines, and a wikilink as the whole value of its own property (`superseded-by: "[[Note]]"`), never mixed into prose.

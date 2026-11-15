@@ -3,6 +3,6 @@ if not set -q DEV_VAULT
     # mochi has no desktop Obsidian; headless Sync keeps vaults on the kura/ichigo dataset.
     set -gx DEV_VAULT /media/ichigo/obsidian/dev
 {{- else }}
-    set -gx DEV_VAULT "$HOME/Documents/Dev"
+    set -gx DEV_VAULT "$HOME/Documents/somewhere.garden"
 {{- end }}
 end

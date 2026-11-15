@@ -26,7 +26,7 @@ for (let i = 0; i < argv.length; i++) {
   else if (a.startsWith('--')) opts[a.slice(2)] = argv[++i];
   else opts.positional.push(a);
 }
-const VAULT = resolve(opts.vault || process.env.DEV_VAULT || join(homedir(), 'Documents/Dev'));
+const VAULT = resolve(opts.vault || process.env.DEV_VAULT || join(homedir(), 'Documents/somewhere.garden'));
 if (!existsSync(join(VAULT, '.obsidian'))) die(`not an Obsidian vault: ${VAULT}`);
 
 function die(msg) {

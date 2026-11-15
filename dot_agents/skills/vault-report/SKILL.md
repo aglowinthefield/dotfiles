@@ -23,7 +23,7 @@ node ~/.agents/skills/vault-report/scripts/vault-report.mjs <report.html> \
   --dest "<folder inside the vault>" --name "<index note name>" [--date YYYY-MM-DD]
 ```
 
-- The vault is `$DEV_VAULT` (else `~/Documents/Dev`); `--vault` overrides. Put the folder where the global "Written reports" rule says, such as `Silk/<topic>/`. Notes get `status: needs-review`, `date`, and a `report:` link to the index; `--status` changes the first.
+- The vault is `$DEV_VAULT` (else `~/Documents/somewhere.garden`); `--vault` overrides. Put the folder where the global "Written reports" rule says, such as `Silk/<topic>/`. Notes get `status: needs-review`, `date`, and a `report:` link to the index; `--status` changes the first.
 - It refuses to overwrite existing notes. Check them for the user's annotations first (`rg -n '%%|\{>>' <folder>`); if there are none, rerun with `--force`. Notes in the folder that this export didn't write are listed, never deleted.
 - `--rebuild` regenerates the snippet only: after deleting a report folder, or after changing the colour roles in `scripts/palette.mjs`.
 - Needs Chrome (Playwright's cached Chromium, or `$CHROME`) and network for Mermaid. The first run installs Tailwind 3 and PostCSS into `~/.cache/vault-report`.
