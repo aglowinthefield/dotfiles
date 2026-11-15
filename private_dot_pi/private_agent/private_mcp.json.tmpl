@@ -17,6 +17,10 @@
       "command" "uvx"
       "args" (list "things-mcp")
       "env" (dict "THINGS_AUTH_TOKEN" "!python3 -c 'import json,os; print(json.load(open(os.path.expanduser(\"~/.claude.json\")))[\"mcpServers\"][\"things\"][\"env\"][\"THINGS_AUTH_TOKEN\"])'")) }}
+{{- /* The Impression Neon key lives in the macOS keychain, which the Linux machines don't have. */ -}}
+{{- $_ := set $servers "Neon-impression" (dict
+      "url" "https://mcp.neon.tech/mcp"
+      "headers" (dict "Authorization" "!echo Bearer $(security find-generic-password -s neon-impression-api-key -w)")) }}
 {{- end }}
 {{- /* mcp.local.json is tracked; mcp.private.json is not, for servers whose
        existence shouldn't be in a public repo. Later files win. */ -}}
