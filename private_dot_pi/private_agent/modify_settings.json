@@ -5,12 +5,13 @@
   A missing file gets the full seed.
 */ -}}
 {{- $s := dict
-      "packages" (list "npm:@gotgenes/pi-anthropic-auth" "npm:pi-multi-pass" "npm:billion-context")
+      "packages" (list "npm:@gotgenes/pi-anthropic-auth" "npm:pi-multi-pass")
       "defaultTools" (list "+codemode") -}}
 {{- if .chezmoi.stdin | trim }}{{ $s = fromJson .chezmoi.stdin }}{{ end -}}
-{{- /* mem0 was dropped in favour of Impression: strip it from existing machines. */ -}}
+{{- /* mem0 was dropped in favour of Impression, and billion-context was
+       uninstalled: strip both from existing machines. */ -}}
 {{- $pkgs := get $s "packages" | default list -}}
-{{- $keep := list -}}{{- range $pkgs }}{{ if ne . "npm:@mem0/pi-agent-plugin" }}{{ $keep = append $keep . }}{{ end }}{{ end -}}
+{{- $keep := list -}}{{- range $pkgs }}{{ if not (has . (list "npm:@mem0/pi-agent-plugin" "npm:billion-context")) }}{{ $keep = append $keep . }}{{ end }}{{ end -}}
 {{- $s = setValueAtPath "packages" $keep $s -}}
 {{- $s = setValueAtPath "defaultProvider" "anthropic" $s -}}
 {{- $s = setValueAtPath "defaultModel" "claude-opus-5-5" $s -}}
