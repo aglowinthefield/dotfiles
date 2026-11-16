@@ -1,0 +1,59 @@
+{{- if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+# launchd agent that deletes unused anonymous Docker volumes once a day.
+# Hash: {{ include ".chezmoiscripts/run_onchange_62_docker-volume-prune.sh.tmpl" | sha256sum }}
+#
+# Every postgres or redis container gets an anonymous volume, and
+# `docker rm -f` leaves it behind. Hand-started test containers filled
+# Colima's disk with 339 of them (12.9 GB) in two weeks. `volume prune`
+# without -a keeps named volumes and any volume a container still uses.
+#
+# Installed by script rather than as a managed file so that chezmoi never
+# takes ownership of ~/Library/LaunchAgents and rewrites its permissions.
+
+set -e
+
+label="com.tauty.docker-volume-prune"
+plist="{{ .chezmoi.homeDir }}/Library/LaunchAgents/${label}.plist"
+
+echo "Installing ${label}..."
+
+tmp="$(mktemp)"
+cat >"$tmp" <<'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.tauty.docker-volume-prune</string>
+
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/sh</string>
+		<string>-c</string>
+		<string>PATH=/opt/homebrew/bin:/usr/local/bin:$PATH; docker info >/dev/null 2>&amp;1 || exit 0; date; docker volume prune -f</string>
+	</array>
+
+	<key>StartCalendarInterval</key>
+	<dict>
+		<key>Hour</key>
+		<integer>4</integer>
+		<key>Minute</key>
+		<integer>0</integer>
+	</dict>
+
+	<key>StandardOutPath</key>
+	<string>{{ .chezmoi.homeDir }}/Library/Logs/docker-volume-prune.log</string>
+	<key>StandardErrorPath</key>
+	<string>{{ .chezmoi.homeDir }}/Library/Logs/docker-volume-prune.log</string>
+</dict>
+</plist>
+PLIST
+
+# install(1) writes the file without touching the parent directory's mode.
+install -m 644 "$tmp" "$plist"
+rm -f "$tmp"
+
+launchctl bootout "gui/$(id -u)/${label}" 2>/dev/null || true
+launchctl bootstrap "gui/$(id -u)" "$plist"
+{{- end }}
