@@ -6,6 +6,7 @@
 - Investigation and review that edit no files can stay in the root.
 - Why: the root is shared by other sessions, Bakery approvals (which merge into local `main` and refuse when main is dirty) and the operator's own editing. Uncommitted edits left there block merges and get mixed up with unrelated work.
 - In the root, don't stash, reset, checkout, clean or reformat files you didn't create, even briefly to compare test results. Commit your worktree's work before you report done.
+- Wrap-up: once your PR has merged (or the work is abandoned and committed), remove your own worktree with `wt remove <branch>` from the repo root before you report done. The `cx.worktree-sweep` launchd job (`~/.local/bin/worktree-sweep`, every 2 h) is the backstop, but it skips any worktree a process still sits in, so stop dev servers, watchers and `caffeinate` jobs you started there first.
 
 ## Codemode output
 - For routine Codemode calls, start scripts with `// @options: {"max_output_tokens": 1200}`. Raise the limit only when the task needs more detail.
