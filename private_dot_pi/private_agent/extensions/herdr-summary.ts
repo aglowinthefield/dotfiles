@@ -11,7 +11,7 @@ const run = promisify(execFile);
 const source = "pi-summary";
 const defaultModel = "anthropic/claude-haiku-4-5";
 const promptMode = new Set(["model", "prompt", "off"]);
-const systemPrompt = "Name the current coding conversation for a narrow sidebar. Return only a specific 2-5 word title. No punctuation, quotes, or generic words like conversation or configuration unless they are the topic. Use the latest user request and assistant result to track topic changes. Never include credentials. Reply with the title alone on one line, with no preamble.";
+const systemPrompt = "Name the task this coding conversation is working on, for a narrow sidebar. Return only a specific 2-5 word title. Name the overall goal, not the latest step: follow-ups like committing, testing, merging, deploying or fixing review comments belong to the same task. If a previous title is given and still describes the task, return it unchanged, word for word. Change it only when the user has moved on to different work. No punctuation, quotes, or generic words like conversation or configuration unless they are the topic. Never include credentials. Reply with the title alone on one line, with no preamble.";
 
 function label(text: string): string {
   // Never expose a prompt fragment or model output that looks like a credential.
@@ -24,7 +24,7 @@ function label(text: string): string {
 // Models sometimes lead with "Based on the conversation, here's a title:"; the title is the last line.
 function lastLine(text: string): string {
   const line = text.split("\n").map((part) => part.trim()).filter(Boolean).at(-1) ?? "";
-  return line.replace(/^(title|suggested title)\s*:\s*/i, "").replace(/[*#]/g, "");
+  return line.replace(/^((new|suggested|updated)\s+)?title\s*:\s*/i, "").replace(/[*#]/g, "");
 }
 
 function currentPane(ctx: ExtensionContext): string | undefined {
