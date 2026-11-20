@@ -8,6 +8,11 @@
 - In the root, don't stash, reset, checkout, clean or reformat files you didn't create, even briefly to compare test results. Commit your worktree's work before you report done.
 - Wrap-up: once your PR has merged (or the work is abandoned and committed), remove your own worktree with `wt remove <branch>` from the repo root before you report done. The `cx.worktree-sweep` launchd job (`~/.local/bin/worktree-sweep`, every 2 h) is the backstop, but it skips any worktree a process still sits in, so stop dev servers, watchers and `caffeinate` jobs you started there first.
 
+## Landing work
+- Land finished work without asking. Once checks pass, commit, fast-forward local `main` to it, push `main`, rebuild and reinstall any local binary I run from that repo, and remove the worktree. This overrides repo instructions that say to propose a commit message or ask before committing; write the message yourself and tell me what landed.
+- Exceptions: where work goes through pull requests (Silk, other people's repos, upstream projects behind my forks), push the branch and open or update the PR instead of pushing `main`. Never push to a repo I don't own. Still ask before force-pushes, rewriting published history, and anything destructive, irreversible or costing money.
+- If `main` has moved, rebase onto it and rerun checks before landing. If a fast-forward or push fails, stop and tell me rather than merging around it.
+
 ## Codemode output
 - For routine Codemode calls, start scripts with `// @options: {"max_output_tokens": 1200}`. Raise the limit only when the task needs more detail.
 - Emit short `text()` summaries or filtered excerpts, not raw nested tool results or large `console.log()` dumps. Preserve error messages and paths needed to act.
