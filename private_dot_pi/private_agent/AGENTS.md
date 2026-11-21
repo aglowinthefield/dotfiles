@@ -28,7 +28,6 @@
   - A fresh-context check of your own work: a reviewer that gets the criteria and the diff, never your reasoning.
   - A skill or role that calls for one, like Unconscious Development's Creator, Shadow and Trickster.
 - Do it yourself when the task is small or sequential, needs back-and-forth with me, or when the child would re-read most of what you already hold.
-- Keep fan-out to what you'll read, usually 2 to 4 children. Each child costs a full context.
 - A child that writes files gets its own worktree. Parallel writers never share one.
 - Children never take gated actions: push, merge, PR, comment, deploy or spend. You audit their diff and take those actions yourself.
 - A child's report is a lead. Check its claims against source before you repeat them.
