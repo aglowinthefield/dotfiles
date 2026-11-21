@@ -21,6 +21,18 @@
 ## Waiting
 - Never wait with a fixed `sleep N`, in bash or through codemode (which has no timers). Wait on the real condition: a blocking command (`gh run watch`, `gh pr checks --watch`, `flyctl ... --wait`, `acp_delegate_wait`) or one bounded poll loop, `timeout 300 sh -c 'until <check>; do sleep 2; done'`. The `no-sleep` extension blocks bare sleeps.
 
+## Subagents
+- You may delegate without asking in these cases. This list is the standing authorization `subagents_enable` asks for.
+  - Independent work that can run in parallel, such as investigating several areas or review lanes.
+  - A large read-heavy or mechanical task that would fill your context, such as a wide sweep, a log trawl or a big merge. Have it return paths, lines and a short summary.
+  - A fresh-context check of your own work: a reviewer that gets the criteria and the diff, never your reasoning.
+  - A skill or role that calls for one, like Unconscious Development's Creator, Shadow and Trickster.
+- Do it yourself when the task is small or sequential, needs back-and-forth with me, or when the child would re-read most of what you already hold.
+- Keep fan-out to what you'll read, usually 2 to 4 children. Each child costs a full context.
+- A child that writes files gets its own worktree. Parallel writers never share one.
+- Children never take gated actions: push, merge, PR, comment, deploy or spend. You audit their diff and take those actions yourself.
+- A child's report is a lead. Check its claims against source before you repeat them.
+
 ## Other sessions
 - pi-intercom connects every local pi session. Use the `intercom` tool to reach another session working in the same repo, a repo you're consulting for its patterns, or a shared library. Don't use it for unrelated repos, for trivial questions, or when you can carry on alone. `/skill:pi-intercom` has the patterns.
 - Run `intercom({ action: "list" })` before sending: session names follow the task and drift. Prefer `send` to notify. Use `ask` only when you're blocked on the answer.
