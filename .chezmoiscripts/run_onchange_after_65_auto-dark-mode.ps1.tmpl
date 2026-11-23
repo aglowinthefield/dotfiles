@@ -1,12 +1,13 @@
 {{- if eq .chezmoi.os "windows" -}}
-# Auto Dark Mode flips Windows' app and system theme between light and dark on
-# a fixed schedule. Windows Terminal ("theme": "system" plus a light/dark
+# Auto Dark Mode flips Windows' app and system theme between light and dark at
+# local sunrise and sunset. Windows Terminal ("theme": "system" plus a light/dark
 # colorScheme pair), VS Code (window.autoDetectColorScheme), Obsidian, Firefox
 # and Herdr follow that switch, and nvim follows the terminal through OSC 11.
 #
-# Fixed hours rather than sunrise/sunset: location services are denied
-# machine-wide, and custom coordinates would put a home location in this repo.
-# Change the hours here to re-run the script.
+# Sunrise and sunset come from Windows location services, so no coordinates
+# live in this repo. That needs location on: privacy.sexy's location policies
+# turn it off. The hours below are the schedule Auto Dark Mode uses if
+# Location is switched off in its settings.
 $ErrorActionPreference = 'Stop'
 $PSNativeCommandUseErrorActionPreference = $false
 {{ template "scoop-path.ps1" . }}
@@ -38,8 +39,8 @@ $yaml = Get-Content $config -Raw
 $yaml = $yaml -replace '(?m)^AutoThemeSwitchingEnabled: \w+', 'AutoThemeSwitchingEnabled: true'
 $yaml = $yaml -replace '(?m)^Sunrise: (\d{4}-\d\d-\d\d)T[^\r\n]*', "Sunrise: `$1T$lightAt.0000000"
 $yaml = $yaml -replace '(?m)^Sunset: (\d{4}-\d\d-\d\d)T[^\r\n]*', "Sunset: `$1T$darkAt.0000000"
-# Location mode would override the fixed hours.
-$yaml = $yaml -replace '(?ms)(^Location:.*?^  Enabled: )\w+', '${1}false'
+$yaml = $yaml -replace '(?ms)(^Location:.*?^  Enabled: )\w+', '${1}true'
+$yaml = $yaml -replace '(?m)^(  UseGeolocatorService: )\w+', '${1}true'
 # Scoop owns updates; the built-in updater would rewrite the scoop app dir.
 $yaml = $yaml -replace '(?ms)(^Updater:.*?^  Enabled: )\w+', '${1}false'
 # A toast twice a day is noise.
@@ -48,5 +49,5 @@ Set-Content -Path $config -Value $yaml -NoNewline -Encoding utf8NoBOM
 
 & $shell --add-autostart | Out-Host
 & $shell --switch | Out-Host
-Write-Host "Auto Dark Mode: light at $lightAt, dark at $darkAt."
+Write-Host "Auto Dark Mode: sunrise/sunset (manual schedule $lightAt/$darkAt)."
 {{- end -}}
