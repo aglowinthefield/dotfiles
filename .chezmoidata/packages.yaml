@@ -196,6 +196,9 @@ packages:
     - 'wget'
     - 'starship'
     - 'fzf'
+    # Switches Windows light/dark by time of day; configured by
+    # run_onchange_after_65_auto-dark-mode.ps1.
+    - 'auto-dark-mode'
     # Global npm CLIs, installed with scoop's nodejs above.
     npm:
     - '@earendil-works/pi-coding-agent'

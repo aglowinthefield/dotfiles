@@ -37,7 +37,11 @@
     {
         "defaults": 
         {
-            "colorScheme": "Token Dark",
+            "colorScheme": 
+            {
+                "dark": "Token Dark",
+                "light": "Token Light"
+            },
             "cursorShape": "vintage",
             "font": 
             {
@@ -11216,7 +11220,7 @@
         }
     ],
     "showTabsInTitlebar": true,
-    "theme": "dark",
+    "theme": "system",
     "themes": [],
     "useAcrylicInTabRow": true
 }

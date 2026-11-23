@@ -1,0 +1,52 @@
+{{- if eq .chezmoi.os "windows" -}}
+# Auto Dark Mode flips Windows' app and system theme between light and dark on
+# a fixed schedule. Windows Terminal ("theme": "system" plus a light/dark
+# colorScheme pair), VS Code (window.autoDetectColorScheme), Obsidian, Firefox
+# and Herdr follow that switch, and nvim follows the terminal through OSC 11.
+#
+# Fixed hours rather than sunrise/sunset: location services are denied
+# machine-wide, and custom coordinates would put a home location in this repo.
+# Change the hours here to re-run the script.
+$ErrorActionPreference = 'Stop'
+$PSNativeCommandUseErrorActionPreference = $false
+{{ template "scoop-path.ps1" . }}
+
+$lightAt = '07:00:00'
+$darkAt = '19:00:00'
+
+$core = Join-Path (scoop prefix auto-dark-mode) 'adm-app\core'
+if (-not (Test-Path $core)) {
+    Write-Warning 'auto-dark-mode is not installed; skipping its configuration.'
+    exit 0
+}
+$shell = Join-Path $core 'AutoDarkModeShell.exe'
+$config = Join-Path $env:APPDATA 'AutoDarkMode\config.yaml'
+
+# The service writes its default config on first start.
+if (-not (Get-Process AutoDarkModeSvc -ErrorAction SilentlyContinue)) {
+    Start-Process (Join-Path $core 'AutoDarkModeSvc.exe') -WindowStyle Hidden
+}
+$deadline = (Get-Date).AddSeconds(60)
+while (-not (Test-Path $config)) {
+    if ((Get-Date) -gt $deadline) { throw "Auto Dark Mode did not create $config" }
+    Start-Sleep -Milliseconds 500
+}
+
+# Patch only the keys this script owns. The service keeps writing its own
+# state into the same file, so chezmoi can't manage it as a whole.
+$yaml = Get-Content $config -Raw
+$yaml = $yaml -replace '(?m)^AutoThemeSwitchingEnabled: \w+', 'AutoThemeSwitchingEnabled: true'
+$yaml = $yaml -replace '(?m)^Sunrise: (\d{4}-\d\d-\d\d)T[^\r\n]*', "Sunrise: `$1T$lightAt.0000000"
+$yaml = $yaml -replace '(?m)^Sunset: (\d{4}-\d\d-\d\d)T[^\r\n]*', "Sunset: `$1T$darkAt.0000000"
+# Location mode would override the fixed hours.
+$yaml = $yaml -replace '(?ms)(^Location:.*?^  Enabled: )\w+', '${1}false'
+# Scoop owns updates; the built-in updater would rewrite the scoop app dir.
+$yaml = $yaml -replace '(?ms)(^Updater:.*?^  Enabled: )\w+', '${1}false'
+# A toast twice a day is noise.
+$yaml = $yaml -replace '(?m)^(  OnAutoThemeSwitching: )\w+', '${1}false'
+Set-Content -Path $config -Value $yaml -NoNewline -Encoding utf8NoBOM
+
+& $shell --add-autostart | Out-Host
+& $shell --switch | Out-Host
+Write-Host "Auto Dark Mode: light at $lightAt, dark at $darkAt."
+{{- end -}}
