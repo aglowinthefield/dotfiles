@@ -1,11 +1,12 @@
 {{- /* Trusted project roots are absolute paths, so they differ per OS:
-       the silk checkouts live under ~/silk on macOS and /home/redbean on Linux. */ -}}
+       silk-remix lives under ~/silk on macOS and ~/code on Linux. */ -}}
 {
 {{- if eq .chezmoi.os "darwin" }}
   "/Users/clearing/code": true,
   "/Users/clearing/silk": true
 {{- else }}
   "/home/redbean/silk": true,
-  "/home/redbean/var": true
+  "/home/redbean/var": true,
+  "/home/redbean/code/silk-remix": true
 {{- end }}
 }
