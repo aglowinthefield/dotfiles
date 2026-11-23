@@ -13,6 +13,11 @@ komorebi.json
 # relative to $HOME — a bare `sysupdate.ps1` would only match ~/sysupdate.ps1.
 .config/yasb
 .local/bin/sysupdate.ps1
+.local/bin/agent-skills-sync.ps1
+{{- end }}
+{{- if ne .chezmoi.os "linux" }}
+# systemd user units: only Linux has systemd.
+.config/systemd
 {{- end }}
 {{- if ne .chezmoi.os "darwin" }}
 # VS Code settings are laid out for the macOS Library path.
@@ -28,6 +33,7 @@ Library
 # Unix shells and executable shims are not used on Windows.
 .config/fish
 .local/bin/env.fish
+.local/bin/agent-skills-sync
 .local/share/node-shims
 bin
 # reviewr is currently provisioned only on macOS/Linux.

@@ -1,0 +1,17 @@
+{{- if eq .chezmoi.os "windows" -}}
+# Agent skills: run the sync once, then register an hourly scheduled task for it.
+# Re-runs when the script changes.
+# script: {{ include "dot_local/bin/agent-skills-sync.ps1" | sha256sum }}
+
+$script = Join-Path $HOME '.local\bin\agent-skills-sync.ps1'
+$pwsh = 'C:\Program Files\PowerShell\7\pwsh.exe'
+
+& $pwsh -NoLogo -NoProfile -File $script
+
+$action = New-ScheduledTaskAction -Execute $pwsh `
+    -Argument "-NoLogo -NoProfile -WindowStyle Hidden -File `"$script`""
+$trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Hours 1)
+$settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+Register-ScheduledTask -TaskName 'agent-skills-sync' -Action $action -Trigger $trigger -Settings $settings `
+    -Description 'Hourly pull of agent skill repos into ~/code and junctions into ~/.agents/skills.' -Force | Out-Null
+{{- end }}

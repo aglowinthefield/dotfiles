@@ -1,0 +1,26 @@
+{{- if ne .chezmoi.os "windows" -}}
+#!/bin/sh
+# Agent skills: run the sync once, then schedule it hourly (systemd timer on
+# Linux, launchd agent on macOS). Re-runs when the script or its schedule changes.
+# script: {{ include "dot_local/bin/executable_agent-skills-sync" | sha256sum }}
+{{- if eq .chezmoi.os "linux" }}
+# timer: {{ include "dot_config/systemd/user/agent-skills-sync.timer" | sha256sum }}
+# service: {{ include "dot_config/systemd/user/agent-skills-sync.service" | sha256sum }}
+{{- else if eq .chezmoi.os "darwin" }}
+# agent: {{ include "private_Library/LaunchAgents/com.aglowinthefield.agent-skills-sync.plist.tmpl" | sha256sum }}
+{{- end }}
+
+"$HOME/.local/bin/agent-skills-sync" || echo "agent-skills-sync failed; the timer retries hourly" >&2
+{{- if eq .chezmoi.os "linux" }}
+
+if systemctl --user show-environment >/dev/null 2>&1; then
+  systemctl --user daemon-reload
+  systemctl --user enable --now agent-skills-sync.timer
+fi
+{{- else if eq .chezmoi.os "darwin" }}
+
+plist="$HOME/Library/LaunchAgents/com.aglowinthefield.agent-skills-sync.plist"
+launchctl bootout "gui/$(id -u)/com.aglowinthefield.agent-skills-sync" 2>/dev/null || true
+launchctl bootstrap "gui/$(id -u)" "$plist"
+{{- end }}
+{{- end }}

@@ -1,0 +1,7 @@
+[Unit]
+Description=Pull agent skill repos and link their skills
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/agent-skills-sync

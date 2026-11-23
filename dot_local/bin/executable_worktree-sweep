@@ -121,7 +121,10 @@ else
   IFS=: read -ra root_list <<<"$ROOTS"
   for root in "${root_list[@]}"; do
     for d in "$root"/*/; do
-      [ -d "${d}.git" ] && [ -d "${d}.worktrees" ] && repos+=("$(cd "$d" && pwd -P)")
+      [ -d "${d}.git" ] && [ -d "${d}.worktrees" ] || continue
+      real="$(cd "$d" && pwd -P)"
+      # A symlink left at an old location (~/silk/silk-remix -> ~/code/silk-remix) would list it twice.
+      case " ${repos[*]-} " in *" $real "*) ;; *) repos+=("$real") ;; esac
     done
   done
 fi

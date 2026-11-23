@@ -1,0 +1,101 @@
+#!/bin/sh
+# agent-skills-sync: keep the agent skill repos current and linked on this machine.
+#
+# Each repo in REPOS is cloned to ~/code/<repo> and fast-forwarded while its
+# checkout sits on main. Every skills/<skill>/ in it is linked at
+# ~/.agents/skills/<skill>, and ~/.claude/skills/<skill> points at that link.
+# Edits made in ~/code/<repo> are live at once and go back through git.
+#
+# Runs hourly (systemd timer on Linux, launchd agent on macOS) and on every
+# `chezmoi apply` that changes it. Windows does the same in sysupdate.ps1.
+#
+# A real folder already sitting where a link belongs is moved to
+# ~/.local/state/agent-skills-sync/replaced/, never deleted.
+
+set -u
+
+OWNER=aglowinthefield
+REPOS="skills clearstack"
+
+code="$HOME/code"
+agents="$HOME/.agents/skills"
+claude="$HOME/.claude/skills"
+state="$HOME/.local/state/agent-skills-sync"
+
+log() { printf 'agent-skills-sync: %s\n' "$*"; }
+
+mkdir -p "$state" "$agents"
+lock="$state/lock"
+if ! mkdir "$lock" 2>/dev/null; then
+  log "another run holds $lock; skipping"
+  exit 0
+fi
+trap 'rmdir "$lock"' EXIT INT TERM
+
+# The repos are public, so fetches go anonymously over HTTPS with the global
+# gitconfig skipped: it rewrites GitHub HTTPS to SSH, and SSH through 1Password
+# would prompt from a background job. origin stays SSH for your own pushes.
+anon() { GIT_CONFIG_GLOBAL=/dev/null git "$@"; }
+
+sync_repo() {
+  dir="$code/$1"
+  https="https://github.com/$OWNER/$1.git"
+  if [ ! -d "$dir/.git" ]; then
+    mkdir -p "$code"
+    anon clone --quiet "$https" "$dir" || { log "could not clone $https"; return 1; }
+    git -C "$dir" remote set-url origin "git@github.com:$OWNER/$1.git"
+    log "cloned $1"
+    return 0
+  fi
+  anon -C "$dir" fetch --quiet "$https" +refs/heads/main:refs/remotes/origin/main ||
+    { log "$1: fetch failed"; return 0; }
+  branch=$(git -C "$dir" symbolic-ref --short -q HEAD || echo "(detached)")
+  if [ "$branch" = main ]; then
+    git -C "$dir" merge --ff-only --quiet origin/main 2>/dev/null ||
+      log "$1: main has local commits or edits in the way; left as is"
+  else
+    log "$1: checkout is on $branch, not main; fetched without updating it"
+  fi
+}
+
+# link <target> <path>: make <path> a symlink to <target>, moving aside anything else there.
+link() {
+  if [ -L "$2" ]; then
+    [ "$(readlink "$2")" = "$1" ] && return 0
+    rm "$2"
+  elif [ -e "$2" ]; then
+    mkdir -p "$state/replaced"
+    moved="$state/replaced/$(basename "$2").$(date +%Y%m%d%H%M%S)"
+    mv "$2" "$moved"
+    log "moved the old $2 to $moved"
+  fi
+  ln -s "$1" "$2"
+}
+
+for repo in $REPOS; do
+  sync_repo "$repo" || continue
+  for skill_dir in "$code/$repo/skills"/*/; do
+    [ -f "${skill_dir}SKILL.md" ] || continue
+    name=$(basename "$skill_dir")
+    link "$code/$repo/skills/$name" "$agents/$name"
+    if [ -d "$HOME/.claude" ]; then
+      mkdir -p "$claude"
+      link "../../.agents/skills/$name" "$claude/$name"
+    fi
+  done
+done
+
+# Drop links to skills a repo no longer has (removed or renamed upstream).
+for l in "$agents"/*; do
+  [ -L "$l" ] && [ ! -e "$l" ] || continue
+  for repo in $REPOS; do
+    case "$(readlink "$l")" in
+      "$code/$repo/skills/"*)
+        name=$(basename "$l")
+        rm "$l"
+        [ -L "$claude/$name" ] && [ "$(readlink "$claude/$name")" = "../../.agents/skills/$name" ] && rm "$claude/$name"
+        log "removed $name; $repo no longer has it"
+        ;;
+    esac
+  done
+done
