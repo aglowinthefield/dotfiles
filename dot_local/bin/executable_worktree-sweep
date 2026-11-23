@@ -5,7 +5,8 @@
 #   worktree-sweep --apply            remove
 #   worktree-sweep [opts] <repo>...   only these repos (primary checkout paths)
 #   worktree-sweep --idle-days N      idle threshold for branches with no PR (default 7)
-#   worktree-sweep --install-agent    run `--apply` every 2 hours via launchd (macOS)
+#   worktree-sweep --install-agent    run `--apply` every 2 hours via launchd (macOS;
+#                                     Linux gets a systemd timer from chezmoi)
 #
 # Repos: each child of the directories in $WORKTREE_SWEEP_ROOTS (colon separated,
 # default ~/code:~/silk) that has a .worktrees/ directory. Worktrunk's
@@ -74,7 +75,7 @@ esac
 
 if $install_agent; then
   [ "$(uname)" = Darwin ] || {
-    echo "worktree-sweep: --install-agent is macOS only; use cron elsewhere." >&2
+    echo "worktree-sweep: --install-agent is macOS only; on Linux chezmoi installs worktree-sweep.timer." >&2
     exit 1
   }
   self="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)/$(basename "${BASH_SOURCE[0]}")"
@@ -161,7 +162,8 @@ fi
 awk '/^p/{pid=substr($0,2)} /^n/{print pid "\t" substr($0,2)}' "$TMP/lsof" >"$TMP/cwds"
 
 now="$(date +%s)"
-mtime() { stat -f %m "$1" 2>/dev/null || stat -c %Y "$1" 2>/dev/null || echo 0; }
+# GNU stat first: on Linux `stat -f` means filesystem status and succeeds with junk.
+mtime() { stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null || echo 0; }
 
 # Seconds since the worktree's HEAD commit or its reflog (checkout, commit,
 # reset) last changed. The index is ignored: `git status` rewrites it.
