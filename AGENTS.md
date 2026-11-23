@@ -17,3 +17,10 @@ This repository is the chezmoi source state for cross-platform dotfiles.
 - Windows: not scheduled. The script needs bash, and `wt` there is Windows Terminal.
 
 `worktree-sweep` with no flags is a dry run. Run it before `--apply` after changing the rules.
+
+## Agent performance jobs (Linux)
+
+chezmoi installs and enables these timers on Linux through `.chezmoiscripts/run_onchange_after_59_agent-perf-timers.sh.tmpl`. macOS does not schedule them.
+
+- `silk-deps-seed.timer` runs `~/.local/bin/silk-deps-seed` hourly. It keeps a locked worktree at `~/code/silk-remix/.worktrees/_deps-seed` on `origin/main` with a fresh `npm ci`, so silk-remix's `scripts/worktree-deps.sh` hardlinks new worktrees' `node_modules` from it instead of installing. It exits quietly where silk-remix is not cloned. Check it with `journalctl --user -u silk-deps-seed`.
+- `git-maintenance@{hourly,daily,weekly}.timer` run `git maintenance` for the repos listed in `~/.config/git/maintenance.gitconfig`. That file is per machine and unmanaged. `.gitconfig` includes it. Add a repo with `git -C <repo> maintenance register --config-file ~/.config/git/maintenance.gitconfig`, never plain `git maintenance start`, which writes into the managed `.gitconfig`.

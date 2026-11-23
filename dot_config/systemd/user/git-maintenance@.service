@@ -1,0 +1,8 @@
+[Unit]
+Description=git maintenance (%i) for repos in maintenance.repo
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/git for-each-repo --keep-going --config=maintenance.repo maintenance run --schedule=%i
+Nice=19
+IOSchedulingClass=idle

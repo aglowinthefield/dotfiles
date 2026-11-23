@@ -1,0 +1,9 @@
+[Unit]
+Description=git maintenance (weekly)
+
+[Timer]
+OnCalendar=Mon 0:23:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

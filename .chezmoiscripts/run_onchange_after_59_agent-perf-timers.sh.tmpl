@@ -1,0 +1,12 @@
+{{- if eq .chezmoi.os "linux" -}}
+#!/bin/sh
+# Enable the silk-remix dependency seed and git maintenance timers.
+# seed: {{ include "dot_config/systemd/user/silk-deps-seed.timer" | sha256sum }}
+# seed-service: {{ include "dot_config/systemd/user/silk-deps-seed.service" | sha256sum }}
+# gm: {{ include "dot_config/systemd/user/git-maintenance@.service" | sha256sum }}
+# gm-hourly: {{ include "dot_config/systemd/user/git-maintenance@hourly.timer" | sha256sum }}
+if systemctl --user show-environment >/dev/null 2>&1; then
+  systemctl --user daemon-reload
+  systemctl --user enable --now silk-deps-seed.timer git-maintenance@hourly.timer git-maintenance@daily.timer git-maintenance@weekly.timer
+fi
+{{- end }}

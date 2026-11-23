@@ -114,3 +114,10 @@
     smudge = git-lfs smudge -- %f
     process = git-lfs filter-process
 {{- end }}
+
+# Per-machine list of repos for scheduled `git maintenance`. chezmoi owns this
+# file, so register repos there, not here:
+#   git maintenance register --config-file ~/.config/git/maintenance.gitconfig
+# A missing include file is ignored.
+[include]
+    path = ~/.config/git/maintenance.gitconfig

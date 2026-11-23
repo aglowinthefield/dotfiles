@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh the silk-remix dependency seed hourly
+
+[Timer]
+OnBootSec=5min
+OnCalendar=hourly
+Persistent=true
+RandomizedDelaySec=5min
+
+[Install]
+WantedBy=timers.target
