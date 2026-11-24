@@ -65,8 +65,10 @@ set -e CLAUDE_CODE_OAUTH_TOKEN
 
 if status is-interactive
     and not set -q TMUX
+    and not set -q HC_TERMINAL_ID
     and test "$DISPLAY" = ":0"
     # Automatically use tmux for VNC / local desktop sessions only.
+    # Herdr panes (HC_TERMINAL_ID) inherit DISPLAY=:0 from the systemd user env.
     # SSH sessions should open a regular interactive shell.
     set SESSION_NAME vnc
 
