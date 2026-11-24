@@ -1,7 +1,7 @@
 // PI_HERDR_SUMMARY_MODE=model (default), prompt (no API call), or off.
 // PI_HERDR_SUMMARY_MODEL picks the model as provider/id; the default is anthropic/claude-haiku-4-5.
 // The title also becomes the pi session name, which pi puts in the terminal title, so
-// herdr-bar names the tab from it. A name set with /name is never overwritten.
+// herdr-bar and the Herdr app name the tab from it. A name set with /name is never overwritten.
 // The model sees at most 600 characters each of the prompt and assistant reply.
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
@@ -27,12 +27,17 @@ function lastLine(text: string): string {
   return line.replace(/^((new|suggested|updated)\s+)?title\s*:\s*/i, "").replace(/[*#]/g, "");
 }
 
+// The herdr TUI sets HERDR_ENV and HERDR_PANE_ID; the Herdr app runs terminals in
+// herdr-core, which sets HC_TERMINAL_ID. Both show the session name in the title.
 function currentPane(ctx: ExtensionContext): string | undefined {
-  return ctx.mode === "tui" && process.env.HERDR_ENV === "1" ? process.env.HERDR_PANE_ID : undefined;
+  if (ctx.mode !== "tui") return undefined;
+  if (process.env.HERDR_ENV === "1") return process.env.HERDR_PANE_ID;
+  return process.env.HC_TERMINAL_ID;
 }
 
+// Only the herdr TUI takes pane metadata; the Herdr app reads the title.
 async function publish(ctx: ExtensionContext, title?: string): Promise<void> {
-  const pane = currentPane(ctx);
+  const pane = process.env.HERDR_ENV === "1" ? currentPane(ctx) : undefined;
   if (!pane) return;
   const args = ["pane", "report-metadata", pane, "--source", source, "--agent", "pi"];
   if (title) args.push("--token", `summary=${title}`);
