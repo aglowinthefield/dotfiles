@@ -3,7 +3,7 @@
 Pi reads this file. `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` are symlinks to it, so Claude Code and Codex get the same rules. Skip sections about tools you don't have.
 
 ## Philosophy
-- Before a design decision (a new module, a seam between projects, a loop, a schema change, a test strategy, where something runs), read `~/code/PHILOSOPHY.md`. A `## Departures` section in a project's AGENTS.md overrides it for that project.
+- Before a design decision (a new module, a seam between projects, a loop, a schema change, a test strategy, where something runs), read `~/code/PHILOSOPHY.md`, or https://github.com/aglowinthefield/skills/blob/main/philosophy/PHILOSOPHY.md where that file doesn't exist. A `## Departures` section in a project's AGENTS.md overrides it for that project.
 
 ## Worktrees
 - Work that edits tracked files gets its own worktree and branch, never the main checkout. Before the first edit, run `git worktree add .worktrees/<branch> -b <branch> <base>` from the repo root (base is `main`/`origin/main` unless the work stacks on another branch), then use absolute paths into that worktree for every read, edit and command. This matches worktrunk's layout (`~/.config/worktrunk/config.toml`), so `wt` can manage the worktree afterwards. If `.worktrees/` isn't in the repo's `.gitignore`, add it in the worktree's first commit.
