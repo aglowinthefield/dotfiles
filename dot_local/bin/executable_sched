@@ -6,13 +6,14 @@
 #   sched --local   this machine only; peers run this over ssh
 #
 # Peers don't need sched installed: the script is piped to `bash -s` over ssh.
-# They do need jq.
+# They do need jq. Piped output is tab-separated with a HOST column; on a
+# terminal it is grouped by host with status colours (NO_COLOR, FORCE_COLOR).
 set -uo pipefail
 
 ago() { # seconds -> 45s / 12m / 5h / 3d
   local s=$(( $1 < 0 ? 0 : $1 ))
-  if (( s < 120 )); then echo "${s}s"
-  elif (( s < 7200 )); then echo "$(( s / 60 ))m"
+  if (( s < 60 )); then echo "${s}s"
+  elif (( s < 3600 )); then echo "$(( s / 60 ))m"
   elif (( s < 172800 )); then echo "$(( s / 3600 ))h"
   else echo "$(( s / 86400 ))d"; fi
 }
@@ -82,7 +83,7 @@ cron_jobs() {
 }
 
 local_jobs() {
-  if ! command -v jq >/dev/null; then printf -- '-\t-\t-\t-\tneeds jq\n'; return; fi
+  if ! command -v jq >/dev/null; then printf 'error\t-\t-\t-\tneeds jq\n'; return; fi
   case $(uname) in
     Darwin) launchd_jobs ;;
     Linux) timer_jobs --user; timer_jobs --system ;;
@@ -105,14 +106,56 @@ for h in $peers; do
   (
     if ! ssh -o BatchMode=yes -o ConnectTimeout=5 "$h" 'bash -s -- --local' \
         <"${BASH_SOURCE[0]}" >"$tmp/out-$h" 2>"$tmp/err-$h"; then
-      printf -- '-\t-\t-\t-\tunreachable: %s\n' "$(tail -1 "$tmp/err-$h")" >>"$tmp/out-$h"
+      printf 'error\t-\t-\t-\tunreachable: %s\n' "$(tail -1 "$tmp/err-$h")" >>"$tmp/out-$h"
     fi
     sed "s/^/$h	/" "$tmp/out-$h" >"$tmp/1-$h"
   ) &
 done
 wait
 
-{
-  printf 'HOST\tKIND\tJOB\tSCHEDULE\tLAST\tSTATUS\n'
+layout=false color=false
+if [ -n "${FORCE_COLOR:-}" ]; then
+  [ "$FORCE_COLOR" != 0 ] && layout=true color=true
+elif [ -t 1 ]; then
+  layout=true
+  [ -z "${NO_COLOR:-}" ] && color=true
+fi
+
+if ! $layout; then
+  printf 'HOST\tKIND\tJOB\tWHEN\tLAST\tSTATUS\n'
   cat "$tmp"/0-* "$tmp"/1-* 2>/dev/null
-} | column -t -s $'\t'
+  exit
+fi
+
+# One section per host: a heading with its job and failure counts, then
+# aligned rows. Widths are measured before colour codes are added.
+cat "$tmp"/0-* "$tmp"/1-* 2>/dev/null | awk -F'\t' -v color="$color" '
+  function c(code, s) { return color == "true" ? "\033[" code "m" s "\033[0m" : s }
+  function pad(s, w) { return s sprintf("%" (w - length(s) + 1) "s", "") }
+  function bad(s) { return s !~ /^(ok|running|never ran|not loaded|-)$/ }
+  function wide(i, s) { if (length(s) > w[i]) w[i] = length(s) }
+  BEGIN { w[1] = 3; w[2] = 4; w[3] = 4; w[4] = 4 }
+  !($1 in seen) { seen[$1] = 1; hosts[++nh] = $1 }
+  $2 == "error" { err[$1] = $6; next }
+  {
+    n++; host[n] = $1; kind[n] = $2; job[n] = $3; when[n] = $4; last[n] = $5; st[n] = $6
+    wide(1, $3); wide(2, $2); wide(3, $4); wide(4, $5)
+    count[$1]++; if (bad($6)) fail[$1]++
+  }
+  END {
+    print c("2", "  " pad("Job", w[1]) " " pad("Kind", w[2]) " " pad("When", w[3]) " " pad("Last", w[4]) " Status")
+    for (h = 1; h <= nh; h++) {
+      name = hosts[h]
+      line = "\n" c("1;34", name) "  "
+      if (name in err) { print line c("31", err[name]); continue }
+      line = line c("2", count[name] " jobs")
+      if (fail[name]) line = line c("2", ", ") c("31", fail[name] " failing")
+      print line
+      for (i = 1; i <= n; i++) {
+        if (host[i] != name) continue
+        s = st[i]
+        s = s == "ok" ? c("32", s) : s == "running" ? c("36", s) : bad(s) ? c("31", s) : c("2", s)
+        print "  " pad(job[i], w[1]) " " c("2", pad(kind[i], w[2])) " " pad(when[i], w[3]) " " c("2", pad(last[i], w[4])) " " s
+      }
+    }
+  }'
