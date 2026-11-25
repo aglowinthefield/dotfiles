@@ -46,7 +46,7 @@ test("adds Pi row to existing Claude rows without changing theme or comments", (
 test("seeds a full Herdr config on a fresh machine", () => {
   const config = parse(target());
   assert.deepEqual(config.ui.sidebar.agents.rows_by_agent.pi[1], ["$summary"]);
-  assert.equal(config.theme.name, "kanagawa");
+  assert.equal(config.theme.name, "terminal");
 });
 
 test("inserts after valid table headers with comments, spaces, or no final newline", () => {
