@@ -20,6 +20,7 @@
 
 ## Waiting
 - Never wait with a fixed `sleep N`, in bash or through codemode (which has no timers). Wait on the real condition: a blocking command (`gh run watch`, `gh pr checks --watch`, `flyctl ... --wait`, `acp_delegate_wait`) or one bounded poll loop, `timeout 300 sh -c 'until <check>; do sleep 2; done'`. The `no-sleep` extension blocks bare sleeps.
+- To wait on a background job, have it write its exit code (`(cmd > log 2>&1; echo $? > /tmp/x.exit) &`) and poll for that file. Never poll `pgrep -f` inside `sh -c`: the pattern is in the wrapper's own command line, so it always matches itself and the loop runs until its timeout. Two Bakery runs lost 25 and 33 minutes this way and then hit the run timeout.
 
 ## Subagents
 - You may delegate without asking in these cases. This list is the standing authorization `subagents_enable` asks for.
