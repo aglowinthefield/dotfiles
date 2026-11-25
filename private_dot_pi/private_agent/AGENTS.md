@@ -31,6 +31,7 @@
 - A child that writes files gets its own worktree. Parallel writers never share one.
 - Children never take gated actions: push, merge, PR, comment, deploy or spend. You audit their diff and take those actions yourself.
 - A child's report is a lead. Check its claims against source before you repeat them.
+- Reviewers (Shadow, Trickster, any fresh-context check of work) run on a different model family from the one that wrote the change: Claude-written work gets the newest GPT sol model, GPT- or Kimi-written work gets Claude. Pass it as the per-run `model` with high thinking. If that provider is down, review on the author's family and say so in the report.
 
 ## Other sessions
 - pi-intercom connects every local pi session. Use the `intercom` tool to reach another session working in the same repo, a repo you're consulting for its patterns, or a shared library. Don't use it for unrelated repos, for trivial questions, or when you can carry on alone. `/skill:pi-intercom` has the patterns.
