@@ -91,7 +91,7 @@ local_jobs() {
   cron_jobs
 }
 
-if [ "${1:-}" = --local ]; then local_jobs; exit; fi
+if [ "${1:-}" = --local ]; then local_jobs; exit 0; fi # grep in cron_jobs exits 1 when there is no crontab
 
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
@@ -106,7 +106,7 @@ for h in $peers; do
   (
     if ! ssh -o BatchMode=yes -o ConnectTimeout=5 "$h" 'bash -s -- --local' \
         <"${BASH_SOURCE[0]}" >"$tmp/out-$h" 2>"$tmp/err-$h"; then
-      printf 'error\t-\t-\t-\tunreachable: %s\n' "$(tail -1 "$tmp/err-$h")" >>"$tmp/out-$h"
+      printf 'error\t-\t-\t-\tunreachable: %s\n' "$(head -1 "$tmp/err-$h")" >>"$tmp/out-$h"
     fi
     sed "s/^/$h	/" "$tmp/out-$h" >"$tmp/1-$h"
   ) &
