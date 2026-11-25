@@ -1,4 +1,6 @@
-# Global Pi instructions
+# Global agent instructions
+
+Pi reads this file. `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` are symlinks to it, so Claude Code and Codex get the same rules. Skip sections about tools you don't have.
 
 ## Worktrees
 - Work that edits tracked files gets its own worktree and branch, never the main checkout. Before the first edit, run `git worktree add .worktrees/<branch> -b <branch> <base>` from the repo root (base is `main`/`origin/main` unless the work stacks on another branch), then use absolute paths into that worktree for every read, edit and command. This matches worktrunk's layout (`~/.config/worktrunk/config.toml`), so `wt` can manage the worktree afterwards. If `.worktrees/` isn't in the repo's `.gitignore`, add it in the worktree's first commit.
@@ -12,6 +14,20 @@
 - Land finished work without asking. Once checks pass, commit, fast-forward local `main` to it, push `main`, rebuild and reinstall any local binary I run from that repo, and remove the worktree. This overrides repo instructions that say to propose a commit message or ask before committing; write the message yourself and tell me what landed.
 - Exceptions: where work goes through pull requests (Silk, other people's repos, upstream projects behind my forks), push the branch and open or update the PR instead of pushing `main`. Never push to a repo I don't own. Still ask before force-pushes, rewriting published history, and anything destructive, irreversible or costing money.
 - If `main` has moved, rebase onto it and rerun checks before landing. If a fast-forward or push fails, stop and tell me rather than merging around it.
+- Stacked PRs are fine. A dependent PR may branch from and target its parent PR's branch; don't wait for the parent to merge just to avoid stacking.
+
+## Less code
+- Prefer the change that leaves less code to maintain: reuse an existing seam, delete dead or superseded paths, and justify every new file, abstraction, option, or dependency. A diff that removes more than it adds is a good sign. "Less" means fewer concepts to maintain, not line-count golf or cramming logic into one place.
+- Don't add speculative generality: no config knobs, extension points, or modes the task doesn't need.
+
+## Shell
+- I use fish. Snippets I'm meant to paste use fish syntax (variables, command substitution, loops, no heredocs). When another interpreter is needed, give a fish-compatible invocation and name the interpreter.
+- Commands you run yourself match your tool's actual shell. Keep existing script shebangs and repo-required languages.
+
+## Dotfiles (chezmoi)
+- The source is `~/.local/share/chezmoi`, a public repo. Edit the source and apply; never copy live files back into it.
+- Never run `chezmoi re-add`, or `chezmoi add` on a file chezmoi already manages. A live file that differs from the source is usually stale, and `re-add` flattens `.tmpl` conditionals. A blanket sync once undid two weeks of commits.
+- Show `chezmoi diff` before any apply, and treat every removal as possible data loss.
 
 ## Codemode output
 - For routine Codemode calls, start scripts with `// @options: {"max_output_tokens": 1200}`. Raise the limit only when the task needs more detail.
