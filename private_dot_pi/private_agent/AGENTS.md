@@ -2,6 +2,9 @@
 
 Pi reads this file. `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` are symlinks to it, so Claude Code and Codex get the same rules. Skip sections about tools you don't have.
 
+## Philosophy
+- Before a design decision (a new module, a seam between projects, a loop, a schema change, a test strategy, where something runs), read `~/code/PHILOSOPHY.md`. A `## Departures` section in a project's AGENTS.md overrides it for that project.
+
 ## Worktrees
 - Work that edits tracked files gets its own worktree and branch, never the main checkout. Before the first edit, run `git worktree add .worktrees/<branch> -b <branch> <base>` from the repo root (base is `main`/`origin/main` unless the work stacks on another branch), then use absolute paths into that worktree for every read, edit and command. This matches worktrunk's layout (`~/.config/worktrunk/config.toml`), so `wt` can manage the worktree afterwards. If `.worktrees/` isn't in the repo's `.gitignore`, add it in the worktree's first commit.
 - Already in a linked worktree (`git rev-parse --git-dir` contains `/worktrees/`, as in Bakery card runs)? Stay there.
@@ -11,8 +14,9 @@ Pi reads this file. `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` are symlinks 
 - Wrap-up: once your PR has merged (or the work is abandoned and committed), remove your own worktree with `wt remove <branch>` from the repo root before you report done. On Windows, `wt` is Windows Terminal (it opens a popup window instead), so use `git worktree remove .worktrees/<branch> && git branch -d <branch>` there. `~/.local/bin/worktree-sweep` runs every 2 h as the backstop (systemd timer on Linux, `cx.worktree-sweep` launchd job on macOS; setup is in the dotfiles repo's AGENTS.md), but it skips any worktree a process still sits in, so stop dev servers, watchers and `caffeinate` jobs you started there first.
 
 ## Landing work
-- Land finished work without asking. Once checks pass, commit, fast-forward local `main` to it, push `main`, rebuild and reinstall any local binary I run from that repo, and remove the worktree. This overrides repo instructions that say to propose a commit message or ask before committing; write the message yourself and tell me what landed.
-- Exceptions: where work goes through pull requests (Silk, other people's repos, upstream projects behind my forks), push the branch and open or update the PR instead of pushing `main`. Never push to a repo I don't own. Still ask before force-pushes, rewriting published history, and anything destructive, irreversible or costing money.
+- Land finished work without asking. This overrides repo instructions that say to propose a commit message or ask before committing; write the message yourself and tell me what landed.
+- In a repo with CI, and wherever work goes through pull requests (Silk, other people's repos, upstream projects behind my forks), push the branch and open or update the PR. CI and the review record live there. Never push to a repo I don't own.
+- In a repo without CI (the dotfiles, skills, docker, the vault), once checks pass, commit, fast-forward local `main`, push `main`, rebuild and reinstall any local binary I run from that repo, and remove the worktree. Still ask before force-pushes, rewriting published history, and anything destructive, irreversible or costing money.
 - If `main` has moved, rebase onto it and rerun checks before landing. If a fast-forward or push fails, stop and tell me rather than merging around it.
 - Stacked PRs are fine. A dependent PR may branch from and target its parent PR's branch; don't wait for the parent to merge just to avoid stacking.
 
