@@ -1,0 +1,118 @@
+#!/usr/bin/env bash
+# Lists scheduled jobs (launchd agents, systemd timers, crontab) on this
+# machine and on every online macOS/Linux peer in the tailnet.
+#
+#   sched           this machine and the tailnet
+#   sched --local   this machine only; peers run this over ssh
+#
+# Peers don't need sched installed: the script is piped to `bash -s` over ssh.
+# They do need jq.
+set -uo pipefail
+
+ago() { # seconds -> 45s / 12m / 5h / 3d
+  local s=$(( $1 < 0 ? 0 : $1 ))
+  if (( s < 120 )); then echo "${s}s"
+  elif (( s < 7200 )); then echo "$(( s / 60 ))m"
+  elif (( s < 172800 )); then echo "$(( s / 3600 ))h"
+  else echo "$(( s / 86400 ))d"; fi
+}
+
+# Rows: KIND, JOB, SCHEDULE, LAST, STATUS (tab-separated).
+launchd_jobs() {
+  local loaded f label when line
+  loaded=$(launchctl list)
+  for f in "$HOME"/Library/LaunchAgents/*.plist; do
+    [ -e "$f" ] || continue
+    IFS=$'\t' read -r label when < <(plutil -convert json -o - "$f" 2>/dev/null | jq -r '
+      def two: tostring | if length < 2 then "0" + . else . end;
+      def dur: if . % 86400 == 0 then "\(. / 86400)d" elif . % 3600 == 0 then "\(. / 3600)h"
+               elif . % 60 == 0 then "\(. / 60)m" else "\(.)s" end;
+      def cal: (if .Hour != null then "\(.Hour | two):\(.Minute // 0 | two)"
+                elif .Minute != null then "hourly :\(.Minute | two)" else "every minute" end) as $t
+               | if .Day != null then "day \(.Day) \($t)"
+                 elif .Weekday != null then ["Sun","Mon","Tue","Wed","Thu","Fri","Sat","Sun"][.Weekday] + " " + $t
+                 elif .Hour != null then "daily \($t)" else $t end;
+      [.Label,
+       (if .StartInterval then "every \(.StartInterval | dur)"
+        elif .StartCalendarInterval then (.StartCalendarInterval | if type == "array" then map(cal) | join(", ") else cal end)
+        elif .WatchPaths then "on file change"
+        elif .KeepAlive then "always on"
+        elif .RunAtLoad then "at login"
+        else "on demand" end)] | @tsv')
+    [ -n "${label:-}" ] || continue
+    line=$(awk -F'\t' -v l="$label" '$3 == l' <<<"$loaded")
+    if [ -z "$line" ]; then status="not loaded"
+    else
+      read -r pid code _ <<<"$line"
+      if [ "$pid" != "-" ]; then status="running"
+      elif [ "$code" = 0 ]; then status="ok"
+      else status="exit $code"; fi
+    fi
+    printf 'launchd\t%s\t%s\t-\t%s\n' "$label" "$when" "$status"
+  done
+}
+
+timer_jobs() { # $1: --user or --system
+  local now timer svc next last k v result code state status
+  now=$(date +%s)
+  systemctl "$1" list-timers --all -o json 2>/dev/null |
+    jq -r '.[] | [.unit, .activates, (.next // 0), (.last // 0)] | @tsv' |
+    while IFS=$'\t' read -r timer svc next last; do
+      result= code= state=
+      while IFS='=' read -r k v; do
+        case $k in Result) result=$v ;; ExecMainStatus) code=$v ;; ActiveState) state=$v ;; esac
+      done < <(systemctl "$1" show -p Result,ExecMainStatus,ActiveState "$svc")
+      if [ "$state" = active ] || [ "$state" = activating ]; then status="running"
+      elif [ "$last" = 0 ]; then status="never ran"
+      elif [ "$result" = success ]; then status="ok"
+      elif [ "$result" = exit-code ]; then status="exit $code"
+      else status=$result; fi
+      [ "$next" = 0 ] && next="-" || next="in $(ago $(( next / 1000000 - now )))"
+      [ "$last" = 0 ] && last="-" || last="$(ago $(( now - last / 1000000 ))) ago"
+      printf '%s\t%s\t%s\t%s\t%s\n' "${1#--} timer" "${timer%.timer}" "$next" "$last" "$status"
+    done
+}
+
+cron_jobs() {
+  crontab -l 2>/dev/null | grep -Ev '^[[:space:]]*(#|$)|^[A-Za-z_]+=' | while read -r line; do
+    set -f; set -- $line; set +f
+    if [[ $1 == @* ]]; then when=$1; shift 1; else when="$1 $2 $3 $4 $5"; shift 5; fi
+    printf 'cron\t%s\t%s\t-\t-\n' "$(basename "$1")" "$when"
+  done
+}
+
+local_jobs() {
+  if ! command -v jq >/dev/null; then printf -- '-\t-\t-\t-\tneeds jq\n'; return; fi
+  case $(uname) in
+    Darwin) launchd_jobs ;;
+    Linux) timer_jobs --user; timer_jobs --system ;;
+  esac
+  cron_jobs
+}
+
+if [ "${1:-}" = --local ]; then local_jobs; exit; fi
+
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+status_json=$(tailscale status --json 2>/dev/null || echo '{}')
+self=$(jq -r '.Self.DNSName // empty | split(".")[0]' <<<"$status_json")
+self=${self:-$(hostname -s)}
+peers=$(jq -r '.Peer // {} | .[] | select(.Online and (.OS == "linux" or .OS == "macOS"))
+                | .DNSName | split(".")[0]' <<<"$status_json")
+
+local_jobs | sed "s/^/$self	/" >"$tmp/0-$self" &
+for h in $peers; do
+  (
+    if ! ssh -o BatchMode=yes -o ConnectTimeout=5 "$h" 'bash -s -- --local' \
+        <"${BASH_SOURCE[0]}" >"$tmp/out-$h" 2>"$tmp/err-$h"; then
+      printf -- '-\t-\t-\t-\tunreachable: %s\n' "$(tail -1 "$tmp/err-$h")" >>"$tmp/out-$h"
+    fi
+    sed "s/^/$h	/" "$tmp/out-$h" >"$tmp/1-$h"
+  ) &
+done
+wait
+
+{
+  printf 'HOST\tKIND\tJOB\tSCHEDULE\tLAST\tSTATUS\n'
+  cat "$tmp"/0-* "$tmp"/1-* 2>/dev/null
+} | column -t -s $'\t'

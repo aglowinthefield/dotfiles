@@ -35,6 +35,7 @@ Library
 .local/bin/env.fish
 .local/bin/agent-skills-sync
 .local/bin/silk-deps-seed
+.local/bin/sched
 .local/share/node-shims
 bin
 # reviewr is currently provisioned only on macOS/Linux.
