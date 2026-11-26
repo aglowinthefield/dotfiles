@@ -69,7 +69,7 @@ Pi reads this file. `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` are symlinks 
 - Use `$DEV_VAULT` for the dev vault; when unset, use `~/Documents/somewhere.garden`. Resolve it before accessing notes. Keep agent reports and annotations in this vault.
 
 ## Written reports
-- Reports, audits, investigations and plans that run past a short reply go in the Obsidian vault, never `/tmp`. Scratch data (query output, logs) may stay in `/tmp`.
+- Reports, audits, investigations and plans that run past a short reply go in the Obsidian vault, never `/tmp`. Scratch data (query output, logs, clones) may stay in `/tmp`, inside a `mktemp -d` directory so it follows `$TMPDIR`, never a hardcoded `/tmp/...` path. Delete scratch clones and builds when you finish with them: /tmp is a RAM disk with a 1M-inode limit, and leftover clones filled it in three days.
 - Before writing or rewriting any vault note, read `~/.agents/skills/vault-writing/SKILL.md` and follow it. It covers where the note goes, frontmatter and `status: needs-review`, when to use `vault-report` HTML, and drawing processes, architectures and flaws as diagrams instead of describing them. Tell the user the path and wait for their review before acting on it.
 - Delegates writing a report get the vault path and the vault-writing skill path in their task, not `/tmp`.
 
