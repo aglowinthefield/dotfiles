@@ -7,7 +7,8 @@
        mcp.local.json or this template, or the next apply reverts them. */ -}}
 {{- $servers := dict
       "paprika" (dict "url" "http://127.0.0.1:8000/mcp" "enabled" false)
-      "porkbun" (dict "url" "https://mcp.porkbun.com/mcp") -}}
+      "porkbun" (dict "url" "https://mcp.porkbun.com/mcp")
+      "stately" (dict "url" "https://mcp.stately.ai/mcp") -}}
 {{- if eq .chezmoi.os "darwin" }}
 {{- /* Things is a macOS app, and icloud-calendar-mcp is installed by hand on the
        laptops only; chezmoi does not ship it. The Things token is read from
