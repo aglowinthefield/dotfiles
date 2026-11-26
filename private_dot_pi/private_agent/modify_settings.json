@@ -12,6 +12,8 @@
        uninstalled: strip both from existing machines. */ -}}
 {{- $pkgs := get $s "packages" | default list -}}
 {{- $keep := list -}}{{- range $pkgs }}{{ if not (has . (list "npm:@mem0/pi-agent-plugin" "npm:billion-context")) }}{{ $keep = append $keep . }}{{ end }}{{ end -}}
+{{- /* Every machine gets vim-mode prompt editing. */ -}}
+{{- if not (has "npm:pi-vim" $keep) }}{{ $keep = append $keep "npm:pi-vim" }}{{ end -}}
 {{- $s = setValueAtPath "packages" $keep $s -}}
 {{- $s = setValueAtPath "defaultProvider" "anthropic" $s -}}
 {{- $s = setValueAtPath "defaultModel" "claude-opus-5-5" $s -}}
