@@ -80,6 +80,11 @@ if status is-interactive
 end
 
 set -g -x SYSTEMD_EDITOR vim
+# Herdr panes inherit DISPLAY=:0 and no SSH markers, so pi copies with xclip to this
+# machine's clipboard. OSC 52 sends the copy on through Herdr to the attached client.
+if set -q HC_TERMINAL_ID
+    set -gx PI_CLIPBOARD_OSC52 1
+end
 # Only wire up the ssh-agent socket if it actually exists on this machine.
 # Headless servers have no ssh-agent.socket, so skip it to avoid
 # "Error connecting to agent: No such file or directory" on login.
