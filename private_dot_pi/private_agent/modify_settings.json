@@ -10,16 +10,23 @@
 {{- /* mem0 was dropped in favour of Impression, and billion-context was
        uninstalled: strip both from existing machines. */ -}}
 {{- $strip := list "npm:@mem0/pi-agent-plugin" "npm:billion-context" -}}
-{{- /* A machine that loads a local Impression checkout through "extensions"
-       can't also load the npm package: both register the "impression" MCP
-       server and pi refuses to start. */ -}}
-{{- range get $s "extensions" | default list }}{{ if hasSuffix "/impression.ts" . }}{{ $strip = append $strip "npm:@aglowinthefield/impression" }}{{ end }}{{ end -}}
+{{- /* Impression is developed on these machines: where its checkout exists,
+       pi loads it in place of the npm package, and without one the npm
+       package comes back. Only one may load, since both register the
+       "impression" MCP server. A hand-added "extensions" entry from before
+       this rule is removed for the same reason. */ -}}
+{{- $impNpm := "npm:@aglowinthefield/impression" -}}
+{{- $impDev := joinPath .chezmoi.homeDir "code/impression/packages/pi/impression.ts" -}}
+{{- $imp := $impNpm -}}
+{{- if stat $impDev }}{{ $imp = $impDev }}{{ $strip = append $strip $impNpm }}{{ else }}{{ $strip = append $strip $impDev }}{{ end -}}
+{{- $exts := list -}}{{- range get $s "extensions" | default list }}{{ if not (hasSuffix "/impression.ts" .) }}{{ $exts = append $exts . }}{{ end }}{{ end -}}
+{{- if $exts }}{{ $s = setValueAtPath "extensions" $exts $s }}{{ else }}{{ $s = unset $s "extensions" }}{{ end -}}
 {{- $pkgs := get $s "packages" | default list -}}
 {{- $keep := list -}}{{- range $pkgs }}{{ if not (has . $strip) }}{{ $keep = append $keep . }}{{ end }}{{ end -}}
 {{- /* Every machine gets the same plugins. Packages a machine adds itself
        (local paths, experiments) stay; uninstall one everywhere by moving
        it to the strip list above. */ -}}
-{{- range list "npm:@gotgenes/pi-anthropic-auth" "npm:pi-multi-pass" "npm:pi-notify" "git:github.com/aglowinthefield/pi-job-progress" "npm:@aglowinthefield/impression" "npm:pi-subagents" "git:github.com/johnlindquist/pi-emphasis" "git:github.com/aglowinthefield/pi-open-pr" "npm:pi-intercom" "npm:pi-vim" }}{{ if not (or (has . $keep) (has . $strip)) }}{{ $keep = append $keep . }}{{ end }}{{ end -}}
+{{- range list "npm:@gotgenes/pi-anthropic-auth" "npm:pi-multi-pass" "npm:pi-notify" "git:github.com/aglowinthefield/pi-job-progress" $imp "npm:pi-subagents" "git:github.com/johnlindquist/pi-emphasis" "git:github.com/aglowinthefield/pi-open-pr" "npm:pi-intercom" "npm:pi-vim" }}{{ if not (or (has . $keep) (has . $strip)) }}{{ $keep = append $keep . }}{{ end }}{{ end -}}
 {{- $s = setValueAtPath "packages" $keep $s -}}
 {{- /* Editor validation and completion, and a key reference for readers. */ -}}
 {{- $s = setValueAtPath "$schema" "https://pi.dev/schemas/settings.schema.json" $s -}}
