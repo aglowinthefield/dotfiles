@@ -3,6 +3,14 @@ source ~/.config/fish/functions.fish
 if status is-interactive
     set -g fish_greeting
     fish_vi_key_bindings
+    # In a Herdr pane, a stray ctrl-d after quitting an agent exits the shell,
+    # and if it was the space's last pane Herdr closes the space without the
+    # confirm prompt. Leave a Herdr shell with `exit` instead.
+    if set -q HERDR_ENV
+        for mode in default insert visual
+            bind -M $mode ctrl-d delete-char
+        end
+    end
     # Clear mouse reporting left behind by a terminal app or disconnected SSH.
     function clear_mouse_reporting --on-event fish_prompt
         printf '\e[?1000l\e[?1002l\e[?1003l'
