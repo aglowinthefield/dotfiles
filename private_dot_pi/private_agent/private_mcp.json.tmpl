@@ -6,7 +6,6 @@
        and enabled-state changes back into mcp.json, so make those in
        mcp.local.json or this template, or the next apply reverts them. */ -}}
 {{- $servers := dict
-      "paprika" (dict "url" "http://127.0.0.1:8000/mcp" "enabled" false)
       "porkbun" (dict "url" "https://mcp.porkbun.com/mcp")
       "stately" (dict "url" "https://mcp.stately.ai/mcp") -}}
 {{- if eq .chezmoi.os "darwin" }}
