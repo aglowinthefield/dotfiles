@@ -16,6 +16,8 @@
        it to the strip list above. */ -}}
 {{- range list "npm:@gotgenes/pi-anthropic-auth" "npm:pi-multi-pass" "npm:pi-notify" "git:github.com/aglowinthefield/pi-job-progress" "npm:@aglowinthefield/impression" "npm:pi-subagents" "git:github.com/johnlindquist/pi-emphasis" "git:github.com/aglowinthefield/pi-open-pr" "npm:pi-intercom" "npm:pi-vim" }}{{ if not (has . $keep) }}{{ $keep = append $keep . }}{{ end }}{{ end -}}
 {{- $s = setValueAtPath "packages" $keep $s -}}
+{{- /* Editor validation and completion, and a key reference for readers. */ -}}
+{{- $s = setValueAtPath "$schema" "https://pi.dev/schemas/settings.schema.json" $s -}}
 {{- $s = setValueAtPath "defaultProvider" "anthropic" $s -}}
 {{- $s = setValueAtPath "defaultModel" "claude-opus-5-5" $s -}}
 {{- /* Restore the shell on exit instead of printing the fullscreen UI. */ -}}
@@ -27,4 +29,22 @@
        /settings alone. */ -}}
 {{- if not (hasKey $s "quietStartup") }}{{ $s = setValueAtPath "quietStartup" true $s }}{{ end -}}
 {{- if not (hasKey (get $s "warnings" | default dict) "anthropicExtraUsage") }}{{ $s = setValueAtPath "warnings.anthropicExtraUsage" false $s }}{{ end -}}
+{{- /* Model ladder: Ctrl+P cycles only these, and the model picks the effort,
+       so /thinking is rarely needed. Opus is the daily driver; Sonnet, Kimi
+       and Sol stay at medium for quick work and reviews; Fable and Astra are
+       for the hardest problems. Enforced so a model bump lands everywhere. */ -}}
+{{- $s = setValueAtPath "enabledModels" (list "anthropic/claude-opus-5-5" "anthropic/claude-sonnet-5-5" "openai/gpt-6.2-sol" "moonshotai/kimi-k3.1-pro" "anthropic/claude-fable-5-2" "openai/gpt-6.2-astra") $s -}}
+{{- if not (hasKey $s "modelThinkingLevels") }}{{ $s = setValueAtPath "modelThinkingLevels" (dict "anthropic/claude-opus-5-5" "high" "anthropic/claude-fable-5-2" "xhigh" "openai/gpt-6.2-astra" "xhigh") $s }}{{ end -}}
+{{- /* Cost visibility: say when a turn re-bills the prompt cache, and what
+       cache warming and compaction cost. Seeded. */ -}}
+{{- range list "cacheMisses" "cacheWarming" "compactionCosts" }}{{ if not (hasKey (get $s "notices" | default dict) .) }}{{ $s = setValueAtPath (printf "notices.%s" .) true $s }}{{ end }}{{ end -}}
+{{- /* Compaction: 1M-context models would otherwise compact at ~984k, re-reading
+       a huge cache every turn and diluting early instructions. Start at ~400k
+       and keep more recent history verbatim. 272k models keep the defaults. */ -}}
+{{- if not (hasKey (get $s "compaction" | default dict) "modelOverrides") }}{{ $o := dict "reserveTokens" 600000 "keepRecentTokens" 40000 }}{{ $s = setValueAtPath "compaction.modelOverrides" (dict "anthropic/claude-opus-5-5" $o "anthropic/claude-sonnet-5-5" $o "anthropic/claude-fable-5-2" $o "moonshotai/kimi-k3.1-pro" $o) $s }}{{ end -}}
+{{- /* Terminal: busy state in the Ghostty tab, room for ~50 skills in
+       autocomplete, /tree lists only user messages, short changelogs across
+       a dozen packages. Seeded. */ -}}
+{{- if not (hasKey (get $s "terminal" | default dict) "showTerminalProgress") }}{{ $s = setValueAtPath "terminal.showTerminalProgress" true $s }}{{ end -}}
+{{- range $k, $v := dict "autocompleteMaxVisible" 10 "treeFilterMode" "user-only" "collapseChangelog" true }}{{ if not (hasKey $s $k) }}{{ $s = setValueAtPath $k $v $s }}{{ end }}{{ end -}}
 {{ toPrettyJson $s }}

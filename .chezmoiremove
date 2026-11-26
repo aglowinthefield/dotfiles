@@ -20,3 +20,7 @@
 # both the live extension and any disabled copy left from earlier.
 .pi/agent/extensions/jev-router.ts
 .pi/agent/extensions-disabled/jev-router.ts
+
+# no-sleep was retired; the AGENTS.md waiting rule stays as guidance and the
+# agent decides how to wait.
+.pi/agent/extensions/no-sleep.ts
