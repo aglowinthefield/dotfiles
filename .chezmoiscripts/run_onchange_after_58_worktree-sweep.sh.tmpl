@@ -1,10 +1,27 @@
-{{- if eq .chezmoi.os "linux" -}}
+{{- if ne .chezmoi.os "windows" -}}
 #!/bin/sh
-# Schedule worktree-sweep every 2 hours. macOS uses `worktree-sweep --install-agent`.
-# timer: {{ include "dot_config/systemd/user/worktree-sweep.timer" | sha256sum }}
-# service: {{ include "dot_config/systemd/user/worktree-sweep.service" | sha256sum }}
-if systemctl --user show-environment >/dev/null 2>&1; then
-  systemctl --user daemon-reload
-  systemctl --user enable --now worktree-sweep.timer
+# Install worktree-sweep (https://github.com/aglowinthefield/worktree-sweep) and
+# schedule it every 2 hours: launchd on macOS, a systemd user timer on Linux.
+# Edit this file to rerun it on every machine.
+set -eu
+repo="$HOME/code/worktree-sweep"
+[ -d "$repo/.git" ] || git clone -q https://github.com/aglowinthefield/worktree-sweep "$repo"
+mkdir -p "$HOME/.local/bin"
+ln -sfn "$repo/worktree-sweep" "$HOME/.local/bin/worktree-sweep"
+{{- if eq .chezmoi.os "darwin" }}
+# The dotfiles copy used this launchd label.
+launchctl bootout "gui/$(id -u)/cx.worktree-sweep" 2>/dev/null || true
+rm -f "$HOME/Library/LaunchAgents/cx.worktree-sweep.plist"
+{{- else }}
+systemctl --user show-environment >/dev/null 2>&1 || exit 0
+# silk-deps-seed kept a locked silk-remix worktree installed; the sweep's refresh
+# of the main checkout replaces it.
+systemctl --user disable --now silk-deps-seed.timer 2>/dev/null || true
+seed="$HOME/code/silk-remix/.worktrees/_deps-seed"
+if [ -d "$seed" ]; then
+  git -C "$HOME/code/silk-remix" worktree unlock "$seed" 2>/dev/null || true
+  git -C "$HOME/code/silk-remix" worktree remove --force "$seed"
 fi
+{{- end }}
+WORKTREE_SWEEP_ROOTS="$HOME/code:$HOME/silk" "$repo/worktree-sweep" --install-agent
 {{- end }}

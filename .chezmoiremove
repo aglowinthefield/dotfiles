@@ -24,3 +24,9 @@
 # no-sleep was retired; the AGENTS.md waiting rule stays as guidance and the
 # agent decides how to wait.
 .pi/agent/extensions/no-sleep.ts
+
+# silk-deps-seed (Linux) kept a silk-remix worktree installed; worktree-sweep now
+# refreshes the main checkout instead (aglowinthefield/worktree-sweep).
+.local/bin/silk-deps-seed
+.config/systemd/user/silk-deps-seed.service
+.config/systemd/user/silk-deps-seed.timer
