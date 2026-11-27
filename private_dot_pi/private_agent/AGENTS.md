@@ -16,6 +16,7 @@ Pi reads this file. `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` are symlinks 
 ## Landing work
 - Land finished work without asking. This overrides repo instructions that say to propose a commit message or ask before committing; write the message yourself and tell me what landed.
 - In a repo with CI, and wherever work goes through pull requests (Silk, other people's repos, upstream projects behind my forks), push the branch and open or update the PR. CI and the review record live there. Never push to a repo I don't own.
+- In a repo I own, merge my own PR once CI passes. Ask before releasing or publishing.
 - In a repo without CI (the dotfiles, skills, docker, the vault), once checks pass, commit, fast-forward local `main`, push `main`, rebuild and reinstall any local binary I run from that repo, and remove the worktree. Still ask before force-pushes, rewriting published history, and anything destructive, irreversible or costing money.
 - If `main` has moved, rebase onto it and rerun checks before landing. If a fast-forward or push fails, stop and tell me rather than merging around it.
 - Stacked PRs are fine. A dependent PR may branch from and target its parent PR's branch; don't wait for the parent to merge just to avoid stacking.
