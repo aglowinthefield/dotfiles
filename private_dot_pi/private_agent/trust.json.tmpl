@@ -1,9 +1,12 @@
 {{- /* Trusted project roots are absolute paths, so they differ per OS:
-       silk-remix lives under ~/silk on macOS and ~/code on Linux. */ -}}
+       silk-remix lives under ~/silk on macOS and ~/code on Linux.
+       Windows keeps repos under C:\Users\tom\code. */ -}}
 {
 {{- if eq .chezmoi.os "darwin" }}
   "/Users/clearing/code": true,
   "/Users/clearing/silk": true
+{{- else if eq .chezmoi.os "windows" }}
+  "C:\\Users\\tom\\code": true
 {{- else }}
   "/home/redbean/silk": true,
   "/home/redbean/code": true,
