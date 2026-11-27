@@ -1,0 +1,59 @@
+{{- if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+# launchd agent that keeps Milieu's dev server on http://127.0.0.1:3012, which
+# Helium uses as its new tab page. Dev mode so edits hot-reload in open tabs.
+# Hash: {{ include ".chezmoiscripts/run_onchange_63_milieu.sh.tmpl" | sha256sum }}
+#
+# Installed by script for the same reason as docker-volume-prune: chezmoi
+# never owns ~/Library/LaunchAgents.
+
+set -e
+
+repo="{{ .chezmoi.homeDir }}/code/milieu"
+[ -d "$repo" ] || exit 0
+
+label="com.aglowinthefield.milieu"
+plist="{{ .chezmoi.homeDir }}/Library/LaunchAgents/${label}.plist"
+
+tmp="$(mktemp)"
+cat >"$tmp" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>${label}</string>
+	<key>WorkingDirectory</key>
+	<string>${repo}</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/sh</string>
+		<string>-c</string>
+		<string>exec npm run dev -- --port 3012</string>
+	</array>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<!-- node-shims follows the repo's Node pin; gh supplies GitHub credentials. -->
+		<key>PATH</key>
+		<string>{{ .chezmoi.homeDir }}/.local/share/node-shims:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+	</dict>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>KeepAlive</key>
+	<true/>
+	<key>ThrottleInterval</key>
+	<integer>30</integer>
+	<key>StandardOutPath</key>
+	<string>{{ .chezmoi.homeDir }}/Library/Logs/milieu.log</string>
+	<key>StandardErrorPath</key>
+	<string>{{ .chezmoi.homeDir }}/Library/Logs/milieu.log</string>
+</dict>
+</plist>
+PLIST
+
+install -m 644 "$tmp" "$plist"
+rm -f "$tmp"
+
+launchctl bootout "gui/$(id -u)/${label}" 2>/dev/null || true
+launchctl bootstrap "gui/$(id -u)" "$plist"
+{{- end }}
