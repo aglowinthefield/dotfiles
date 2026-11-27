@@ -7,9 +7,9 @@ Pi reads this file. `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` are symlinks 
 
 ## Worktrees
 - Work that edits tracked files gets its own worktree and branch, never the main checkout. Before the first edit, run `git worktree add .worktrees/<branch> -b <branch> <base>` from the repo root (base is `main`/`origin/main` unless the work stacks on another branch), then use absolute paths into that worktree for every read, edit and command. This matches worktrunk's layout (`~/.config/worktrunk/config.toml`), so `wt` can manage the worktree afterwards. Then run `wt -C .worktrees/<branch> hook pre-start --foreground --yes`: in repos with a `.config/wt.toml` it reflinks main's dependencies and build caches instead of a full install, and elsewhere it does nothing. If `.worktrees/` isn't in the repo's `.gitignore`, add it in the worktree's first commit.
-- Already in a linked worktree (`git rev-parse --git-dir` contains `/worktrees/`, as in Bakery card runs)? Stay there.
+- Already in a linked worktree (`git rev-parse --git-dir` contains `/worktrees/`, as in Alice card runs)? Stay there.
 - Investigation and review that edit no files can stay in the root.
-- Why: the root is shared by other sessions, Bakery approvals (which merge into local `main` and refuse when main is dirty) and the operator's own editing. Uncommitted edits left there block merges and get mixed up with unrelated work.
+- Why: the root is shared by other sessions, Alice approvals (which merge into local `main` and refuse when main is dirty) and the operator's own editing. Uncommitted edits left there block merges and get mixed up with unrelated work.
 - In the root, don't stash, reset, checkout, clean or reformat files you didn't create, even briefly to compare test results. Commit your worktree's work before you report done.
 - Wrap-up: once your PR has merged (or the work is abandoned and committed), remove your own worktree with `wt remove <branch>` from the repo root before you report done. On Windows, `wt` is Windows Terminal (it opens a popup window instead), so use `git worktree remove .worktrees/<branch> && git branch -d <branch>` there. `~/.local/bin/worktree-sweep` runs every 2 h as the backstop (systemd timer on Linux, `worktree-sweep` launchd job on macOS; source in `~/code/worktree-sweep`), but it skips any worktree a process still sits in, so stop dev servers, watchers and `caffeinate` jobs you started there first.
 
@@ -41,7 +41,7 @@ Pi reads this file. `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` are symlinks 
 
 ## Waiting
 - Never wait with a fixed `sleep N`, in bash or through codemode (which has no timers). Wait on the real condition: a blocking command (`gh run watch`, `gh pr checks --watch`, `flyctl ... --wait`, `acp_delegate_wait`) or one bounded poll loop, `timeout 300 sh -c 'until <check>; do sleep 2; done'`.
-- To wait on a background job, have it write its exit code (`(cmd > log 2>&1; echo $? > /tmp/x.exit) &`) and poll for that file. Never poll `pgrep -f` inside `sh -c`: the pattern is in the wrapper's own command line, so it always matches itself and the loop runs until its timeout. Two Bakery runs lost 25 and 33 minutes this way and then hit the run timeout.
+- To wait on a background job, have it write its exit code (`(cmd > log 2>&1; echo $? > /tmp/x.exit) &`) and poll for that file. Never poll `pgrep -f` inside `sh -c`: the pattern is in the wrapper's own command line, so it always matches itself and the loop runs until its timeout. Two Alice runs lost 25 and 33 minutes this way and then hit the run timeout.
 
 ## Subagents
 - You may delegate without asking in these cases. This list is the standing authorization `subagents_enable` asks for.
@@ -75,8 +75,8 @@ Pi reads this file. `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md` are symlinks 
 - Delegates writing a report get the vault path and the vault-writing skill path in their task, not `/tmp`.
 
 ## Systems
-- Tom seeks new systems when the current one gets uncomfortable. Default to tweaking the current system (Bakery cards, skills, charters, vault `🌀 Now/` pages). When he proposes a new tool, workflow or framework for the same job, say so, ask what the current system failed at, and offer the smallest tweak first. Switch only when he names a concrete failure the tweak cannot fix.
-- Cards I file on the Bakery board after we discuss a Bakery change go straight to Ready (`bakery-cli create`, then `bakery-cli ready <id> --yes`), not Triage.
+- Tom seeks new systems when the current one gets uncomfortable. Default to tweaking the current system (Alice cards, skills, charters, vault `🌀 Now/` pages). When he proposes a new tool, workflow or framework for the same job, say so, ask what the current system failed at, and offer the smallest tweak first. Switch only when he names a concrete failure the tweak cannot fix.
+- Cards I file on the Alice board after we discuss an Alice change go straight to Ready (`alice create`, then `alice ready <id> --yes`), not Triage.
 - Annotation loop: he annotates files with `<leader>ya` in nvim, which appends to `$DEV_VAULT/Annotations/<repo or file>.md`. "Read my annotations" means the `annotations` skill.
 
 ## Spec ids
