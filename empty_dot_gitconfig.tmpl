@@ -49,6 +49,15 @@
 [url "git@github.com:"]
     insteadOf = https://github.com/
     insteadOf = git://github.com/
+{{- if eq .chezmoi.os "darwin" }}
+
+# Pushes go over HTTPS with gh's keychain token instead. SSH auth goes through
+# 1Password's agent, which needs someone at the keyboard to approve, so unattended
+# agents could commit but never push. Fetches stay on SSH.
+[url "https://github.com/"]
+    pushInsteadOf = git@github.com:
+    pushInsteadOf = https://github.com/
+{{- end }}
 
 # ---- Work identity overrides below ----
 # Any repo under ~/dev/ will use ~/.gitconfig_work
